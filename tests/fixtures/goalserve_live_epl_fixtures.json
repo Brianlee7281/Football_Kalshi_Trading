@@ -1,0 +1,1620 @@
+{
+  "results": {
+    "@country": "England",
+    "tournament": {
+      "@id": "1204",
+      "@gid": "1204",
+      "@league": "Premier League",
+      "@season": "2025/2026",
+      "@stage_id": "12041081",
+      "@is_current": "True",
+      "week": [
+        {
+          "@number": "1",
+          "match": [
+            {
+              "@date": "15.08.2025",
+              "@time": "19:00",
+              "@status": "FT",
+              "@venue": "Anfield",
+              "@venue_id": "",
+              "@venue_city": "Liverpool",
+              "@attendance": "60 315",
+              "@static_id": "3692270",
+              "@id": "4199653",
+              "localteam": {
+                "@name": "Liverpool",
+                "@score": "4",
+                "@ft_score": "4",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9249"
+              },
+              "visitorteam": {
+                "@name": "Bournemouth",
+                "@score": "2",
+                "@ft_score": "2",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9053"
+              },
+              "halftime": {
+                "@score": "1 - 0"
+              },
+              "goals": {
+                "goal": [
+                  {
+                    "@team": "localteam",
+                    "@minute": "37",
+                    "@player": "H. Ekitike",
+                    "@score": "[1 - 0]",
+                    "@playerid": "624582",
+                    "@assist": "A. Mac Allister",
+                    "@assistid": "468060"
+                  },
+                  {
+                    "@team": "localteam",
+                    "@minute": "49",
+                    "@player": "C. Gakpo",
+                    "@score": "[2 - 0]",
+                    "@playerid": "436584",
+                    "@assist": "H. Ekitike",
+                    "@assistid": "624582"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "64",
+                    "@player": "A. Semenyo",
+                    "@score": "[2 - 1]",
+                    "@playerid": "529560",
+                    "@assist": "D. Brooks",
+                    "@assistid": "376315"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "76",
+                    "@player": "A. Semenyo",
+                    "@score": "[2 - 2]",
+                    "@playerid": "529560",
+                    "@assist": "H. J. Traore",
+                    "@assistid": "495017"
+                  },
+                  {
+                    "@team": "localteam",
+                    "@minute": "88",
+                    "@player": "F. Chiesa",
+                    "@score": "[3 - 2]",
+                    "@playerid": "453705",
+                    "@assist": "",
+                    "@assistid": ""
+                  },
+                  {
+                    "@team": "localteam",
+                    "@minute": "90",
+                    "@player": "M. Salah",
+                    "@score": "[4 - 2]",
+                    "@playerid": "138653",
+                    "@assist": "W. Endo",
+                    "@assistid": "124613"
+                  }
+                ]
+              },
+              "lineups": {
+                "localteam": {
+                  "@formation": "4-2-3-1",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "Alisson",
+                      "@booking": "",
+                      "@id": "102643"
+                    },
+                    {
+                      "@number": "30",
+                      "@name": "J. Frimpong",
+                      "@booking": "",
+                      "@id": "453104"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "I. Konate",
+                      "@booking": "",
+                      "@id": "416730"
+                    },
+                    {
+                      "@number": "4",
+                      "@name": "V. van Dijk",
+                      "@booking": "",
+                      "@id": "188624"
+                    },
+                    {
+                      "@number": "6",
+                      "@name": "M. Kerkez",
+                      "@booking": "YC 43",
+                      "@id": "646880"
+                    },
+                    {
+                      "@number": "10",
+                      "@name": "A. Mac Allister",
+                      "@booking": "",
+                      "@id": "468060"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "D. Szoboszlai",
+                      "@booking": "",
+                      "@id": "463719"
+                    },
+                    {
+                      "@number": "11",
+                      "@name": "M. Salah",
+                      "@booking": "",
+                      "@id": "138653"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "F. Wirtz",
+                      "@booking": "",
+                      "@id": "560015"
+                    },
+                    {
+                      "@number": "18",
+                      "@name": "C. Gakpo",
+                      "@booking": "",
+                      "@id": "436584"
+                    },
+                    {
+                      "@number": "22",
+                      "@name": "H. Ekitike",
+                      "@booking": "",
+                      "@id": "624582"
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "@formation": "4-2-3-1",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "D. Petrovic",
+                      "@booking": "",
+                      "@id": "463402"
+                    },
+                    {
+                      "@number": "15",
+                      "@name": "A. Smith",
+                      "@booking": "",
+                      "@id": "88146"
+                    },
+                    {
+                      "@number": "18",
+                      "@name": "B. Diakite",
+                      "@booking": "",
+                      "@id": "567492"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "M. Senesi",
+                      "@booking": "",
+                      "@id": "432117"
+                    },
+                    {
+                      "@number": "3",
+                      "@name": "A. Truffert",
+                      "@booking": "",
+                      "@id": "590282"
+                    },
+                    {
+                      "@number": "12",
+                      "@name": "T. Adams",
+                      "@booking": "",
+                      "@id": "400878"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "A. Scott",
+                      "@booking": "",
+                      "@id": "684945"
+                    },
+                    {
+                      "@number": "24",
+                      "@name": "A. Semenyo",
+                      "@booking": "",
+                      "@id": "529560"
+                    },
+                    {
+                      "@number": "16",
+                      "@name": "M. Tavernier",
+                      "@booking": "",
+                      "@id": "423982"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "D. Brooks",
+                      "@booking": "YC 14",
+                      "@id": "376315"
+                    },
+                    {
+                      "@number": "9",
+                      "@name": "Evanilson",
+                      "@booking": "YC 81",
+                      "@id": "533328"
+                    }
+                  ]
+                }
+              },
+              "substitutions": {
+                "localteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "25",
+                      "@player_in_name": "G. Mamardashvili",
+                      "@player_in_booking": "",
+                      "@player_in_id": "463141",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "2",
+                      "@player_in_name": "J. Gomez",
+                      "@player_in_booking": "",
+                      "@player_in_id": "290182",
+                      "@player_out_name": "H. Ekitike",
+                      "@player_out_id": "624582",
+                      "@minute": "72"
+                    },
+                    {
+                      "@player_in_number": "3",
+                      "@player_in_name": "W. Endo",
+                      "@player_in_booking": "",
+                      "@player_in_id": "124613",
+                      "@player_out_name": "J. Frimpong",
+                      "@player_out_id": "453104",
+                      "@minute": "60"
+                    },
+                    {
+                      "@player_in_number": "14",
+                      "@player_in_name": "F. Chiesa",
+                      "@player_in_booking": "",
+                      "@player_in_id": "453705",
+                      "@player_out_name": "F. Wirtz",
+                      "@player_out_id": "560015",
+                      "@minute": "82"
+                    },
+                    {
+                      "@player_in_number": "17",
+                      "@player_in_name": "C. Jones",
+                      "@player_in_booking": "",
+                      "@player_in_id": "459355",
+                      "@player_out_name": "A. Mac Allister",
+                      "@player_out_id": "468060",
+                      "@minute": "72"
+                    },
+                    {
+                      "@player_in_number": "19",
+                      "@player_in_name": "H. Elliott",
+                      "@player_in_booking": "",
+                      "@player_in_id": "535339",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "26",
+                      "@player_in_name": "A. Robertson",
+                      "@player_in_booking": "",
+                      "@player_in_id": "254527",
+                      "@player_out_name": "M. Kerkez",
+                      "@player_out_id": "646880",
+                      "@minute": "60"
+                    },
+                    {
+                      "@player_in_number": "42",
+                      "@player_in_name": "T. Nyoni",
+                      "@player_in_booking": "",
+                      "@player_in_id": "861720",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "73",
+                      "@player_in_name": "R. Ngumoha",
+                      "@player_in_booking": "",
+                      "@player_in_id": "900221",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "40",
+                      "@player_in_name": "W. Dennis",
+                      "@player_in_booking": "",
+                      "@player_in_id": "529829",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "2",
+                      "@player_in_name": "J. Araujo",
+                      "@player_in_booking": "",
+                      "@player_in_id": "510059",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "20",
+                      "@player_in_name": "J. Soler",
+                      "@player_in_booking": "",
+                      "@player_in_id": "828996",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "22",
+                      "@player_in_name": "E. J. Kroupi",
+                      "@player_in_booking": "",
+                      "@player_in_id": "801299",
+                      "@player_out_name": "T. Adams",
+                      "@player_out_id": "400878",
+                      "@minute": "90+1"
+                    },
+                    {
+                      "@player_in_number": "23",
+                      "@player_in_name": "J. Hill",
+                      "@player_in_booking": "",
+                      "@player_in_id": "530168",
+                      "@player_out_name": "A. Smith",
+                      "@player_out_id": "88146",
+                      "@minute": "90"
+                    },
+                    {
+                      "@player_in_number": "25",
+                      "@player_in_name": "H. J. Traore",
+                      "@player_in_booking": "",
+                      "@player_in_id": "495017",
+                      "@player_out_name": "A. Scott",
+                      "@player_out_id": "684945",
+                      "@minute": "74"
+                    },
+                    {
+                      "@player_in_number": "29",
+                      "@player_in_name": "P. Billing",
+                      "@player_in_booking": "",
+                      "@player_in_id": "335778",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "50",
+                      "@player_in_name": "R. Rees-Dottin",
+                      "@player_in_booking": "",
+                      "@player_in_id": "814265",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "47",
+                      "@player_in_name": "B. Winterburn",
+                      "@player_in_booking": "",
+                      "@player_in_id": "684429",
+                      "@player_out_name": "D. Brooks",
+                      "@player_out_id": "376315",
+                      "@minute": "84"
+                    }
+                  ]
+                }
+              },
+              "coaches": {
+                "localteam": {
+                  "coach": {
+                    "@name": "Arend Martijn Slot",
+                    "@id": "2353"
+                  }
+                },
+                "visitorteam": {
+                  "coach": {
+                    "@name": "Andoni Iraola Sagarna",
+                    "@id": "555419"
+                  }
+                }
+              },
+              "referee": {
+                "@name": "",
+                "@id": ""
+              }
+            },
+            {
+              "@date": "16.08.2025",
+              "@time": "11:30",
+              "@status": "FT",
+              "@venue": "Villa Park",
+              "@venue_id": "",
+              "@venue_city": "Birmingham",
+              "@attendance": "42 526",
+              "@static_id": "3682336",
+              "@id": "4189717",
+              "localteam": {
+                "@name": "Aston Villa",
+                "@score": "0",
+                "@ft_score": "0",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9008"
+              },
+              "visitorteam": {
+                "@name": "Newcastle",
+                "@score": "0",
+                "@ft_score": "0",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9287"
+              },
+              "halftime": {
+                "@score": "0 - 0"
+              },
+              "goals": null,
+              "lineups": {
+                "localteam": {
+                  "@formation": "4-2-3-1",
+                  "player": [
+                    {
+                      "@number": "40",
+                      "@name": "M. Bizot",
+                      "@booking": "",
+                      "@id": "134058"
+                    },
+                    {
+                      "@number": "2",
+                      "@name": "M. Cash",
+                      "@booking": "",
+                      "@id": "437878"
+                    },
+                    {
+                      "@number": "4",
+                      "@name": "E. Konsa",
+                      "@booking": "RC 66",
+                      "@id": "431214"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "T. Mings",
+                      "@booking": "",
+                      "@id": "274052"
+                    },
+                    {
+                      "@number": "12",
+                      "@name": "L. Digne",
+                      "@booking": "",
+                      "@id": "138198"
+                    },
+                    {
+                      "@number": "44",
+                      "@name": "B. Kamara",
+                      "@booking": "YC 58",
+                      "@id": "426522"
+                    },
+                    {
+                      "@number": "24",
+                      "@name": "A. Onana",
+                      "@booking": "",
+                      "@id": "540520"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "J. McGinn",
+                      "@booking": "",
+                      "@id": "256156"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "Y. Tielemans",
+                      "@booking": "",
+                      "@id": "297294"
+                    },
+                    {
+                      "@number": "27",
+                      "@name": "M. Rogers",
+                      "@booking": "",
+                      "@id": "473391"
+                    },
+                    {
+                      "@number": "11",
+                      "@name": "O. Watkins",
+                      "@booking": "",
+                      "@id": "334174"
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "@formation": "4-3-3",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "N. Pope",
+                      "@booking": "",
+                      "@id": "220636"
+                    },
+                    {
+                      "@number": "2",
+                      "@name": "K. Trippier",
+                      "@booking": "",
+                      "@id": "97354"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "F. Schar",
+                      "@booking": "",
+                      "@id": "109708"
+                    },
+                    {
+                      "@number": "33",
+                      "@name": "D. Burn",
+                      "@booking": "",
+                      "@id": "110513"
+                    },
+                    {
+                      "@number": "21",
+                      "@name": "V. Livramento",
+                      "@booking": "",
+                      "@id": "525807"
+                    },
+                    {
+                      "@number": "39",
+                      "@name": "Bruno Guimaraes",
+                      "@booking": "",
+                      "@id": "402388"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "S. Tonali",
+                      "@booking": "",
+                      "@id": "495152"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "Joelinton",
+                      "@booking": "YC 45",
+                      "@id": "331264"
+                    },
+                    {
+                      "@number": "20",
+                      "@name": "A. Elanga",
+                      "@booking": "",
+                      "@id": "546875"
+                    },
+                    {
+                      "@number": "10",
+                      "@name": "A. Gordon",
+                      "@booking": "",
+                      "@id": "465503"
+                    },
+                    {
+                      "@number": "11",
+                      "@name": "H. Barnes",
+                      "@booking": "",
+                      "@id": "454522"
+                    }
+                  ]
+                }
+              },
+              "substitutions": {
+                "localteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "64",
+                      "@player_in_name": "J. Wright",
+                      "@player_in_booking": "",
+                      "@player_in_id": "634427",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "14",
+                      "@player_in_name": "P. Torres",
+                      "@player_in_booking": "",
+                      "@player_in_id": "423623",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "22",
+                      "@player_in_name": "I. Maatsen",
+                      "@player_in_booking": "",
+                      "@player_in_id": "525926",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "26",
+                      "@player_in_name": "L. Bogarde",
+                      "@player_in_booking": "",
+                      "@player_in_id": "671092",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "10",
+                      "@player_in_name": "E. Buendia",
+                      "@player_in_booking": "",
+                      "@player_in_id": "335467",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "17",
+                      "@player_in_name": "D. Malen",
+                      "@player_in_booking": "",
+                      "@player_in_id": "399771",
+                      "@player_out_name": "J. McGinn",
+                      "@player_out_id": "256156",
+                      "@minute": "84"
+                    },
+                    {
+                      "@player_in_number": "20",
+                      "@player_in_name": "J. Jimoh-Aloba",
+                      "@player_in_booking": "",
+                      "@player_in_id": "801020",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "29",
+                      "@player_in_name": "E. Guessand",
+                      "@player_in_booking": "",
+                      "@player_in_id": "542649",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "19",
+                      "@player_in_name": "S. Iling Junior",
+                      "@player_in_booking": "",
+                      "@player_in_id": "604417",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "32",
+                      "@player_in_name": "A. Ramsdale",
+                      "@player_in_booking": "",
+                      "@player_in_id": "443616",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "3",
+                      "@player_in_name": "L. Hall",
+                      "@player_in_booking": "",
+                      "@player_in_id": "621191",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "4",
+                      "@player_in_name": "S. Botman",
+                      "@player_in_booking": "",
+                      "@player_in_id": "463014",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "12",
+                      "@player_in_name": "M. Thiaw",
+                      "@player_in_booking": "",
+                      "@player_in_id": "563179",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "17",
+                      "@player_in_name": "E. Krafth",
+                      "@player_in_booking": "",
+                      "@player_in_id": "185166",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "18",
+                      "@player_in_name": "W. Osula",
+                      "@player_in_booking": "",
+                      "@player_in_id": "682268",
+                      "@player_out_name": "H. Barnes",
+                      "@player_out_id": "454522",
+                      "@minute": "90"
+                    },
+                    {
+                      "@player_in_number": "23",
+                      "@player_in_name": "J. Murphy",
+                      "@player_in_booking": "",
+                      "@player_in_id": "326321",
+                      "@player_out_name": "A. Elanga",
+                      "@player_out_id": "546875",
+                      "@minute": "78"
+                    },
+                    {
+                      "@player_in_number": "67",
+                      "@player_in_name": "L. Miley",
+                      "@player_in_booking": "",
+                      "@player_in_id": "761851",
+                      "@player_out_name": "Joelinton",
+                      "@player_out_id": "331264",
+                      "@minute": "83"
+                    },
+                    {
+                      "@player_in_number": "64",
+                      "@player_in_name": "Park Seung-soo",
+                      "@player_in_booking": "",
+                      "@player_in_id": "818791",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                }
+              },
+              "coaches": {
+                "localteam": {
+                  "coach": {
+                    "@name": "Unai Emery Etxegoien",
+                    "@id": "110779"
+                  }
+                },
+                "visitorteam": {
+                  "coach": {
+                    "@name": "Edward John Frank Howe",
+                    "@id": "169884"
+                  }
+                }
+              },
+              "referee": {
+                "@name": "",
+                "@id": ""
+              }
+            }
+          ]
+        },
+        {
+          "@number": "2",
+          "match": [
+            {
+              "@date": "22.08.2025",
+              "@time": "19:00",
+              "@status": "FT",
+              "@venue": "London Stadium",
+              "@venue_id": "",
+              "@venue_city": "London",
+              "@attendance": "62 462",
+              "@static_id": "3703977",
+              "@id": "4211371",
+              "localteam": {
+                "@name": "West Ham",
+                "@score": "1",
+                "@ft_score": "1",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9427"
+              },
+              "visitorteam": {
+                "@name": "Chelsea",
+                "@score": "5",
+                "@ft_score": "5",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9092"
+              },
+              "halftime": {
+                "@score": "1 - 3"
+              },
+              "goals": {
+                "goal": [
+                  {
+                    "@team": "localteam",
+                    "@minute": "6",
+                    "@player": "Lucas Paqueta",
+                    "@score": "[1 - 0]",
+                    "@playerid": "438313",
+                    "@assist": "M. Diouf",
+                    "@assistid": "895893"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "15",
+                    "@player": "Joao Pedro",
+                    "@score": "[1 - 1]",
+                    "@playerid": "591522",
+                    "@assist": "M. Cucurella",
+                    "@assistid": "372743"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "23",
+                    "@player": "P. Neto",
+                    "@score": "[1 - 2]",
+                    "@playerid": "477582",
+                    "@assist": "Joao Pedro",
+                    "@assistid": "591522"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "34",
+                    "@player": "E. Fernandez",
+                    "@score": "[1 - 3]",
+                    "@playerid": "547472",
+                    "@assist": "Estevao",
+                    "@assistid": "913583"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "54",
+                    "@player": "M. Caicedo",
+                    "@score": "[1 - 4]",
+                    "@playerid": "551665",
+                    "@assist": "",
+                    "@assistid": ""
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "58",
+                    "@player": "T. Chalobah",
+                    "@score": "[1 - 5]",
+                    "@playerid": "376695",
+                    "@assist": "Joao Pedro",
+                    "@assistid": "591522"
+                  }
+                ]
+              },
+              "lineups": {
+                "localteam": {
+                  "@formation": "3-4-1-2",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "M. Hermansen",
+                      "@booking": "",
+                      "@id": "463682"
+                    },
+                    {
+                      "@number": "25",
+                      "@name": "J. Todibo",
+                      "@booking": "",
+                      "@id": "480539"
+                    },
+                    {
+                      "@number": "3",
+                      "@name": "M. Kilman",
+                      "@booking": "",
+                      "@id": "477041"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "N. Aguerd",
+                      "@booking": "",
+                      "@id": "405620"
+                    },
+                    {
+                      "@number": "29",
+                      "@name": "A. Wan-Bissaka",
+                      "@booking": "",
+                      "@id": "470717"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "J. Ward-Prowse",
+                      "@booking": "",
+                      "@id": "200872"
+                    },
+                    {
+                      "@number": "28",
+                      "@name": "T. Soucek",
+                      "@booking": "",
+                      "@id": "319365"
+                    },
+                    {
+                      "@number": "12",
+                      "@name": "M. Diouf",
+                      "@booking": "",
+                      "@id": "895893"
+                    },
+                    {
+                      "@number": "10",
+                      "@name": "Lucas Paqueta",
+                      "@booking": "",
+                      "@id": "438313"
+                    },
+                    {
+                      "@number": "20",
+                      "@name": "J. Bowen",
+                      "@booking": "",
+                      "@id": "331388"
+                    },
+                    {
+                      "@number": "11",
+                      "@name": "N. Fullkrug",
+                      "@booking": "",
+                      "@id": "166369"
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "@formation": "4-2-3-1",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "R. Sanchez",
+                      "@booking": "",
+                      "@id": "454501"
+                    },
+                    {
+                      "@number": "27",
+                      "@name": "M. Gusto",
+                      "@booking": "",
+                      "@id": "607374"
+                    },
+                    {
+                      "@number": "4",
+                      "@name": "T. Adarabioyo",
+                      "@booking": "",
+                      "@id": "317349"
+                    },
+                    {
+                      "@number": "23",
+                      "@name": "T. Chalobah",
+                      "@booking": "",
+                      "@id": "376695"
+                    },
+                    {
+                      "@number": "3",
+                      "@name": "M. Cucurella",
+                      "@booking": "",
+                      "@id": "372743"
+                    },
+                    {
+                      "@number": "8",
+                      "@name": "E. Fernandez",
+                      "@booking": "",
+                      "@id": "547472"
+                    },
+                    {
+                      "@number": "25",
+                      "@name": "M. Caicedo",
+                      "@booking": "",
+                      "@id": "551665"
+                    },
+                    {
+                      "@number": "41",
+                      "@name": "Est\u00eav\u00e3o",
+                      "@booking": "",
+                      "@id": "913583"
+                    },
+                    {
+                      "@number": "20",
+                      "@name": "Joao Pedro",
+                      "@booking": "",
+                      "@id": "591522"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "P. Neto",
+                      "@booking": "",
+                      "@id": "477582"
+                    },
+                    {
+                      "@number": "9",
+                      "@name": "L. Delap",
+                      "@booking": "",
+                      "@id": "564788"
+                    }
+                  ]
+                }
+              },
+              "substitutions": {
+                "localteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "23",
+                      "@player_in_name": "A. Areola",
+                      "@player_in_booking": "",
+                      "@player_in_id": "138003",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "2",
+                      "@player_in_name": "K. Walker-Peters",
+                      "@player_in_booking": "",
+                      "@player_in_id": "425059",
+                      "@player_out_name": "T. Soucek",
+                      "@player_out_id": "319365",
+                      "@minute": "70"
+                    },
+                    {
+                      "@player_in_number": "9",
+                      "@player_in_name": "C. Wilson",
+                      "@player_in_booking": "",
+                      "@player_in_id": "89009",
+                      "@player_out_name": "N. Fullkrug",
+                      "@player_out_id": "166369",
+                      "@minute": "46"
+                    },
+                    {
+                      "@player_in_number": "15",
+                      "@player_in_name": "K. Mavropanos",
+                      "@player_in_booking": "",
+                      "@player_in_id": "431967",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "24",
+                      "@player_in_name": "G. Rodriguez",
+                      "@player_in_booking": "",
+                      "@player_in_id": "365587",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "30",
+                      "@player_in_name": "O. Scarles",
+                      "@player_in_booking": "",
+                      "@player_in_id": "697548",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "32",
+                      "@player_in_name": "F. Potts",
+                      "@player_in_booking": "",
+                      "@player_in_id": "623079",
+                      "@player_out_name": "J. Todibo",
+                      "@player_out_id": "480539",
+                      "@minute": "46"
+                    },
+                    {
+                      "@player_in_number": "39",
+                      "@player_in_name": "A. Irving",
+                      "@player_in_booking": "",
+                      "@player_in_id": "451070",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "50",
+                      "@player_in_name": "C. Marshall",
+                      "@player_in_booking": "",
+                      "@player_in_id": "800936",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "12",
+                      "@player_in_name": "F. Jorgensen",
+                      "@player_in_booking": "",
+                      "@player_in_id": "573307",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "34",
+                      "@player_in_name": "J. Acheampong",
+                      "@player_in_booking": "",
+                      "@player_in_id": "831524",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "29",
+                      "@player_in_name": "W. Fofana",
+                      "@player_in_booking": "",
+                      "@player_in_id": "534233",
+                      "@player_out_name": "T. Chalobah",
+                      "@player_out_id": "376695",
+                      "@minute": "69"
+                    },
+                    {
+                      "@player_in_number": "21",
+                      "@player_in_name": "J. Hato",
+                      "@player_in_booking": "YC 87",
+                      "@player_in_id": "783173",
+                      "@player_out_name": "M. Cucurella",
+                      "@player_out_id": "372743",
+                      "@minute": "69"
+                    },
+                    {
+                      "@player_in_number": "24",
+                      "@player_in_name": "R. James",
+                      "@player_in_booking": "",
+                      "@player_in_id": "453252",
+                      "@player_out_name": "M. Gusto",
+                      "@player_out_id": "607374",
+                      "@minute": "69"
+                    },
+                    {
+                      "@player_in_number": "14",
+                      "@player_in_name": "D. Essugo",
+                      "@player_in_booking": "",
+                      "@player_in_id": "657648",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "17",
+                      "@player_in_name": "Andrey Santos",
+                      "@player_in_booking": "",
+                      "@player_in_id": "691934",
+                      "@player_out_name": "L. Delap",
+                      "@player_out_id": "564788",
+                      "@minute": "62"
+                    },
+                    {
+                      "@player_in_number": "11",
+                      "@player_in_name": "J. Gittens",
+                      "@player_in_booking": "",
+                      "@player_in_id": "621172",
+                      "@player_out_name": "Est\u00eav\u00e3o",
+                      "@player_out_id": "913583",
+                      "@minute": "77"
+                    },
+                    {
+                      "@player_in_number": "44",
+                      "@player_in_name": "G. Slonina",
+                      "@player_in_booking": "",
+                      "@player_in_id": "586750",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                }
+              },
+              "coaches": {
+                "localteam": {
+                  "coach": {
+                    "@name": "Graham Stephen Potter",
+                    "@id": "225696"
+                  }
+                },
+                "visitorteam": {
+                  "coach": {
+                    "@name": "Vincenzo Maresca",
+                    "@id": "3124"
+                  }
+                }
+              },
+              "referee": {
+                "@name": "",
+                "@id": ""
+              }
+            },
+            {
+              "@date": "23.08.2025",
+              "@time": "11:30",
+              "@status": "FT",
+              "@venue": "Etihad Stadium",
+              "@venue_id": "",
+              "@venue_city": "Manchester",
+              "@attendance": "51 785",
+              "@static_id": "3682346",
+              "@id": "4189727",
+              "localteam": {
+                "@name": "Manchester City",
+                "@score": "0",
+                "@ft_score": "0",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9259"
+              },
+              "visitorteam": {
+                "@name": "Tottenham",
+                "@score": "2",
+                "@ft_score": "2",
+                "@et_score": "",
+                "@pen_score": "",
+                "@id": "9406"
+              },
+              "halftime": {
+                "@score": "0 - 2"
+              },
+              "goals": {
+                "goal": [
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "35",
+                    "@player": "B. Johnson",
+                    "@score": "[0 - 1]",
+                    "@playerid": "529972",
+                    "@assist": "Richarlison",
+                    "@assistid": "407737"
+                  },
+                  {
+                    "@team": "visitorteam",
+                    "@minute": "45",
+                    "@player": "J. Palhinha",
+                    "@score": "[0 - 2]",
+                    "@playerid": "285652",
+                    "@assist": "",
+                    "@assistid": ""
+                  }
+                ]
+              },
+              "lineups": {
+                "localteam": {
+                  "@formation": "4-2-3-1",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "J. Trafford",
+                      "@booking": "",
+                      "@id": "536619"
+                    },
+                    {
+                      "@number": "82",
+                      "@name": "R. Lewis",
+                      "@booking": "",
+                      "@id": "655390"
+                    },
+                    {
+                      "@number": "5",
+                      "@name": "J. Stones",
+                      "@booking": "",
+                      "@id": "189445"
+                    },
+                    {
+                      "@number": "3",
+                      "@name": "R. Dias",
+                      "@booking": "",
+                      "@id": "290253"
+                    },
+                    {
+                      "@number": "21",
+                      "@name": "R. Ait Nouri",
+                      "@booking": "",
+                      "@id": "541344"
+                    },
+                    {
+                      "@number": "4",
+                      "@name": "T. Reijnders",
+                      "@booking": "",
+                      "@id": "497090"
+                    },
+                    {
+                      "@number": "14",
+                      "@name": "Nico",
+                      "@booking": "YC 71",
+                      "@id": "571788"
+                    },
+                    {
+                      "@number": "52",
+                      "@name": "O. Bobb",
+                      "@booking": "",
+                      "@id": "624931"
+                    },
+                    {
+                      "@number": "10",
+                      "@name": "R. Cherki",
+                      "@booking": "",
+                      "@id": "559939"
+                    },
+                    {
+                      "@number": "7",
+                      "@name": "O. Marmoush",
+                      "@booking": "",
+                      "@id": "480170"
+                    },
+                    {
+                      "@number": "9",
+                      "@name": "E. Haaland",
+                      "@booking": "",
+                      "@id": "441484"
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "@formation": "4-3-3",
+                  "player": [
+                    {
+                      "@number": "1",
+                      "@name": "G. Vicario",
+                      "@booking": "",
+                      "@id": "338189"
+                    },
+                    {
+                      "@number": "23",
+                      "@name": "P. Porro",
+                      "@booking": "YC 81",
+                      "@id": "525641"
+                    },
+                    {
+                      "@number": "17",
+                      "@name": "C. Romero",
+                      "@booking": "YC 68",
+                      "@id": "433963"
+                    },
+                    {
+                      "@number": "37",
+                      "@name": "M. van de Ven",
+                      "@booking": "",
+                      "@id": "537818"
+                    },
+                    {
+                      "@number": "24",
+                      "@name": "D. Spence",
+                      "@booking": "",
+                      "@id": "453857"
+                    },
+                    {
+                      "@number": "29",
+                      "@name": "P. M. Sarr",
+                      "@booking": "",
+                      "@id": "606427"
+                    },
+                    {
+                      "@number": "6",
+                      "@name": "J. Palhinha",
+                      "@booking": "",
+                      "@id": "285652"
+                    },
+                    {
+                      "@number": "30",
+                      "@name": "R. Bentancur",
+                      "@booking": "",
+                      "@id": "396178"
+                    },
+                    {
+                      "@number": "20",
+                      "@name": "M. Kudus",
+                      "@booking": "",
+                      "@id": "513954"
+                    },
+                    {
+                      "@number": "9",
+                      "@name": "Richarlison",
+                      "@booking": "YC 71",
+                      "@id": "407737"
+                    },
+                    {
+                      "@number": "22",
+                      "@name": "B. Johnson",
+                      "@booking": "YC 34",
+                      "@id": "529972"
+                    }
+                  ]
+                }
+              },
+              "substitutions": {
+                "localteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "31",
+                      "@player_in_name": "Ederson",
+                      "@player_in_booking": "",
+                      "@player_in_id": "206804",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "6",
+                      "@player_in_name": "N. Ake",
+                      "@player_in_booking": "",
+                      "@player_in_id": "182930",
+                      "@player_out_name": "R. Ait Nouri",
+                      "@player_out_id": "541344",
+                      "@minute": "23"
+                    },
+                    {
+                      "@player_in_number": "11",
+                      "@player_in_name": "J. Doku",
+                      "@player_in_booking": "",
+                      "@player_in_id": "548687",
+                      "@player_out_name": "O. Marmoush",
+                      "@player_out_id": "480170",
+                      "@minute": "54"
+                    },
+                    {
+                      "@player_in_number": "16",
+                      "@player_in_name": "Rodri",
+                      "@player_in_booking": "",
+                      "@player_in_id": "395959",
+                      "@player_out_name": "Nico",
+                      "@player_out_id": "571788",
+                      "@minute": "75"
+                    },
+                    {
+                      "@player_in_number": "20",
+                      "@player_in_name": "B. Silva",
+                      "@player_in_booking": "",
+                      "@player_in_id": "298753",
+                      "@player_out_name": "R. Cherki",
+                      "@player_out_id": "559939",
+                      "@minute": "54"
+                    },
+                    {
+                      "@player_in_number": "27",
+                      "@player_in_name": "M. Nunes",
+                      "@player_in_booking": "",
+                      "@player_in_id": "564554",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "33",
+                      "@player_in_name": "N. O'Reilly",
+                      "@player_in_booking": "",
+                      "@player_in_id": "679796",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "45",
+                      "@player_in_name": "A. Khusanov",
+                      "@player_in_booking": "",
+                      "@player_in_id": "822386",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "47",
+                      "@player_in_name": "P. Foden",
+                      "@player_in_booking": "",
+                      "@player_in_id": "453102",
+                      "@player_out_name": "O. Bobb",
+                      "@player_out_id": "624931",
+                      "@minute": "75"
+                    }
+                  ]
+                },
+                "visitorteam": {
+                  "substitution": [
+                    {
+                      "@player_in_number": "31",
+                      "@player_in_name": "A. Kinsky",
+                      "@player_in_booking": "",
+                      "@player_in_id": "612291",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "4",
+                      "@player_in_name": "K. Danso",
+                      "@player_in_booking": "",
+                      "@player_in_id": "396792",
+                      "@player_out_name": "J. Palhinha",
+                      "@player_out_id": "285652",
+                      "@minute": "90+1"
+                    },
+                    {
+                      "@player_in_number": "11",
+                      "@player_in_name": "M. Tel",
+                      "@player_in_booking": "",
+                      "@player_in_id": "663511",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "14",
+                      "@player_in_name": "A. Gray",
+                      "@player_in_booking": "",
+                      "@player_in_id": "761807",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "15",
+                      "@player_in_name": "L. Bergvall",
+                      "@player_in_booking": "",
+                      "@player_in_id": "805559",
+                      "@player_out_name": "M. Kudus",
+                      "@player_out_id": "513954",
+                      "@minute": "86"
+                    },
+                    {
+                      "@player_in_number": "16",
+                      "@player_in_name": "L. Vuskovic",
+                      "@player_in_booking": "",
+                      "@player_in_id": "865818",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    },
+                    {
+                      "@player_in_number": "19",
+                      "@player_in_name": "D. Solanke",
+                      "@player_in_booking": "",
+                      "@player_in_id": "320283",
+                      "@player_out_name": "Richarlison",
+                      "@player_out_id": "407737",
+                      "@minute": "78"
+                    },
+                    {
+                      "@player_in_number": "28",
+                      "@player_in_name": "W. Odobert",
+                      "@player_in_booking": "",
+                      "@player_in_id": "782198",
+                      "@player_out_name": "B. Johnson",
+                      "@player_out_id": "529972",
+                      "@minute": "78"
+                    },
+                    {
+                      "@player_in_number": "33",
+                      "@player_in_name": "B. Davies",
+                      "@player_in_booking": "",
+                      "@player_in_id": "207547",
+                      "@player_out_name": "",
+                      "@player_out_id": "",
+                      "@minute": ""
+                    }
+                  ]
+                }
+              },
+              "coaches": {
+                "localteam": {
+                  "coach": {
+                    "@name": "Josep Guardiola i Sala",
+                    "@id": "104652"
+                  }
+                },
+                "visitorteam": {
+                  "coach": {
+                    "@name": "Thomas Frank",
+                    "@id": "193511"
+                  }
+                }
+              },
+              "referee": {
+                "@name": "",
+                "@id": ""
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

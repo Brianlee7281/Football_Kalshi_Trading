@@ -25,8 +25,8 @@ _WS_BASE_URL = "wss://api.odds-api.io/v3/ws"
 SELECTED_BOOKMAKERS = frozenset({
     "Bet365",
     "Betfair Exchange",
-    "SBOBet",
-    "1xBet",
+    "Sbobet",
+    "1xbet",
     "DraftKings",
 })
 

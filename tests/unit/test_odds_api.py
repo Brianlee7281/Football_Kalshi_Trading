@@ -133,7 +133,7 @@ class TestBuildOddsFeatures:
             "Bet365": [
                 {"name": "ML", "odds": [{"home": "2.00", "draw": "3.00", "away": "4.00"}]}
             ],
-            "SBOBet": [
+            "Sbobet": [
                 {"name": "ML", "odds": [{"home": "2.10", "draw": "3.10", "away": "3.80"}]}
             ],
         }
@@ -363,6 +363,6 @@ def test_selected_bookmakers_has_five() -> None:
     assert len(SELECTED_BOOKMAKERS) == 5
     assert "Betfair Exchange" in SELECTED_BOOKMAKERS
     assert "Bet365" in SELECTED_BOOKMAKERS
-    assert "SBOBet" in SELECTED_BOOKMAKERS
-    assert "1xBet" in SELECTED_BOOKMAKERS
+    assert "Sbobet" in SELECTED_BOOKMAKERS
+    assert "1xbet" in SELECTED_BOOKMAKERS
     assert "DraftKings" in SELECTED_BOOKMAKERS

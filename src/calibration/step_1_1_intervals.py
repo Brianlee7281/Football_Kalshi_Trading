@@ -74,7 +74,7 @@ def build_intervals_from_goalserve(
         last interval ends at ``45 + alpha_1`` and the second-half first
         interval starts at the same value.
     """
-    match_id = str(match_data.get("id", ""))
+    match_id = str(match_data.get("@id", match_data.get("id", "")))
     alpha_1, alpha_2 = extract_stoppage_time(match_data)
     T_m = 90.0 + alpha_1 + alpha_2
 

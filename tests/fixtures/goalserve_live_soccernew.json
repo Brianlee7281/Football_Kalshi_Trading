@@ -1,0 +1,203 @@
+{
+  "@status": "FT",
+  "@timer": "",
+  "@inj_time": "",
+  "@inj_minute": "",
+  "@date": "Mar 09",
+  "@formatted_date": "09.03.2026",
+  "@time": "18:00",
+  "@commentary_available": "",
+  "@venue": "Elbasan Arena",
+  "@v": "250",
+  "@static_id": "3716214",
+  "@fix_id": "4223609",
+  "@id": "6660414",
+  "localteam": {
+    "@name": "Dinamo Tirana",
+    "@goals": "0",
+    "@id": "5683"
+  },
+  "visitorteam": {
+    "@name": "Partizani",
+    "@goals": "2",
+    "@id": "5723"
+  },
+  "events": {
+    "event": [
+      {
+        "@type": "subst",
+        "@minute": "18",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "V. Murataj",
+        "@result": "",
+        "@playerId": "320380",
+        "@assist": "K. Qaka",
+        "@assistid": "159845",
+        "@eventid": "66604141"
+      },
+      {
+        "@type": "goal",
+        "@minute": "38",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "C. Martinez",
+        "@result": "[0 - 1]",
+        "@playerId": "489061",
+        "@assist": "",
+        "@assistid": "",
+        "@eventid": "66604142"
+      },
+      {
+        "@type": "yellowcard",
+        "@minute": "40",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "C. Martinez",
+        "@result": "",
+        "@playerId": "489061",
+        "@assist": "",
+        "@assistid": "",
+        "@eventid": "66604143"
+      },
+      {
+        "@type": "goal",
+        "@minute": "51",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "A. Doumbia",
+        "@result": "[0 - 2]",
+        "@playerId": "669550",
+        "@assist": "R. Human",
+        "@assistid": "647688",
+        "@eventid": "66604144"
+      },
+      {
+        "@type": "subst",
+        "@minute": "58",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "I. Mustapha",
+        "@result": "",
+        "@playerId": "531981",
+        "@assist": "S. Guindo",
+        "@assistid": "405519",
+        "@eventid": "66604145"
+      },
+      {
+        "@type": "subst",
+        "@minute": "69",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "X. Skuka",
+        "@result": "",
+        "@playerId": "505930",
+        "@assist": "D. Fadairo",
+        "@assistid": "1109669",
+        "@eventid": "66604146"
+      },
+      {
+        "@type": "subst",
+        "@minute": "72",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "M. Ayodeji",
+        "@result": "",
+        "@playerId": "1109605",
+        "@assist": "D. Bregu",
+        "@assistid": "244415",
+        "@eventid": "66604147"
+      },
+      {
+        "@type": "subst",
+        "@minute": "72",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "U. Ismaili",
+        "@result": "",
+        "@playerId": "1100749",
+        "@assist": "L. Vila",
+        "@assistid": "484938",
+        "@eventid": "66604148"
+      },
+      {
+        "@type": "subst",
+        "@minute": "72",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "Lorran",
+        "@result": "",
+        "@playerId": "1100663",
+        "@assist": "F. Neziri",
+        "@assistid": "859263",
+        "@eventid": "66604149"
+      },
+      {
+        "@type": "subst",
+        "@minute": "75",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "A. Janjeva",
+        "@result": "",
+        "@playerId": "645803",
+        "@assist": "P. Buxhelaj",
+        "@assistid": "823179",
+        "@eventid": "666041410"
+      },
+      {
+        "@type": "subst",
+        "@minute": "75",
+        "@extra_min": "",
+        "@team": "visitorteam",
+        "@player": "L. Shabani",
+        "@result": "",
+        "@playerId": "519762",
+        "@assist": "S. Sidibe",
+        "@assistid": "466607",
+        "@eventid": "666041411"
+      },
+      {
+        "@type": "subst",
+        "@minute": "84",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "M. Koma",
+        "@result": "",
+        "@playerId": "1192628",
+        "@assist": "B. Berisha",
+        "@assistid": "261042",
+        "@eventid": "666041412"
+      },
+      {
+        "@type": "yellowcard",
+        "@minute": "85",
+        "@extra_min": "",
+        "@team": "localteam",
+        "@player": "T. Nani",
+        "@result": "",
+        "@playerId": "500263",
+        "@assist": "",
+        "@assistid": "",
+        "@eventid": "666041413"
+      },
+      {
+        "@type": "yellowcard",
+        "@minute": "90",
+        "@extra_min": "3",
+        "@team": "visitorteam",
+        "@player": "D. Atanaskoski",
+        "@result": "",
+        "@playerId": "401245",
+        "@assist": "",
+        "@assistid": "",
+        "@eventid": "666041414"
+      }
+    ]
+  },
+  "ht": {
+    "@score": "[0-1]"
+  },
+  "ft": {
+    "@score": "[0-2]"
+  }
+}

@@ -1,0 +1,107 @@
+[
+  {
+    "id": 68567012,
+    "home": "Buriram United",
+    "away": "Melbourne City FC",
+    "homeId": 34218,
+    "awayId": 42210,
+    "date": "2026-03-10T12:15:00Z",
+    "sport": {
+      "name": "Football",
+      "slug": "football"
+    },
+    "league": {
+      "name": "International Clubs - AFC Champions League Elite",
+      "slug": "international-clubs-afc-champions-league-elite"
+    },
+    "status": "settled",
+    "scores": {
+      "home": 4,
+      "away": 2
+    }
+  },
+  {
+    "id": 67921426,
+    "home": "Fleetwood Town",
+    "away": "Sheffield Wednesday Reserve",
+    "homeId": 678191,
+    "awayId": 164500,
+    "date": "2026-03-10T12:30:00Z",
+    "sport": {
+      "name": "Football",
+      "slug": "football"
+    },
+    "league": {
+      "name": "England Amateur - U21 Professional Development League",
+      "slug": "england-amateur-u21-professional-development-league"
+    },
+    "status": "settled",
+    "scores": {
+      "home": 3,
+      "away": 3
+    }
+  },
+  {
+    "id": 61939682,
+    "home": "Iskenderunspor AS",
+    "away": "1928 Bucaspor",
+    "homeId": 170408,
+    "awayId": 6363,
+    "date": "2026-03-10T12:30:00Z",
+    "sport": {
+      "name": "Football",
+      "slug": "football"
+    },
+    "league": {
+      "name": "Turkiye Amateur - 2. Lig",
+      "slug": "turkiye-amateur-2-lig"
+    },
+    "status": "settled",
+    "scores": {
+      "home": 1,
+      "away": 1
+    }
+  },
+  {
+    "id": 69217362,
+    "home": "Hawassa Kenema SC",
+    "away": "Mekelle 70 Enderta FC",
+    "homeId": 327591,
+    "awayId": 402253,
+    "date": "2026-03-10T13:00:00Z",
+    "sport": {
+      "name": "Football",
+      "slug": "football"
+    },
+    "league": {
+      "name": "Ethiopia - Premier League",
+      "slug": "ethiopia-premier-league"
+    },
+    "status": "settled",
+    "scores": {
+      "home": 1,
+      "away": 0
+    }
+  },
+  {
+    "id": 62486492,
+    "home": "Bristol City",
+    "away": "Watford FC",
+    "homeId": 297884,
+    "awayId": 77863,
+    "date": "2026-03-10T13:00:00Z",
+    "sport": {
+      "name": "Football",
+      "slug": "football"
+    },
+    "league": {
+      "name": "England Amateur - U21 Professional Development League",
+      "slug": "england-amateur-u21-professional-development-league"
+    },
+    "status": "settled",
+    "scores": {
+      "home": 2,
+      "away": 2
+    }
+  }
+]

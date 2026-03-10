@@ -1,0 +1,4777 @@
+{
+  "id": 61301103,
+  "home": "Burnley FC",
+  "away": "AFC Bournemouth",
+  "date": "2026-03-14T15:00:00Z",
+  "status": "pending",
+  "sport": {
+    "name": "Football",
+    "slug": "football"
+  },
+  "league": {
+    "name": "England - Premier League",
+    "slug": "england-premier-league"
+  },
+  "urls": {
+    "1xbet": "https://1xbet.com/en/line/Football/88637-England-Premier-League/309817786-Burnley-Bournemouth",
+    "Bet365": "https://www.bet365.com/#/AC/B1/C1/D8/E189510159/F3/I0/",
+    "Betfair Exchange": "https://www.betfair.com/exchange/plus/en/e/e/e-e-35320012",
+    "DraftKings": "https://sportsbook.draftkings.com/event/33737468",
+    "Sbobet": "N/A"
+  },
+  "bookmakerIds": {
+    "Betfair Exchange": "35320012",
+    "DraftKings": "33737468"
+  },
+  "bookmakers": {
+    "1xbet": [
+      {
+        "name": "ML",
+        "updatedAt": "2026-03-10T04:37:39.79Z",
+        "odds": [
+          {
+            "home": "4.165",
+            "draw": "4.015",
+            "away": "1.900"
+          }
+        ]
+      },
+      {
+        "name": "Double Chance",
+        "updatedAt": "2026-03-10T04:37:39.79Z",
+        "odds": [
+          {
+            "1X": "2.002",
+            "12": "1.288",
+            "X2": "1.273"
+          }
+        ]
+      },
+      {
+        "name": "Spread",
+        "updatedAt": "2026-03-10T15:41:14.782Z",
+        "odds": [
+          {
+            "hdp": 3,
+            "home": "1.020",
+            "away": "12.500"
+          },
+          {
+            "hdp": 1.25,
+            "home": "1.363",
+            "away": "2.780"
+          },
+          {
+            "hdp": -1.25,
+            "home": "8.400",
+            "away": "1.027"
+          },
+          {
+            "hdp": 2.25,
+            "home": "1.067",
+            "away": "5.950"
+          },
+          {
+            "hdp": 2.5,
+            "home": "1.054",
+            "away": "6.400"
+          },
+          {
+            "hdp": 1,
+            "home": "1.480",
+            "away": "2.430"
+          },
+          {
+            "hdp": -1,
+            "home": "7.900",
+            "away": "1.041"
+          },
+          {
+            "hdp": 1.75,
+            "home": "1.180",
+            "away": "3.880"
+          },
+          {
+            "hdp": -0.75,
+            "home": "5.050",
+            "away": "1.134"
+          },
+          {
+            "hdp": 0.75,
+            "home": "1.710",
+            "away": "2.020"
+          },
+          {
+            "hdp": 0,
+            "home": "3.000",
+            "away": "1.390"
+          },
+          {
+            "hdp": 2,
+            "home": "1.082",
+            "away": "5.500"
+          },
+          {
+            "hdp": 3.5,
+            "home": "1.020",
+            "away": "13.500"
+          },
+          {
+            "hdp": -1.5,
+            "home": "8.900",
+            "away": "1.014"
+          },
+          {
+            "hdp": 1.5,
+            "home": "1.285",
+            "away": "3.125"
+          },
+          {
+            "hdp": -0.25,
+            "home": "3.360",
+            "away": "1.285"
+          },
+          {
+            "hdp": 0.25,
+            "home": "2.260",
+            "away": "1.580"
+          }
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2026-03-10T15:41:14.782Z",
+        "odds": [
+          {
+            "hdp": 5.5,
+            "over": "9.800",
+            "under": "1.050"
+          },
+          {
+            "hdp": 4.5,
+            "over": "4.950",
+            "under": "1.106"
+          },
+          {
+            "hdp": 4.75,
+            "over": "6.350",
+            "under": "1.055"
+          },
+          {
+            "hdp": 2.75,
+            "over": "1.870",
+            "under": "1.870"
+          },
+          {
+            "hdp": 6.5,
+            "over": "21.000",
+            "under": "1.015"
+          },
+          {
+            "hdp": 2.5,
+            "over": "1.780",
+            "under": "2.205"
+          },
+          {
+            "hdp": 2.25,
+            "over": "1.500",
+            "under": "2.480"
+          },
+          {
+            "hdp": 3.5,
+            "over": "2.720",
+            "under": "1.390"
+          },
+          {
+            "hdp": 3.25,
+            "over": "2.440",
+            "under": "1.490"
+          },
+          {
+            "hdp": 0.5,
+            "over": "1.010",
+            "under": "15.000"
+          },
+          {
+            "hdp": 7.5,
+            "over": "41.000",
+            "under": "1.004"
+          },
+          {
+            "hdp": 1.25,
+            "over": "1.086",
+            "under": "5.800"
+          },
+          {
+            "hdp": 4.25,
+            "over": "4.600",
+            "under": "1.126"
+          },
+          {
+            "hdp": 1.75,
+            "over": "1.240",
+            "under": "3.640"
+          },
+          {
+            "hdp": 3.75,
+            "over": "3.200",
+            "under": "1.280"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.184",
+            "under": "4.150"
+          }
+        ]
+      },
+      {
+        "name": "Both Teams To Score",
+        "updatedAt": "2026-03-09T15:20:57.81Z",
+        "odds": [
+          {
+            "hdp": 0,
+            "yes": "1.630",
+            "no": "2.167"
+          }
+        ]
+      },
+      {
+        "name": "Team Total Home",
+        "updatedAt": "2026-03-10T15:41:14.782Z",
+        "odds": [
+          {
+            "hdp": 1.75,
+            "over": "3.920",
+            "under": "1.240"
+          },
+          {
+            "hdp": 1.5,
+            "over": "2.800",
+            "under": "1.420"
+          },
+          {
+            "hdp": 2,
+            "over": "6.100",
+            "under": "1.120"
+          },
+          {
+            "hdp": 2.25,
+            "over": "7.000",
+            "under": "1.090"
+          },
+          {
+            "hdp": 0.75,
+            "over": "1.570",
+            "under": "2.420"
+          },
+          {
+            "hdp": 2.75,
+            "over": "11.500",
+            "under": "1.010"
+          },
+          {
+            "hdp": 1,
+            "over": "1.860",
+            "under": "1.930"
+          },
+          {
+            "hdp": 2.5,
+            "over": "7.800",
+            "under": "1.070"
+          },
+          {
+            "hdp": 0.5,
+            "over": "1.400",
+            "under": "2.900"
+          },
+          {
+            "hdp": 1.25,
+            "over": "2.450",
+            "under": "1.560"
+          }
+        ]
+      },
+      {
+        "name": "Team Total Away",
+        "updatedAt": "2026-03-10T15:41:14.782Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "over": "1.150",
+            "under": "5.300"
+          },
+          {
+            "hdp": 1.25,
+            "over": "1.530",
+            "under": "2.530"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.760",
+            "under": "2.040"
+          },
+          {
+            "hdp": 3.5,
+            "over": "7.900",
+            "under": "1.070"
+          },
+          {
+            "hdp": 0.75,
+            "over": "1.181",
+            "under": "4.700"
+          },
+          {
+            "hdp": 1.75,
+            "over": "2.080",
+            "under": "1.760"
+          },
+          {
+            "hdp": 2,
+            "over": "2.550",
+            "under": "1.500"
+          },
+          {
+            "hdp": 2.25,
+            "over": "3.080",
+            "under": "1.360"
+          },
+          {
+            "hdp": 1,
+            "over": "1.250",
+            "under": "3.900"
+          },
+          {
+            "hdp": 2.5,
+            "over": "3.500",
+            "under": "1.300"
+          }
+        ]
+      },
+      {
+        "name": "European Handicap",
+        "updatedAt": "2026-03-10T04:37:39.79Z",
+        "odds": [
+          {
+            "hdp": 1,
+            "home": "2.002",
+            "draw": "3.690",
+            "away": "1.273"
+          },
+          {
+            "hdp": -1,
+            "home": "8.900",
+            "draw": "5.190",
+            "away": "3.125"
+          }
+        ]
+      },
+      {
+        "name": "Corners Spread",
+        "updatedAt": "2026-03-10T17:51:09.119Z",
+        "odds": [
+          {
+            "hdp": 1.5,
+            "home": "1.770",
+            "away": "1.920"
+          },
+          {
+            "hdp": -1,
+            "home": "3.050",
+            "away": "1.285"
+          },
+          {
+            "hdp": 1,
+            "home": "1.950",
+            "away": "1.760"
+          },
+          {
+            "hdp": 3,
+            "home": "1.330",
+            "away": "2.830"
+          },
+          {
+            "hdp": 0,
+            "home": "2.400",
+            "away": "1.480"
+          },
+          {
+            "hdp": 2,
+            "home": "1.580",
+            "away": "2.150"
+          },
+          {
+            "hdp": 2.5,
+            "home": "1.470",
+            "away": "2.350"
+          }
+        ]
+      },
+      {
+        "name": "Corners Totals",
+        "updatedAt": "2026-03-10T17:51:09.119Z",
+        "odds": [
+          {
+            "hdp": 8.5,
+            "over": "1.340",
+            "under": "2.780"
+          },
+          {
+            "hdp": 9.5,
+            "over": "1.630",
+            "under": "2.090"
+          },
+          {
+            "hdp": 10.5,
+            "over": "2.060",
+            "under": "1.680"
+          },
+          {
+            "hdp": 11.25,
+            "over": "2.533",
+            "under": "1.430"
+          },
+          {
+            "hdp": 11.75,
+            "over": "2.920",
+            "under": "1.320"
+          },
+          {
+            "hdp": 12.25,
+            "over": "3.415",
+            "under": "1.229"
+          },
+          {
+            "hdp": 7.5,
+            "over": "1.165",
+            "under": "4.050"
+          },
+          {
+            "hdp": 8.75,
+            "over": "1.380",
+            "under": "2.625"
+          },
+          {
+            "hdp": 9.25,
+            "over": "1.541",
+            "under": "2.256"
+          },
+          {
+            "hdp": 14.5,
+            "over": "7.200",
+            "under": "1.034"
+          },
+          {
+            "hdp": 9.75,
+            "over": "1.720",
+            "under": "1.980"
+          },
+          {
+            "hdp": 10.25,
+            "over": "1.939",
+            "under": "1.770"
+          },
+          {
+            "hdp": 6.5,
+            "over": "1.059",
+            "under": "6.200"
+          },
+          {
+            "hdp": 10.75,
+            "over": "2.210",
+            "under": "1.590"
+          },
+          {
+            "hdp": 11.5,
+            "over": "2.670",
+            "under": "1.390"
+          },
+          {
+            "hdp": 12.5,
+            "over": "3.580",
+            "under": "1.210"
+          },
+          {
+            "hdp": 13.5,
+            "over": "5.100",
+            "under": "1.100"
+          }
+        ]
+      },
+      {
+        "name": "Corners Totals Away",
+        "updatedAt": "2026-03-10T14:22:57.14Z",
+        "odds": [
+          {
+            "hdp": 7,
+            "over": "3.100",
+            "under": "1.300"
+          },
+          {
+            "hdp": 6,
+            "over": "2.190",
+            "under": "1.570"
+          },
+          {
+            "hdp": 6.5,
+            "over": "2.480",
+            "under": "1.450"
+          },
+          {
+            "hdp": 5.5,
+            "over": "1.890",
+            "under": "1.810"
+          },
+          {
+            "hdp": 5,
+            "over": "1.620",
+            "under": "2.090"
+          },
+          {
+            "hdp": 4,
+            "over": "1.280",
+            "under": "3.180"
+          },
+          {
+            "hdp": 4.5,
+            "over": "1.480",
+            "under": "2.410"
+          }
+        ]
+      },
+      {
+        "name": "Corners Totals Home",
+        "updatedAt": "2026-03-10T14:22:57.14Z",
+        "odds": [
+          {
+            "hdp": 3.5,
+            "over": "1.490",
+            "under": "2.380"
+          },
+          {
+            "hdp": 3,
+            "over": "1.270",
+            "under": "3.290"
+          },
+          {
+            "hdp": 6,
+            "over": "3.510",
+            "under": "1.240"
+          },
+          {
+            "hdp": 5.5,
+            "over": "2.700",
+            "under": "1.380"
+          },
+          {
+            "hdp": 5,
+            "over": "2.360",
+            "under": "1.490"
+          },
+          {
+            "hdp": 4.5,
+            "over": "1.980",
+            "under": "1.740"
+          },
+          {
+            "hdp": 4,
+            "over": "1.660",
+            "under": "2.030"
+          }
+        ]
+      }
+    ],
+    "Bet365": [
+      {
+        "name": "ML",
+        "updatedAt": "2026-03-10T18:34:21.752Z",
+        "odds": [
+          {
+            "home": "4.200",
+            "draw": "3.700",
+            "away": "1.833"
+          }
+        ]
+      },
+      {
+        "name": "Draw No Bet",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "home": "3.250",
+            "away": "1.333"
+          }
+        ]
+      },
+      {
+        "name": "Double Chance",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "label": "Burnley or Draw",
+            "under": "1.909"
+          },
+          {
+            "label": "Draw or Bournemouth",
+            "under": "1.222"
+          },
+          {
+            "label": "Burnley or Bournemouth",
+            "under": "1.285"
+          }
+        ]
+      },
+      {
+        "name": "Spread",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "home": "2.025",
+            "away": "1.825"
+          }
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 2.75,
+            "over": "1.925",
+            "under": "1.925"
+          }
+        ]
+      },
+      {
+        "name": "Goals Over/Under",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 2.5,
+            "over": "1.727",
+            "under": "2.100"
+          }
+        ]
+      },
+      {
+        "name": "Both Teams To Score",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "yes": "1.666",
+            "no": "2.100"
+          }
+        ]
+      },
+      {
+        "name": "Spread HT",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 0.25,
+            "home": "1.850",
+            "away": "1.950"
+          }
+        ]
+      },
+      {
+        "name": "Totals HT",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 1.25,
+            "over": "2.075",
+            "under": "1.725"
+          }
+        ]
+      },
+      {
+        "name": "Team Total Home",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "over": "1.400",
+            "under": "2.750"
+          },
+          {
+            "hdp": 1.5,
+            "over": "3.000",
+            "under": "1.363"
+          },
+          {
+            "hdp": 2.5,
+            "over": "8.000",
+            "under": "1.083"
+          },
+          {
+            "hdp": 3.5,
+            "over": "23.000",
+            "under": "1.012"
+          }
+        ]
+      },
+      {
+        "name": "Team Total Away",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "over": "1.142",
+            "under": "5.500"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.727",
+            "under": "2.000"
+          },
+          {
+            "hdp": 2.5,
+            "over": "3.400",
+            "under": "1.300"
+          },
+          {
+            "hdp": 3.5,
+            "over": "8.000",
+            "under": "1.083"
+          },
+          {
+            "hdp": 4.5,
+            "over": "19.000",
+            "under": "1.020"
+          },
+          {
+            "hdp": 5.5,
+            "over": "51.000",
+            "under": "1.002"
+          }
+        ]
+      },
+      {
+        "name": "European Handicap",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 1,
+            "home": "1.909"
+          },
+          {
+            "hdp": -1,
+            "draw": "4.000",
+            "away": "3.100"
+          },
+          {
+            "hdp": -2,
+            "home": "23.000",
+            "draw": "5.500",
+            "away": "6.500"
+          },
+          {
+            "hdp": 2,
+            "home": "1.333",
+            "draw": "13.000",
+            "away": "1.055"
+          },
+          {
+            "hdp": 3,
+            "home": "1.100"
+          },
+          {
+            "hdp": -3,
+            "draw": "9.500",
+            "away": "15.000"
+          }
+        ]
+      },
+      {
+        "name": "Corners Spread",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 1.5,
+            "home": "1.900",
+            "away": "1.900"
+          }
+        ]
+      },
+      {
+        "name": "Corners Totals",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 10,
+            "over": "1.925",
+            "under": "1.875"
+          }
+        ]
+      },
+      {
+        "name": "Bookings Spread",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 0,
+            "home": "1.800"
+          }
+        ]
+      },
+      {
+        "name": "Anytime Goalscorer",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "label": "Eli Junior Kroupi",
+            "hdp": 0.5,
+            "over": "2.300"
+          },
+          {
+            "label": "Evanilson",
+            "hdp": 0.5,
+            "over": "2.400"
+          },
+          {
+            "label": "Enes Unal",
+            "hdp": 0.5,
+            "over": "2.600"
+          },
+          {
+            "label": "Rayan Vitor",
+            "hdp": 0.5,
+            "over": "2.750"
+          },
+          {
+            "label": "David Brooks",
+            "hdp": 0.5,
+            "over": "3.100"
+          },
+          {
+            "label": "Dominic Sadi",
+            "hdp": 0.5,
+            "over": "3.400"
+          },
+          {
+            "label": "Amine Adli",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Armando Broja",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Jacob Bruun Larsen",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Lyle Foster",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Zian Flemming",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Michael Dacosta",
+            "hdp": 0.5,
+            "over": "4.000"
+          },
+          {
+            "label": "Mike Tresor",
+            "hdp": 0.5,
+            "over": "4.000"
+          },
+          {
+            "label": "Ashley Barnes",
+            "hdp": 0.5,
+            "over": "4.500"
+          },
+          {
+            "label": "Enock Agyei",
+            "hdp": 0.5,
+            "over": "4.500"
+          },
+          {
+            "label": "Jaidon Anthony",
+            "hdp": 0.5,
+            "over": "4.500"
+          },
+          {
+            "label": "Marcus Edwards",
+            "hdp": 0.5,
+            "over": "4.500"
+          },
+          {
+            "label": "Remy Rees-Dottin",
+            "hdp": 0.5,
+            "over": "4.500"
+          },
+          {
+            "label": "Loum Tchaouna",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Malcom DaCosta",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Alejandro Jimenez",
+            "hdp": 0.5,
+            "over": "6.000"
+          },
+          {
+            "label": "Alex Scott",
+            "hdp": 0.5,
+            "over": "6.000"
+          },
+          {
+            "label": "Ryan Christie",
+            "hdp": 0.5,
+            "over": "6.000"
+          },
+          {
+            "label": "Hannibal Mejbri",
+            "hdp": 0.5,
+            "over": "7.000"
+          },
+          {
+            "label": "Lesley Ugochukwu",
+            "hdp": 0.5,
+            "over": "7.000"
+          },
+          {
+            "label": "Alex Toth",
+            "hdp": 0.5,
+            "over": "7.500"
+          },
+          {
+            "label": "Josh Laurent",
+            "hdp": 0.5,
+            "over": "7.500"
+          },
+          {
+            "label": "George Brierley",
+            "hdp": 0.5,
+            "over": "8.000"
+          },
+          {
+            "label": "James Ward-Prowse",
+            "hdp": 0.5,
+            "over": "8.000"
+          },
+          {
+            "label": "Oliver Pimlott",
+            "hdp": 0.5,
+            "over": "8.000"
+          },
+          {
+            "label": "Lucas Pires",
+            "hdp": 0.5,
+            "over": "8.000"
+          },
+          {
+            "label": "Bafode Diakite",
+            "hdp": 0.5,
+            "over": "9.000"
+          },
+          {
+            "label": "Lewis Cook",
+            "hdp": 0.5,
+            "over": "9.000"
+          },
+          {
+            "label": "Adrien Truffert",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "Charlie Stevens",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "James Hill",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "Luis Florentino",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "Tyler Adams",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "Veljko Milosavljevic",
+            "hdp": 0.5,
+            "over": "10.000"
+          },
+          {
+            "label": "Adam Smith",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Bashir Humphreys",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Hjalmar Ekdal",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Joe Worrall",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Julio Soler",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Marcos Senesi",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Maxime Esteve",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Oliver Sonne",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Quilindschy Hartman",
+            "hdp": 0.5,
+            "over": "15.000"
+          },
+          {
+            "label": "Axel Tuanzebe",
+            "hdp": 0.5,
+            "over": "17.000"
+          },
+          {
+            "label": "Kyle Walker",
+            "hdp": 0.5,
+            "over": "17.000"
+          }
+        ]
+      },
+      {
+        "name": "Player To Score or Assist",
+        "updatedAt": "2026-03-10T18:34:21.755Z",
+        "odds": [
+          {
+            "label": "Eli Junior Kroupi (Score) (2)",
+            "over": "2.300"
+          },
+          {
+            "label": "Enes Unal (Score) (2)",
+            "over": "2.600"
+          },
+          {
+            "label": "Rayan Vitor (Score) (2)",
+            "over": "2.750"
+          },
+          {
+            "label": "Evanilson (Score) (2)",
+            "over": "2.400"
+          },
+          {
+            "label": "David Brooks (Score) (2)",
+            "over": "3.100"
+          },
+          {
+            "label": "Dominic Sadi (Score) (2)",
+            "over": "3.400"
+          },
+          {
+            "label": "Amine Adli (Score) (2)",
+            "over": "3.750"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Score) (1)",
+            "over": "3.750"
+          },
+          {
+            "label": "Michael Dacosta (Score) (2)",
+            "over": "4.000"
+          },
+          {
+            "label": "Alex Toth (Score) (2)",
+            "over": "7.500"
+          },
+          {
+            "label": "Lyle Foster (Score) (1)",
+            "over": "3.750"
+          },
+          {
+            "label": "Zian Flemming (Score) (1)",
+            "over": "3.750"
+          },
+          {
+            "label": "Remy Rees-Dottin (Score) (2)",
+            "over": "4.500"
+          },
+          {
+            "label": "Armando Broja (Score) (1)",
+            "over": "3.750"
+          },
+          {
+            "label": "Jaidon Anthony (Score) (1)",
+            "over": "4.500"
+          },
+          {
+            "label": "Enock Agyei (Score) (1)",
+            "over": "4.500"
+          },
+          {
+            "label": "Mike Tresor (Score) (1)",
+            "over": "4.000"
+          },
+          {
+            "label": "Ryan Christie (Score) (2)",
+            "over": "6.000"
+          },
+          {
+            "label": "Marcus Edwards (Score) (1)",
+            "over": "4.500"
+          },
+          {
+            "label": "Ashley Barnes (Score) (1)",
+            "over": "4.500"
+          },
+          {
+            "label": "Alejandro Jimenez (Score) (2)",
+            "over": "6.000"
+          },
+          {
+            "label": "Alex Scott (Score) (2)",
+            "over": "6.000"
+          },
+          {
+            "label": "Hannibal Mejbri (Score) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Malcom DaCosta (Score) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Adrien Truffert (Score) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Loum Tchaouna (Score) (1)",
+            "over": "5.500"
+          },
+          {
+            "label": "James Ward-Prowse (Score) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (Score) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Lewis Cook (Score) (2)",
+            "over": "9.000"
+          },
+          {
+            "label": "Lucas Pires (Score) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Josh Laurent (Score) (1)",
+            "over": "7.500"
+          },
+          {
+            "label": "Bafode Diakite (Score) (2)",
+            "over": "9.000"
+          },
+          {
+            "label": "James Hill (Score) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Quilindschy Hartman (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "George Brierley (Score) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Oliver Pimlott (Score) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Bashir Humphreys (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Charlie Stevens (Score) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Tyler Adams (Score) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Adam Smith (Score) (2)",
+            "over": "15.000"
+          },
+          {
+            "label": "Luis Florentino (Score) (1)",
+            "over": "10.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Score) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Joe Worrall (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Julio Soler (Score) (2)",
+            "over": "15.000"
+          },
+          {
+            "label": "Marcos Senesi (Score) (2)",
+            "over": "15.000"
+          },
+          {
+            "label": "Kyle Walker (Score) (1)",
+            "over": "17.000"
+          },
+          {
+            "label": "Oliver Sonne (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Axel Tuanzebe (Score) (1)",
+            "over": "17.000"
+          },
+          {
+            "label": "Maxime Esteve (Score) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Eli Junior Kroupi (Assist) (2)",
+            "over": "7.000"
+          },
+          {
+            "label": "Enes Unal (Assist) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Rayan Vitor (Assist) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Evanilson (Assist) (2)",
+            "over": "9.000"
+          },
+          {
+            "label": "David Brooks (Assist) (2)",
+            "over": "5.000"
+          },
+          {
+            "label": "Dominic Sadi (Assist) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Amine Adli (Assist) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Assist) (1)",
+            "over": "6.000"
+          },
+          {
+            "label": "Michael Dacosta (Assist) (2)",
+            "over": "5.500"
+          },
+          {
+            "label": "Alex Toth (Assist) (2)",
+            "over": "3.750"
+          },
+          {
+            "label": "Lyle Foster (Assist) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Zian Flemming (Assist) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Remy Rees-Dottin (Assist) (2)",
+            "over": "6.500"
+          },
+          {
+            "label": "Armando Broja (Assist) (1)",
+            "over": "10.000"
+          },
+          {
+            "label": "Jaidon Anthony (Assist) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Enock Agyei (Assist) (1)",
+            "over": "9.000"
+          },
+          {
+            "label": "Mike Tresor (Assist) (1)",
+            "over": "11.000"
+          },
+          {
+            "label": "Ryan Christie (Assist) (2)",
+            "over": "6.000"
+          },
+          {
+            "label": "Marcus Edwards (Assist) (1)",
+            "over": "10.000"
+          },
+          {
+            "label": "Ashley Barnes (Assist) (1)",
+            "over": "13.000"
+          },
+          {
+            "label": "Alejandro Jimenez (Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Alex Scott (Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Hannibal Mejbri (Assist) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Malcom DaCosta (Assist) (2)",
+            "over": "10.000"
+          },
+          {
+            "label": "Adrien Truffert (Assist) (2)",
+            "over": "6.000"
+          },
+          {
+            "label": "Loum Tchaouna (Assist) (1)",
+            "over": "11.000"
+          },
+          {
+            "label": "James Ward-Prowse (Assist) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (Assist) (1)",
+            "over": "10.000"
+          },
+          {
+            "label": "Lewis Cook (Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Lucas Pires (Assist) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Josh Laurent (Assist) (1)",
+            "over": "10.000"
+          },
+          {
+            "label": "Bafode Diakite (Assist) (2)",
+            "over": "9.000"
+          },
+          {
+            "label": "James Hill (Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Quilindschy Hartman (Assist) (1)",
+            "over": "6.500"
+          },
+          {
+            "label": "George Brierley (Assist) (1)",
+            "over": "11.000"
+          },
+          {
+            "label": "Oliver Pimlott (Assist) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Bashir Humphreys (Assist) (1)",
+            "over": "13.000"
+          },
+          {
+            "label": "Charlie Stevens (Assist) (2)",
+            "over": "17.000"
+          },
+          {
+            "label": "Tyler Adams (Assist) (2)",
+            "over": "17.000"
+          },
+          {
+            "label": "Adam Smith (Assist) (2)",
+            "over": "13.000"
+          },
+          {
+            "label": "Luis Florentino (Assist) (1)",
+            "over": "19.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Assist) (2)",
+            "over": "19.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Assist) (1)",
+            "over": "17.000"
+          },
+          {
+            "label": "Joe Worrall (Assist) (1)",
+            "over": "17.000"
+          },
+          {
+            "label": "Julio Soler (Assist) (2)",
+            "over": "17.000"
+          },
+          {
+            "label": "Marcos Senesi (Assist) (2)",
+            "over": "17.000"
+          },
+          {
+            "label": "Kyle Walker (Assist) (1)",
+            "over": "15.000"
+          },
+          {
+            "label": "Oliver Sonne (Assist) (1)",
+            "over": "19.000"
+          },
+          {
+            "label": "Axel Tuanzebe (Assist) (1)",
+            "over": "17.000"
+          },
+          {
+            "label": "Maxime Esteve (Assist) (1)",
+            "over": "21.000"
+          },
+          {
+            "label": "Eli Junior Kroupi (Score or Assist) (2)",
+            "over": "1.833"
+          },
+          {
+            "label": "Enes Unal (Score or Assist) (2)",
+            "over": "1.952"
+          },
+          {
+            "label": "Rayan Vitor (Score or Assist) (2)",
+            "over": "2.000"
+          },
+          {
+            "label": "Evanilson (Score or Assist) (2)",
+            "over": "2.050"
+          },
+          {
+            "label": "David Brooks (Score or Assist) (2)",
+            "over": "2.100"
+          },
+          {
+            "label": "Dominic Sadi (Score or Assist) (2)",
+            "over": "2.300"
+          },
+          {
+            "label": "Amine Adli (Score or Assist) (2)",
+            "over": "2.375"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Score or Assist) (1)",
+            "over": "2.500"
+          },
+          {
+            "label": "Michael Dacosta (Score or Assist) (2)",
+            "over": "2.500"
+          },
+          {
+            "label": "Alex Toth (Score or Assist) (2)",
+            "over": "2.600"
+          },
+          {
+            "label": "Lyle Foster (Score or Assist) (1)",
+            "over": "2.625"
+          },
+          {
+            "label": "Zian Flemming (Score or Assist) (1)",
+            "over": "2.625"
+          },
+          {
+            "label": "Remy Rees-Dottin (Score or Assist) (2)",
+            "over": "2.750"
+          },
+          {
+            "label": "Armando Broja (Score or Assist) (1)",
+            "over": "2.875"
+          },
+          {
+            "label": "Jaidon Anthony (Score or Assist) (1)",
+            "over": "2.875"
+          },
+          {
+            "label": "Enock Agyei (Score or Assist) (1)",
+            "over": "3.100"
+          },
+          {
+            "label": "Mike Tresor (Score or Assist) (1)",
+            "over": "3.100"
+          },
+          {
+            "label": "Ryan Christie (Score or Assist) (2)",
+            "over": "3.100"
+          },
+          {
+            "label": "Marcus Edwards (Score or Assist) (1)",
+            "over": "3.200"
+          },
+          {
+            "label": "Ashley Barnes (Score or Assist) (1)",
+            "over": "3.400"
+          },
+          {
+            "label": "Alejandro Jimenez (Score or Assist) (2)",
+            "over": "3.500"
+          },
+          {
+            "label": "Alex Scott (Score or Assist) (2)",
+            "over": "3.500"
+          },
+          {
+            "label": "Hannibal Mejbri (Score or Assist) (1)",
+            "over": "3.500"
+          },
+          {
+            "label": "Malcom DaCosta (Score or Assist) (2)",
+            "over": "3.600"
+          },
+          {
+            "label": "Adrien Truffert (Score or Assist) (2)",
+            "over": "3.750"
+          },
+          {
+            "label": "Loum Tchaouna (Score or Assist) (1)",
+            "over": "3.750"
+          },
+          {
+            "label": "James Ward-Prowse (Score or Assist) (1)",
+            "over": "4.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (Score or Assist) (1)",
+            "over": "4.000"
+          },
+          {
+            "label": "Lewis Cook (Score or Assist) (2)",
+            "over": "4.000"
+          },
+          {
+            "label": "Lucas Pires (Score or Assist) (1)",
+            "over": "4.000"
+          },
+          {
+            "label": "Josh Laurent (Score or Assist) (1)",
+            "over": "4.333"
+          },
+          {
+            "label": "Bafode Diakite (Score or Assist) (2)",
+            "over": "4.500"
+          },
+          {
+            "label": "James Hill (Score or Assist) (2)",
+            "over": "4.500"
+          },
+          {
+            "label": "Quilindschy Hartman (Score or Assist) (1)",
+            "over": "4.500"
+          },
+          {
+            "label": "George Brierley (Score or Assist) (1)",
+            "over": "4.750"
+          },
+          {
+            "label": "Oliver Pimlott (Score or Assist) (1)",
+            "over": "5.500"
+          },
+          {
+            "label": "Bashir Humphreys (Score or Assist) (1)",
+            "over": "6.500"
+          },
+          {
+            "label": "Charlie Stevens (Score or Assist) (2)",
+            "over": "6.500"
+          },
+          {
+            "label": "Tyler Adams (Score or Assist) (2)",
+            "over": "6.500"
+          },
+          {
+            "label": "Adam Smith (Score or Assist) (2)",
+            "over": "7.000"
+          },
+          {
+            "label": "Luis Florentino (Score or Assist) (1)",
+            "over": "7.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Score or Assist) (2)",
+            "over": "7.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Score or Assist) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Joe Worrall (Score or Assist) (1)",
+            "over": "8.000"
+          },
+          {
+            "label": "Julio Soler (Score or Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Marcos Senesi (Score or Assist) (2)",
+            "over": "8.000"
+          },
+          {
+            "label": "Kyle Walker (Score or Assist) (1)",
+            "over": "8.500"
+          },
+          {
+            "label": "Oliver Sonne (Score or Assist) (1)",
+            "over": "8.500"
+          },
+          {
+            "label": "Axel Tuanzebe (Score or Assist) (1)",
+            "over": "9.000"
+          },
+          {
+            "label": "Maxime Esteve (Score or Assist) (1)",
+            "over": "9.000"
+          }
+        ]
+      },
+      {
+        "name": "Exact Total Goals",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "0 Goals",
+            "under": "13.000"
+          },
+          {
+            "label": "1 Goal",
+            "under": "6.000"
+          },
+          {
+            "label": "2 Goals",
+            "under": "3.750"
+          },
+          {
+            "label": "3 Goals",
+            "under": "4.000"
+          },
+          {
+            "label": "4 Goals",
+            "under": "5.500"
+          },
+          {
+            "label": "5 Goals",
+            "under": "9.000"
+          },
+          {
+            "label": "6 Goals",
+            "under": "17.000"
+          },
+          {
+            "label": "7+ Goals",
+            "under": "21.000"
+          }
+        ]
+      },
+      {
+        "name": "Alternative Asian Handicap",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": -0.75,
+            "home": "5.250",
+            "away": "2.050"
+          },
+          {
+            "hdp": -0.5,
+            "home": "4.000",
+            "away": "1.230"
+          },
+          {
+            "hdp": -0.25,
+            "home": "3.550",
+            "away": "1.575"
+          },
+          {
+            "hdp": 0,
+            "home": "3.100",
+            "away": "1.350"
+          },
+          {
+            "hdp": 0.25,
+            "home": "2.350",
+            "away": "1.275"
+          },
+          {
+            "hdp": 0.75,
+            "home": "1.750",
+            "away": "1.160"
+          },
+          {
+            "hdp": 1,
+            "home": "1.525",
+            "away": "2.425"
+          },
+          {
+            "hdp": 1.25,
+            "home": "1.425",
+            "away": "2.750"
+          },
+          {
+            "hdp": 1.5,
+            "home": "1.350",
+            "away": "3.100"
+          },
+          {
+            "hdp": 1.75,
+            "home": "1.250",
+            "away": "3.800"
+          },
+          {
+            "hdp": 2,
+            "home": "1.150",
+            "away": "5.500"
+          },
+          {
+            "hdp": 2.25,
+            "home": "1.130",
+            "away": "5.900"
+          },
+          {
+            "hdp": 2.5,
+            "home": "1.115",
+            "away": "6.400"
+          }
+        ]
+      },
+      {
+        "name": "Multi Scorers",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "Eli Junior Kroupi (2 or More) (2)",
+            "under": "8.500"
+          },
+          {
+            "label": "Evanilson (2 or More) (2)",
+            "under": "10.000"
+          },
+          {
+            "label": "Enes Unal (2 or More) (2)",
+            "under": "12.000"
+          },
+          {
+            "label": "Rayan Vitor (2 or More) (2)",
+            "under": "13.000"
+          },
+          {
+            "label": "David Brooks (2 or More) (2)",
+            "under": "17.000"
+          },
+          {
+            "label": "Dominic Sadi (2 or More) (2)",
+            "under": "21.000"
+          },
+          {
+            "label": "Amine Adli (2 or More) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Armando Broja (2 or More) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Jacob Bruun Larsen (2 or More) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Lyle Foster (2 or More) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Zian Flemming (2 or More) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Michael Dacosta (2 or More) (2)",
+            "under": "29.000"
+          },
+          {
+            "label": "Mike Tresor (2 or More) (1)",
+            "under": "29.000"
+          },
+          {
+            "label": "Ashley Barnes (2 or More) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Enock Agyei (2 or More) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Jaidon Anthony (2 or More) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Marcus Edwards (2 or More) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Remy Rees-Dottin (2 or More) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "Loum Tchaouna (2 or More) (1)",
+            "under": "51.000"
+          },
+          {
+            "label": "Malcom DaCosta (2 or More) (2)",
+            "under": "51.000"
+          },
+          {
+            "label": "Alejandro Jimenez (2 or More) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "Alex Scott (2 or More) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "Ryan Christie (2 or More) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "Hannibal Mejbri (2 or More) (1)",
+            "under": "81.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (2 or More) (1)",
+            "under": "81.000"
+          },
+          {
+            "label": "Alex Toth (2 or More) (2)",
+            "under": "101.000"
+          },
+          {
+            "label": "George Brierley (2 or More) (1)",
+            "under": "101.000"
+          },
+          {
+            "label": "James Ward-Prowse (2 or More) (1)",
+            "under": "101.000"
+          },
+          {
+            "label": "Josh Laurent (2 or More) (1)",
+            "under": "101.000"
+          },
+          {
+            "label": "Oliver Pimlott (2 or More) (1)",
+            "under": "101.000"
+          },
+          {
+            "label": "Lucas Pires (2 or More) (1)",
+            "under": "101.000"
+          },
+          {
+            "label": "Adrien Truffert (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Bafode Diakite (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Charlie Stevens (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "James Hill (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Lewis Cook (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Luis Florentino (2 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Tyler Adams (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (2 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Adam Smith (2 or More) (2)",
+            "under": "151.000"
+          },
+          {
+            "label": "Axel Tuanzebe (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Bashir Humphreys (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Joe Worrall (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Julio Soler (2 or More) (2)",
+            "under": "151.000"
+          },
+          {
+            "label": "Kyle Walker (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Marcos Senesi (2 or More) (2)",
+            "under": "151.000"
+          },
+          {
+            "label": "Maxime Esteve (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Oliver Sonne (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Quilindschy Hartman (2 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Eli Junior Kroupi (3 or More) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "Evanilson (3 or More) (2)",
+            "under": "41.000"
+          },
+          {
+            "label": "Enes Unal (3 or More) (2)",
+            "under": "51.000"
+          },
+          {
+            "label": "Rayan Vitor (3 or More) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "David Brooks (3 or More) (2)",
+            "under": "101.000"
+          },
+          {
+            "label": "Dominic Sadi (3 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Amine Adli (3 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Armando Broja (3 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Jacob Bruun Larsen (3 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Lyle Foster (3 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Zian Flemming (3 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Michael Dacosta (3 or More) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Mike Tresor (3 or More) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Ashley Barnes (3 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Enock Agyei (3 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Jaidon Anthony (3 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Marcus Edwards (3 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Remy Rees-Dottin (3 or More) (2)",
+            "under": "151.000"
+          },
+          {
+            "label": "Loum Tchaouna (3 or More) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Malcom DaCosta (3 or More) (2)",
+            "under": "151.000"
+          },
+          {
+            "label": "Alejandro Jimenez (3 or More) (2)",
+            "under": "201.000"
+          },
+          {
+            "label": "Alex Scott (3 or More) (2)",
+            "under": "201.000"
+          },
+          {
+            "label": "Ryan Christie (3 or More) (2)",
+            "under": "201.000"
+          },
+          {
+            "label": "Hannibal Mejbri (3 or More) (1)",
+            "under": "251.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (3 or More) (1)",
+            "under": "251.000"
+          },
+          {
+            "label": "Alex Toth (3 or More) (2)",
+            "under": "351.000"
+          },
+          {
+            "label": "George Brierley (3 or More) (1)",
+            "under": "401.000"
+          },
+          {
+            "label": "James Ward-Prowse (3 or More) (1)",
+            "under": "401.000"
+          },
+          {
+            "label": "Josh Laurent (3 or More) (1)",
+            "under": "351.000"
+          },
+          {
+            "label": "Oliver Pimlott (3 or More) (1)",
+            "under": "401.000"
+          },
+          {
+            "label": "Lucas Pires (3 or More) (1)",
+            "under": "401.000"
+          },
+          {
+            "label": "Adrien Truffert (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Bafode Diakite (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Charlie Stevens (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "James Hill (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Lewis Cook (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Luis Florentino (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Tyler Adams (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Adam Smith (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Axel Tuanzebe (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Bashir Humphreys (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Joe Worrall (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Julio Soler (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Kyle Walker (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Marcos Senesi (3 or More) (2)",
+            "under": "501.000"
+          },
+          {
+            "label": "Maxime Esteve (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Oliver Sonne (3 or More) (1)",
+            "under": "501.000"
+          },
+          {
+            "label": "Quilindschy Hartman (3 or More) (1)",
+            "under": "501.000"
+          }
+        ]
+      },
+      {
+        "name": "First 10 Minutes (00:00 - 09:59)",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "Goals (Over) (0.5)",
+            "hdp": 0.5,
+            "over": "4.333",
+            "under": "1.200"
+          }
+        ]
+      },
+      {
+        "name": "Goalkeeper Saves",
+        "updatedAt": "2026-03-10T18:34:21.755Z",
+        "odds": [
+          {
+            "label": "Martin Dubravka",
+            "hdp": 3.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Martin Dubravka",
+            "hdp": 2
+          },
+          {
+            "label": "Martin Dubravka",
+            "hdp": 2.5,
+            "over": "2.000"
+          }
+        ]
+      },
+      {
+        "name": "Goal Method",
+        "updatedAt": "2026-03-10T18:34:21.755Z",
+        "odds": [
+          {
+            "label": "Enes Unal (Header) (2)",
+            "under": "9.500"
+          },
+          {
+            "label": "Evanilson (Header) (2)",
+            "under": "9.500"
+          },
+          {
+            "label": "Eli Junior Kroupi (Header) (2)",
+            "under": "11.000"
+          },
+          {
+            "label": "Zian Flemming (Header) (1)",
+            "under": "11.000"
+          },
+          {
+            "label": "Armando Broja (Header) (1)",
+            "under": "12.000"
+          },
+          {
+            "label": "Ashley Barnes (Header) (1)",
+            "under": "12.000"
+          },
+          {
+            "label": "Bafode Diakite (Header) (2)",
+            "under": "13.000"
+          },
+          {
+            "label": "James Hill (Header) (2)",
+            "under": "13.000"
+          },
+          {
+            "label": "Rayan Vitor (Header) (2)",
+            "under": "17.000"
+          },
+          {
+            "label": "Amine Adli (Header) (2)",
+            "under": "19.000"
+          },
+          {
+            "label": "David Brooks (Header) (2)",
+            "under": "19.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (Header) (1)",
+            "under": "19.000"
+          },
+          {
+            "label": "Bashir Humphreys (Header) (1)",
+            "under": "21.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Header) (2)",
+            "under": "21.000"
+          },
+          {
+            "label": "Axel Tuanzebe (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Luis Florentino (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Lyle Foster (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Marcos Senesi (Header) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Maxime Esteve (Header) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Enock Agyei (Header) (1)",
+            "under": "26.000"
+          },
+          {
+            "label": "Jaidon Anthony (Header) (1)",
+            "under": "26.000"
+          },
+          {
+            "label": "Joe Worrall (Header) (1)",
+            "under": "26.000"
+          },
+          {
+            "label": "Dominic Sadi (Header) (2)",
+            "under": "29.000"
+          },
+          {
+            "label": "Josh Laurent (Header) (1)",
+            "under": "29.000"
+          },
+          {
+            "label": "Oliver Pimlott (Header) (1)",
+            "under": "29.000"
+          },
+          {
+            "label": "Alex Toth (Header) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "George Brierley (Header) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Malcom DaCosta (Header) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "Michael Dacosta (Header) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "Oliver Sonne (Header) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "James Ward-Prowse (Header) (1)",
+            "under": "41.000"
+          },
+          {
+            "label": "Marcus Edwards (Header) (1)",
+            "under": "41.000"
+          },
+          {
+            "label": "Remy Rees-Dottin (Header) (2)",
+            "under": "41.000"
+          },
+          {
+            "label": "Alejandro Jimenez (Header) (2)",
+            "under": "51.000"
+          },
+          {
+            "label": "Alex Scott (Header) (2)",
+            "under": "51.000"
+          },
+          {
+            "label": "Hannibal Mejbri (Header) (1)",
+            "under": "51.000"
+          },
+          {
+            "label": "Loum Tchaouna (Header) (1)",
+            "under": "51.000"
+          },
+          {
+            "label": "Ryan Christie (Header) (2)",
+            "under": "51.000"
+          },
+          {
+            "label": "Charlie Stevens (Header) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "Kyle Walker (Header) (1)",
+            "under": "67.000"
+          },
+          {
+            "label": "Mike Tresor (Header) (1)",
+            "under": "67.000"
+          },
+          {
+            "label": "Lucas Pires (Header) (1)",
+            "under": "67.000"
+          },
+          {
+            "label": "Tyler Adams (Header) (2)",
+            "under": "67.000"
+          },
+          {
+            "label": "Adrien Truffert (Header) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Julio Soler (Header) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Lewis Cook (Header) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Quilindschy Hartman (Header) (1)",
+            "under": "81.000"
+          },
+          {
+            "label": "Adam Smith (Header) (2)",
+            "under": "126.000"
+          },
+          {
+            "label": "Enes Unal (Outside the Box) (2)",
+            "under": "29.000"
+          },
+          {
+            "label": "Evanilson (Outside the Box) (2)",
+            "under": "15.000"
+          },
+          {
+            "label": "Eli Junior Kroupi (Outside the Box) (2)",
+            "under": "11.000"
+          },
+          {
+            "label": "Zian Flemming (Outside the Box) (1)",
+            "under": "7.500"
+          },
+          {
+            "label": "Armando Broja (Outside the Box) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Ashley Barnes (Outside the Box) (1)",
+            "under": "41.000"
+          },
+          {
+            "label": "Bafode Diakite (Outside the Box) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "James Hill (Outside the Box) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Rayan Vitor (Outside the Box) (2)",
+            "under": "13.000"
+          },
+          {
+            "label": "Amine Adli (Outside the Box) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "David Brooks (Outside the Box) (2)",
+            "under": "12.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (Outside the Box) (1)",
+            "under": "21.000"
+          },
+          {
+            "label": "Bashir Humphreys (Outside the Box) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Outside the Box) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Axel Tuanzebe (Outside the Box) (1)",
+            "under": "151.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Outside the Box) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Outside the Box) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Luis Florentino (Outside the Box) (1)",
+            "under": "23.000"
+          },
+          {
+            "label": "Lyle Foster (Outside the Box) (1)",
+            "under": "15.000"
+          },
+          {
+            "label": "Marcos Senesi (Outside the Box) (2)",
+            "under": "101.000"
+          },
+          {
+            "label": "Maxime Esteve (Outside the Box) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Enock Agyei (Outside the Box) (1)",
+            "under": "17.000"
+          },
+          {
+            "label": "Jaidon Anthony (Outside the Box) (1)",
+            "under": "21.000"
+          },
+          {
+            "label": "Joe Worrall (Outside the Box) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "Dominic Sadi (Outside the Box) (2)",
+            "under": "17.000"
+          },
+          {
+            "label": "Josh Laurent (Outside the Box) (1)",
+            "under": "21.000"
+          },
+          {
+            "label": "Oliver Pimlott (Outside the Box) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Alex Toth (Outside the Box) (2)",
+            "under": "34.000"
+          },
+          {
+            "label": "George Brierley (Outside the Box) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Malcom DaCosta (Outside the Box) (2)",
+            "under": "17.000"
+          },
+          {
+            "label": "Michael Dacosta (Outside the Box) (2)",
+            "under": "15.000"
+          },
+          {
+            "label": "Oliver Sonne (Outside the Box) (1)",
+            "under": "126.000"
+          },
+          {
+            "label": "James Ward-Prowse (Outside the Box) (1)",
+            "under": "17.000"
+          },
+          {
+            "label": "Marcus Edwards (Outside the Box) (1)",
+            "under": "11.000"
+          },
+          {
+            "label": "Remy Rees-Dottin (Outside the Box) (2)",
+            "under": "12.000"
+          },
+          {
+            "label": "Alejandro Jimenez (Outside the Box) (2)",
+            "under": "21.000"
+          },
+          {
+            "label": "Alex Scott (Outside the Box) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Hannibal Mejbri (Outside the Box) (1)",
+            "under": "29.000"
+          },
+          {
+            "label": "Loum Tchaouna (Outside the Box) (1)",
+            "under": "26.000"
+          },
+          {
+            "label": "Ryan Christie (Outside the Box) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Charlie Stevens (Outside the Box) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Kyle Walker (Outside the Box) (1)",
+            "under": "34.000"
+          },
+          {
+            "label": "Mike Tresor (Outside the Box) (1)",
+            "under": "15.000"
+          },
+          {
+            "label": "Lucas Pires (Outside the Box) (1)",
+            "under": "67.000"
+          },
+          {
+            "label": "Tyler Adams (Outside the Box) (2)",
+            "under": "23.000"
+          },
+          {
+            "label": "Adrien Truffert (Outside the Box) (2)",
+            "under": "29.000"
+          },
+          {
+            "label": "Julio Soler (Outside the Box) (2)",
+            "under": "81.000"
+          },
+          {
+            "label": "Lewis Cook (Outside the Box) (2)",
+            "under": "19.000"
+          },
+          {
+            "label": "Quilindschy Hartman (Outside the Box) (1)",
+            "under": "51.000"
+          },
+          {
+            "label": "Adam Smith (Outside the Box) (2)",
+            "under": "34.000"
+          }
+        ]
+      },
+      {
+        "name": "Team Shots Away",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 16.5,
+            "over": "1.909",
+            "under": "1.800"
+          }
+        ]
+      },
+      {
+        "name": "Team Shots Home",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 10.5,
+            "over": "1.800",
+            "under": "1.909"
+          }
+        ]
+      },
+      {
+        "name": "Both Teams To Score HT",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "yes": "4.000",
+            "no": "1.222"
+          }
+        ]
+      },
+      {
+        "name": "Team Goalscorer",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "label": "Jacob Bruun Larsen (First)",
+            "over": "5.000"
+          },
+          {
+            "label": "Zian Flemming (First)",
+            "over": "5.000"
+          },
+          {
+            "label": "Lyle Foster (First)",
+            "over": "5.000"
+          },
+          {
+            "label": "Armando Broja (First)",
+            "over": "5.000"
+          },
+          {
+            "label": "Mike Tresor (First)",
+            "over": "5.500"
+          },
+          {
+            "label": "Jaidon Anthony (First)",
+            "over": "6.000"
+          },
+          {
+            "label": "Ashley Barnes (First)",
+            "over": "6.000"
+          },
+          {
+            "label": "Enock Agyei (First)",
+            "over": "6.000"
+          },
+          {
+            "label": "Marcus Edwards (First)",
+            "over": "6.000"
+          },
+          {
+            "label": "Loum Tchaouna (First)",
+            "over": "7.500"
+          },
+          {
+            "label": "Lesley Ugochukwu (First)",
+            "over": "9.000"
+          },
+          {
+            "label": "Hannibal Mejbri (First)",
+            "over": "9.000"
+          },
+          {
+            "label": "Josh Laurent (First)",
+            "over": "10.000"
+          },
+          {
+            "label": "Lucas Pires (First)",
+            "over": "11.000"
+          },
+          {
+            "label": "George Brierley (First)",
+            "over": "13.000"
+          },
+          {
+            "label": "James Ward-Prowse (First)",
+            "over": "13.000"
+          },
+          {
+            "label": "Oliver Pimlott (First)",
+            "over": "13.000"
+          },
+          {
+            "label": "Luis Florentino (First)",
+            "over": "15.000"
+          },
+          {
+            "label": "Maxime Esteve (First)",
+            "over": "21.000"
+          },
+          {
+            "label": "Oliver Sonne (First)",
+            "over": "21.000"
+          },
+          {
+            "label": "Quilindschy Hartman (First)",
+            "over": "21.000"
+          },
+          {
+            "label": "Joe Worrall (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "Bashir Humphreys (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "Kyle Walker (First)",
+            "over": "29.000"
+          },
+          {
+            "label": "Axel Tuanzebe (First)",
+            "over": "29.000"
+          },
+          {
+            "label": "No Goalscorer (Burnley) (First)",
+            "over": "2.750"
+          },
+          {
+            "label": "Jacob Bruun Larsen (Last)",
+            "over": "5.000"
+          },
+          {
+            "label": "Zian Flemming (Last)",
+            "over": "5.000"
+          },
+          {
+            "label": "Lyle Foster (Last)",
+            "over": "5.000"
+          },
+          {
+            "label": "Armando Broja (Last)",
+            "over": "5.000"
+          },
+          {
+            "label": "Mike Tresor (Last)",
+            "over": "5.500"
+          },
+          {
+            "label": "Jaidon Anthony (Last)",
+            "over": "6.000"
+          },
+          {
+            "label": "Ashley Barnes (Last)",
+            "over": "6.000"
+          },
+          {
+            "label": "Enock Agyei (Last)",
+            "over": "6.000"
+          },
+          {
+            "label": "Marcus Edwards (Last)",
+            "over": "6.000"
+          },
+          {
+            "label": "Loum Tchaouna (Last)",
+            "over": "7.500"
+          },
+          {
+            "label": "Lesley Ugochukwu (Last)",
+            "over": "9.000"
+          },
+          {
+            "label": "Hannibal Mejbri (Last)",
+            "over": "9.000"
+          },
+          {
+            "label": "Josh Laurent (Last)",
+            "over": "10.000"
+          },
+          {
+            "label": "Lucas Pires (Last)",
+            "over": "11.000"
+          },
+          {
+            "label": "George Brierley (Last)",
+            "over": "13.000"
+          },
+          {
+            "label": "James Ward-Prowse (Last)",
+            "over": "13.000"
+          },
+          {
+            "label": "Oliver Pimlott (Last)",
+            "over": "13.000"
+          },
+          {
+            "label": "Luis Florentino (Last)",
+            "over": "15.000"
+          },
+          {
+            "label": "Maxime Esteve (Last)",
+            "over": "21.000"
+          },
+          {
+            "label": "Oliver Sonne (Last)",
+            "over": "21.000"
+          },
+          {
+            "label": "Quilindschy Hartman (Last)",
+            "over": "21.000"
+          },
+          {
+            "label": "Joe Worrall (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "Bashir Humphreys (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "Kyle Walker (Last)",
+            "over": "29.000"
+          },
+          {
+            "label": "Axel Tuanzebe (Last)",
+            "over": "29.000"
+          },
+          {
+            "label": "No Goalscorer (Burnley) (Last)",
+            "over": "2.750"
+          },
+          {
+            "label": "Eli Junior Kroupi (First)",
+            "over": "3.250"
+          },
+          {
+            "label": "Evanilson (First)",
+            "over": "3.750"
+          },
+          {
+            "label": "Enes Unal (First)",
+            "over": "4.000"
+          },
+          {
+            "label": "Rayan Vitor (First)",
+            "over": "4.333"
+          },
+          {
+            "label": "David Brooks (First)",
+            "over": "5.000"
+          },
+          {
+            "label": "Dominic Sadi (First)",
+            "over": "5.500"
+          },
+          {
+            "label": "Amine Adli (First)",
+            "over": "6.000"
+          },
+          {
+            "label": "Michael Dacosta (First)",
+            "over": "6.500"
+          },
+          {
+            "label": "Remy Rees-Dottin (First)",
+            "over": "7.500"
+          },
+          {
+            "label": "Malcom DaCosta (First)",
+            "over": "9.500"
+          },
+          {
+            "label": "Alex Scott (First)",
+            "over": "10.000"
+          },
+          {
+            "label": "Alejandro Jimenez (First)",
+            "over": "10.000"
+          },
+          {
+            "label": "Ryan Christie (First)",
+            "over": "10.000"
+          },
+          {
+            "label": "Alex Toth (First)",
+            "over": "13.000"
+          },
+          {
+            "label": "Lewis Cook (First)",
+            "over": "17.000"
+          },
+          {
+            "label": "Bafode Diakite (First)",
+            "over": "17.000"
+          },
+          {
+            "label": "James Hill (First)",
+            "over": "19.000"
+          },
+          {
+            "label": "Charlie Stevens (First)",
+            "over": "19.000"
+          },
+          {
+            "label": "Adrien Truffert (First)",
+            "over": "19.000"
+          },
+          {
+            "label": "Tyler Adams (First)",
+            "over": "19.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (First)",
+            "over": "19.000"
+          },
+          {
+            "label": "Julio Soler (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "Marcos Senesi (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "Adam Smith (First)",
+            "over": "23.000"
+          },
+          {
+            "label": "No Goalscorer (Bournemouth) (First)",
+            "over": "5.500"
+          },
+          {
+            "label": "Eli Junior Kroupi (Last)",
+            "over": "3.250"
+          },
+          {
+            "label": "Evanilson (Last)",
+            "over": "3.750"
+          },
+          {
+            "label": "Enes Unal (Last)",
+            "over": "4.000"
+          },
+          {
+            "label": "Rayan Vitor (Last)",
+            "over": "4.333"
+          },
+          {
+            "label": "David Brooks (Last)",
+            "over": "5.000"
+          },
+          {
+            "label": "Dominic Sadi (Last)",
+            "over": "5.500"
+          },
+          {
+            "label": "Amine Adli (Last)",
+            "over": "6.000"
+          },
+          {
+            "label": "Michael Dacosta (Last)",
+            "over": "6.500"
+          },
+          {
+            "label": "Remy Rees-Dottin (Last)",
+            "over": "7.500"
+          },
+          {
+            "label": "Malcom DaCosta (Last)",
+            "over": "9.500"
+          },
+          {
+            "label": "Alex Scott (Last)",
+            "over": "10.000"
+          },
+          {
+            "label": "Alejandro Jimenez (Last)",
+            "over": "10.000"
+          },
+          {
+            "label": "Ryan Christie (Last)",
+            "over": "10.000"
+          },
+          {
+            "label": "Alex Toth (Last)",
+            "over": "13.000"
+          },
+          {
+            "label": "Lewis Cook (Last)",
+            "over": "17.000"
+          },
+          {
+            "label": "Bafode Diakite (Last)",
+            "over": "17.000"
+          },
+          {
+            "label": "James Hill (Last)",
+            "over": "19.000"
+          },
+          {
+            "label": "Charlie Stevens (Last)",
+            "over": "19.000"
+          },
+          {
+            "label": "Adrien Truffert (Last)",
+            "over": "19.000"
+          },
+          {
+            "label": "Tyler Adams (Last)",
+            "over": "19.000"
+          },
+          {
+            "label": "Veljko Milosavljevic (Last)",
+            "over": "19.000"
+          },
+          {
+            "label": "Julio Soler (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "Marcos Senesi (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "Adam Smith (Last)",
+            "over": "23.000"
+          },
+          {
+            "label": "No Goalscorer (Bournemouth) (Last)",
+            "over": "5.500"
+          }
+        ]
+      },
+      {
+        "name": "Number of Goals In Match",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "Under 2 goals",
+            "under": "4.333"
+          },
+          {
+            "label": "2 or 3 goals",
+            "under": "2.000"
+          },
+          {
+            "label": "Over 3 goals",
+            "over": "2.750"
+          }
+        ]
+      },
+      {
+        "name": "1st Half Handicap",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "1 (1)",
+            "hdp": 1,
+            "home": "1.533"
+          },
+          {
+            "label": "Tie (-1)",
+            "hdp": -1,
+            "away": "6.500"
+          }
+        ]
+      },
+      {
+        "name": "Half Time Result",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "label": "1",
+            "hdp": 1,
+            "under": "4.333"
+          },
+          {
+            "label": "Draw",
+            "under": "2.375"
+          },
+          {
+            "label": "2",
+            "hdp": 2,
+            "under": "2.375"
+          }
+        ]
+      },
+      {
+        "name": "Player Fouls Committed",
+        "updatedAt": "2026-03-10T18:34:21.756Z",
+        "odds": [
+          {
+            "label": "Axel Tuanzebe (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Bashir Humphreys (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Enock Agyei (1)",
+            "hdp": 0.5,
+            "over": "2.625"
+          },
+          {
+            "label": "Hjalmar Ekdal (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Jacob Bruun Larsen (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Jaidon Anthony (1)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "James Ward-Prowse (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Joe Worrall (1)",
+            "hdp": 0.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Kyle Walker (1)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "Loum Tchaouna (1)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Marcus Edwards (1)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "Maxime Esteve (1)",
+            "hdp": 0.5,
+            "over": "1.615"
+          },
+          {
+            "label": "Mike Tresor (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Oliver Sonne (1)",
+            "hdp": 0.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Quilindschy Hartman (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Lucas Pires (1)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Adam Smith (2)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Adrien Truffert (2)",
+            "hdp": 0.5,
+            "over": "1.533"
+          },
+          {
+            "label": "Alejandro Jimenez (2)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "Amine Adli (2)",
+            "hdp": 0.5,
+            "over": "1.400"
+          },
+          {
+            "label": "Bafode Diakite (2)",
+            "hdp": 0.5,
+            "over": "1.909"
+          },
+          {
+            "label": "David Brooks (2)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Dominic Sadi (2)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Eli Junior Kroupi (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Enes Unal (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Evanilson (2)",
+            "hdp": 0.5,
+            "over": "1.615"
+          },
+          {
+            "label": "James Hill (2)",
+            "hdp": 0.5,
+            "over": "1.400"
+          },
+          {
+            "label": "Julio Soler (2)",
+            "hdp": 0.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Lewis Cook (2)",
+            "hdp": 0.5,
+            "over": "1.533"
+          },
+          {
+            "label": "Malcom DaCosta (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Marcos Senesi (2)",
+            "hdp": 0.5,
+            "over": "1.400"
+          },
+          {
+            "label": "Michael Dacosta (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Remy Rees-Dottin (2)",
+            "hdp": 0.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Rayan Vitor (2)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Armando Broja (1)",
+            "hdp": 1.5,
+            "over": "1.909"
+          },
+          {
+            "label": "Ashley Barnes (1)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "George Brierley (1)",
+            "hdp": 1.5,
+            "over": "2.500"
+          },
+          {
+            "label": "Hannibal Mejbri (1)",
+            "hdp": 1.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Josh Laurent (1)",
+            "hdp": 1.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Lesley Ugochukwu (1)",
+            "hdp": 1.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Luis Florentino (1)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Lyle Foster (1)",
+            "hdp": 1.5,
+            "over": "1.909"
+          },
+          {
+            "label": "Oliver Pimlott (1)",
+            "hdp": 1.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Zian Flemming (1)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Alex Scott (2)",
+            "hdp": 1.5,
+            "over": "2.500"
+          },
+          {
+            "label": "Alex Toth (2)",
+            "hdp": 1.5,
+            "over": "2.625"
+          },
+          {
+            "label": "Charlie Stevens (2)",
+            "hdp": 1.5,
+            "over": "2.200"
+          },
+          {
+            "label": "Ryan Christie (2)",
+            "hdp": 1.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Tyler Adams (2)",
+            "hdp": 1.5,
+            "over": "2.200"
+          },
+          {
+            "label": "Veljko Milosavljevic (2)",
+            "hdp": 1.5,
+            "over": "2.625"
+          }
+        ]
+      },
+      {
+        "name": "Both Teams To Score 2H",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "yes": "3.000",
+            "no": "1.363"
+          }
+        ]
+      },
+      {
+        "name": "Player Shots",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "Axel Tuanzebe (1)",
+            "hdp": 0.5,
+            "over": "2.500"
+          },
+          {
+            "label": "Bashir Humphreys (1)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "George Brierley (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Hannibal Mejbri (1)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "Hjalmar Ekdal (1)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "James Ward-Prowse (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Joe Worrall (1)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Josh Laurent (1)",
+            "hdp": 0.5,
+            "over": "1.533"
+          },
+          {
+            "label": "Kyle Walker (1)",
+            "hdp": 0.5,
+            "over": "2.200"
+          },
+          {
+            "label": "Luis Florentino (1)",
+            "hdp": 0.5,
+            "over": "1.533"
+          },
+          {
+            "label": "Maxime Esteve (1)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Oliver Pimlott (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Oliver Sonne (1)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Quilindschy Hartman (1)",
+            "hdp": 0.5,
+            "over": "1.909"
+          },
+          {
+            "label": "Lucas Pires (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Adam Smith (2)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Adrien Truffert (2)",
+            "hdp": 0.5,
+            "over": "1.615"
+          },
+          {
+            "label": "Bafode Diakite (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Charlie Stevens (2)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "James Hill (2)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Julio Soler (2)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Lewis Cook (2)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Marcos Senesi (2)",
+            "hdp": 0.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Tyler Adams (2)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Veljko Milosavljevic (2)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Ashley Barnes (1)",
+            "hdp": 1.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Enock Agyei (1)",
+            "hdp": 1.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Lesley Ugochukwu (1)",
+            "hdp": 1.5,
+            "over": "2.375"
+          },
+          {
+            "label": "Loum Tchaouna (1)",
+            "hdp": 1.5,
+            "over": "1.909"
+          },
+          {
+            "label": "Marcus Edwards (1)",
+            "hdp": 1.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Mike Tresor (1)",
+            "hdp": 1.5,
+            "over": "1.533"
+          },
+          {
+            "label": "Alejandro Jimenez (2)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Alex Scott (2)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Alex Toth (2)",
+            "hdp": 1.5,
+            "over": "2.625"
+          },
+          {
+            "label": "Malcom DaCosta (2)",
+            "hdp": 1.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Michael Dacosta (2)",
+            "hdp": 1.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Remy Rees-Dottin (2)",
+            "hdp": 1.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Ryan Christie (2)",
+            "hdp": 1.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Armando Broja (1)",
+            "hdp": 2.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Jacob Bruun Larsen (1)",
+            "hdp": 2.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Jaidon Anthony (1)",
+            "hdp": 2.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Lyle Foster (1)",
+            "hdp": 2.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Zian Flemming (1)",
+            "hdp": 2.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Amine Adli (2)",
+            "hdp": 2.5,
+            "over": "1.727"
+          },
+          {
+            "label": "Dominic Sadi (2)",
+            "hdp": 2.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Rayan Vitor (2)",
+            "hdp": 2.5,
+            "over": "1.666"
+          },
+          {
+            "label": "David Brooks (2)",
+            "hdp": 3.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Enes Unal (2)",
+            "hdp": 3.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Evanilson (2)",
+            "hdp": 3.5,
+            "over": "2.200"
+          },
+          {
+            "label": "Eli Junior Kroupi (2)",
+            "hdp": 4.5,
+            "over": "2.000"
+          }
+        ]
+      },
+      {
+        "name": "Alternative Total Goals",
+        "updatedAt": "2026-03-10T18:34:21.753Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "over": "1.040",
+            "under": "13.000"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.222",
+            "under": "4.333"
+          },
+          {
+            "hdp": 3.5,
+            "over": "2.750",
+            "under": "1.444"
+          },
+          {
+            "hdp": 4.5,
+            "over": "5.000",
+            "under": "1.166"
+          },
+          {
+            "hdp": 5.5,
+            "over": "10.000",
+            "under": "1.062"
+          },
+          {
+            "hdp": 6.5,
+            "over": "21.000",
+            "under": "1.015"
+          },
+          {
+            "hdp": 7.5,
+            "over": "41.000",
+            "under": "1.004"
+          }
+        ]
+      },
+      {
+        "name": "Player Shots on Target",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "Armando Broja (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Ashley Barnes (1)",
+            "hdp": 0.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Axel Tuanzebe (1)",
+            "hdp": 0.5,
+            "over": "6.000"
+          },
+          {
+            "label": "Bashir Humphreys (1)",
+            "hdp": 0.5,
+            "over": "5.000"
+          },
+          {
+            "label": "Enock Agyei (1)",
+            "hdp": 0.5,
+            "over": "1.833"
+          },
+          {
+            "label": "George Brierley (1)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Hannibal Mejbri (1)",
+            "hdp": 0.5,
+            "over": "3.000"
+          },
+          {
+            "label": "Hjalmar Ekdal (1)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Jacob Bruun Larsen (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Jaidon Anthony (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "James Ward-Prowse (1)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Joe Worrall (1)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Josh Laurent (1)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Kyle Walker (1)",
+            "hdp": 0.5,
+            "over": "5.000"
+          },
+          {
+            "label": "Lesley Ugochukwu (1)",
+            "hdp": 0.5,
+            "over": "2.625"
+          },
+          {
+            "label": "Loum Tchaouna (1)",
+            "hdp": 0.5,
+            "over": "2.100"
+          },
+          {
+            "label": "Luis Florentino (1)",
+            "hdp": 0.5,
+            "over": "3.400"
+          },
+          {
+            "label": "Lyle Foster (1)",
+            "hdp": 0.5,
+            "over": "1.666"
+          },
+          {
+            "label": "Marcus Edwards (1)",
+            "hdp": 0.5,
+            "over": "1.800"
+          },
+          {
+            "label": "Maxime Esteve (1)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Mike Tresor (1)",
+            "hdp": 0.5,
+            "over": "1.727"
+          },
+          {
+            "label": "Oliver Pimlott (1)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Oliver Sonne (1)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Quilindschy Hartman (1)",
+            "hdp": 0.5,
+            "over": "5.000"
+          },
+          {
+            "label": "Lucas Pires (1)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Zian Flemming (1)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "Adam Smith (2)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Adrien Truffert (2)",
+            "hdp": 0.5,
+            "over": "3.400"
+          },
+          {
+            "label": "Alejandro Jimenez (2)",
+            "hdp": 0.5,
+            "over": "2.000"
+          },
+          {
+            "label": "Alex Scott (2)",
+            "hdp": 0.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Alex Toth (2)",
+            "hdp": 0.5,
+            "over": "2.625"
+          },
+          {
+            "label": "Amine Adli (2)",
+            "hdp": 0.5,
+            "over": "1.444"
+          },
+          {
+            "label": "Bafode Diakite (2)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Charlie Stevens (2)",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "David Brooks (2)",
+            "hdp": 0.5,
+            "over": "1.500"
+          },
+          {
+            "label": "Dominic Sadi (2)",
+            "hdp": 0.5,
+            "over": "1.571"
+          },
+          {
+            "label": "James Hill (2)",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Julio Soler (2)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Lewis Cook (2)",
+            "hdp": 0.5,
+            "over": "3.500"
+          },
+          {
+            "label": "Malcom DaCosta (2)",
+            "hdp": 0.5,
+            "over": "2.250"
+          },
+          {
+            "label": "Marcos Senesi (2)",
+            "hdp": 0.5,
+            "over": "5.500"
+          },
+          {
+            "label": "Michael Dacosta (2)",
+            "hdp": 0.5,
+            "over": "1.727"
+          },
+          {
+            "label": "Remy Rees-Dottin (2)",
+            "hdp": 0.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Rayan Vitor (2)",
+            "hdp": 0.5,
+            "over": "1.400"
+          },
+          {
+            "label": "Ryan Christie (2)",
+            "hdp": 0.5,
+            "over": "2.200"
+          },
+          {
+            "label": "Tyler Adams (2)",
+            "hdp": 0.5,
+            "over": "3.750"
+          },
+          {
+            "label": "Veljko Milosavljevic (2)",
+            "hdp": 0.5,
+            "over": "3.250"
+          },
+          {
+            "label": "Eli Junior Kroupi (2)",
+            "hdp": 1.5,
+            "over": "1.833"
+          },
+          {
+            "label": "Enes Unal (2)",
+            "hdp": 1.5,
+            "over": "2.500"
+          },
+          {
+            "label": "Evanilson (2)",
+            "hdp": 1.5,
+            "over": "2.375"
+          }
+        ]
+      },
+      {
+        "name": "Alternative Goal Line",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "hdp": 1.25,
+            "over": "1.130",
+            "under": "5.900"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.220",
+            "under": "4.150"
+          },
+          {
+            "hdp": 1.75,
+            "over": "1.260",
+            "under": "3.700"
+          },
+          {
+            "hdp": 2,
+            "over": "1.325",
+            "under": "3.300"
+          },
+          {
+            "hdp": 2.25,
+            "over": "1.525",
+            "under": "2.425"
+          },
+          {
+            "hdp": 2.5,
+            "over": "1.700",
+            "under": "2.100"
+          },
+          {
+            "hdp": 3,
+            "over": "2.150",
+            "under": "1.675"
+          },
+          {
+            "hdp": 3.25,
+            "over": "2.425",
+            "under": "1.525"
+          },
+          {
+            "hdp": 3.5,
+            "over": "2.675",
+            "under": "1.450"
+          },
+          {
+            "hdp": 3.75,
+            "over": "3.300",
+            "under": "1.325"
+          },
+          {
+            "hdp": 4,
+            "over": "4.250",
+            "under": "1.210"
+          },
+          {
+            "hdp": 4.25,
+            "over": "4.650",
+            "under": "1.180"
+          },
+          {
+            "hdp": 4.5,
+            "over": "5.250",
+            "under": "1.160"
+          },
+          {
+            "hdp": 4.75,
+            "over": "6.400",
+            "under": "1.115"
+          }
+        ]
+      },
+      {
+        "name": "Specials",
+        "updatedAt": "2026-03-10T18:34:21.754Z",
+        "odds": [
+          {
+            "label": "To Win From Behind (1)",
+            "hdp": 1,
+            "home": "4.500"
+          },
+          {
+            "label": "To Win From Behind (2)",
+            "hdp": 2,
+            "away": "2.625"
+          }
+        ]
+      }
+    ],
+    "Bet365 (no latency)": [
+      {
+        "name": "ML",
+        "updatedAt": "2026-03-10T17:36:47.836Z",
+        "odds": [
+          {
+            "home": "4.20",
+            "draw": "3.70",
+            "away": "1.83"
+          }
+        ]
+      },
+      {
+        "name": "Spread",
+        "updatedAt": "2026-03-10T17:36:47.836Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "home": "2.025",
+            "away": "1.825"
+          }
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2026-03-10T17:36:47.836Z",
+        "odds": [
+          {
+            "hdp": 2.75,
+            "over": "1.925",
+            "under": "1.925"
+          }
+        ]
+      }
+    ],
+    "Betfair Exchange": [
+      {
+        "name": "ML",
+        "updatedAt": "2026-03-10T18:38:52.931Z",
+        "odds": [
+          {
+            "home": "4.20",
+            "draw": "4.00",
+            "away": "1.91",
+            "layHome": "4.40",
+            "layAway": "1.92",
+            "layDraw": "4.10",
+            "depthHome": "196.15",
+            "depthAway": "44.79",
+            "depthDraw": "1223.21",
+            "depthLayHome": "145.64",
+            "depthLayAway": "49.49",
+            "depthLayDraw": "232.65"
+          }
+        ]
+      },
+      {
+        "name": "Spread",
+        "updatedAt": "2026-03-10T18:38:52.932Z",
+        "odds": [
+          {
+            "hdp": -4,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -3.75,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -3.5,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -3.25,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -3,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -2.75,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -2.5,
+            "home": "1.01",
+            "depthHome": "79.62"
+          },
+          {
+            "hdp": -2.25,
+            "home": "10.09",
+            "depthHome": "17.4"
+          },
+          {
+            "hdp": -2,
+            "home": "10.09",
+            "away": "N/A",
+            "layAway": "1.11",
+            "depthHome": "17.43",
+            "depthAway": "13.32",
+            "depthLayAway": "87.75"
+          },
+          {
+            "hdp": -1.75,
+            "home": "10.09",
+            "away": "1.05",
+            "layHome": "19.27",
+            "layAway": "1.07",
+            "depthHome": "20.11",
+            "depthAway": "633.79",
+            "depthLayHome": "16.83",
+            "depthLayAway": "26.7"
+          },
+          {
+            "hdp": -1.5,
+            "home": "8.34",
+            "away": "1.09",
+            "layHome": "12.06",
+            "layAway": "1.11",
+            "depthHome": "16.33",
+            "depthAway": "424.39",
+            "depthLayHome": "24.88",
+            "depthLayAway": "51.29"
+          },
+          {
+            "hdp": -1.25,
+            "home": "7.87",
+            "away": "1.09",
+            "layHome": "11.16",
+            "layAway": "1.12",
+            "depthHome": "18.91",
+            "depthAway": "1144.36",
+            "depthLayHome": "39.39",
+            "depthLayAway": "67.01"
+          },
+          {
+            "hdp": -1,
+            "home": "7.40",
+            "away": "1.10",
+            "layHome": "10.28",
+            "layAway": "1.13",
+            "depthHome": "20.55",
+            "depthAway": "985.71",
+            "depthLayHome": "28.19",
+            "depthLayAway": "69.93"
+          },
+          {
+            "hdp": -0.75,
+            "home": "5.62",
+            "away": "1.20",
+            "layHome": "5.98",
+            "layAway": "1.22",
+            "depthHome": "18.18",
+            "depthAway": "1095.47",
+            "depthLayHome": "105.02",
+            "depthLayAway": "137.75"
+          },
+          {
+            "hdp": -0.5,
+            "home": "4.25",
+            "away": "1.29",
+            "layHome": "4.40",
+            "layAway": "1.31",
+            "depthHome": "22.36",
+            "depthAway": "719.81",
+            "depthLayHome": "145.64",
+            "depthLayAway": "72.53"
+          },
+          {
+            "hdp": -0.25,
+            "home": "3.73",
+            "away": "1.35",
+            "layHome": "3.86",
+            "layAway": "1.37",
+            "depthHome": "25.47",
+            "depthAway": "538.06",
+            "depthLayHome": "208.23",
+            "depthLayAway": "69.35"
+          },
+          {
+            "hdp": 0,
+            "home": "3.21",
+            "away": "1.43",
+            "layHome": "3.31",
+            "layAway": "1.46",
+            "depthHome": "29.6",
+            "depthAway": "708.48",
+            "depthLayHome": "85.38",
+            "depthLayAway": "65.08"
+          },
+          {
+            "hdp": 0.25,
+            "home": "2.45",
+            "away": "1.67",
+            "layHome": "2.49",
+            "layAway": "1.69",
+            "depthHome": "38.78",
+            "depthAway": "73.08",
+            "depthLayHome": "49.01",
+            "depthLayAway": "56.22"
+          },
+          {
+            "hdp": 0.5,
+            "home": "2.08",
+            "away": "1.91",
+            "layHome": "2.10",
+            "layAway": "1.92",
+            "depthHome": "45.68",
+            "depthAway": "44.79",
+            "depthLayHome": "40.74",
+            "depthLayAway": "49.49"
+          },
+          {
+            "hdp": 0.75,
+            "home": "1.83",
+            "away": "2.16",
+            "layHome": "1.86",
+            "layAway": "2.21",
+            "depthHome": "76.8",
+            "depthAway": "70.1",
+            "depthLayHome": "81.4",
+            "depthLayAway": "63.59"
+          },
+          {
+            "hdp": 1,
+            "home": "1.57",
+            "away": "2.62",
+            "layHome": "1.62",
+            "layAway": "2.74",
+            "depthHome": "321.64",
+            "depthAway": "33.74",
+            "depthLayHome": "109.32",
+            "depthLayAway": "32.64"
+          },
+          {
+            "hdp": 1.25,
+            "home": "1.45",
+            "away": "3.00",
+            "layHome": "1.50",
+            "layAway": "3.18",
+            "depthHome": "449.59",
+            "depthAway": "21.87",
+            "depthLayHome": "43.77",
+            "depthLayAway": "21.18"
+          },
+          {
+            "hdp": 1.5,
+            "home": "1.38",
+            "away": "3.38",
+            "layHome": "1.43",
+            "layAway": "3.64",
+            "depthHome": "125.23",
+            "depthAway": "16.17",
+            "depthLayHome": "88.13",
+            "depthLayAway": "79.38"
+          },
+          {
+            "hdp": 1.75,
+            "home": "1.27",
+            "away": "4.23",
+            "layHome": "1.31",
+            "layAway": "4.64",
+            "depthHome": "764.47",
+            "depthAway": "22.39",
+            "depthLayHome": "72.37",
+            "depthLayAway": "27.84"
+          },
+          {
+            "hdp": 2,
+            "home": "1.16",
+            "away": "6.00",
+            "layHome": "1.20",
+            "layAway": "6.91",
+            "depthHome": "816.08",
+            "depthAway": "14.14",
+            "depthLayHome": "71.02",
+            "depthLayAway": "16.75"
+          },
+          {
+            "hdp": 2.25,
+            "home": "1.15",
+            "away": "6.37",
+            "layHome": "1.18",
+            "layAway": "7.56",
+            "depthHome": "534.02",
+            "depthAway": "14.37",
+            "depthLayHome": "50.94",
+            "depthLayAway": "29.28"
+          },
+          {
+            "hdp": 2.5,
+            "home": "1.13",
+            "away": "6.74",
+            "layHome": "1.17",
+            "layAway": "8.26",
+            "depthHome": "717.19",
+            "depthAway": "13.51",
+            "depthLayHome": "73.95",
+            "depthLayAway": "24.47"
+          },
+          {
+            "hdp": 2.75,
+            "home": "1.09",
+            "away": "9.30",
+            "layHome": "1.12",
+            "layAway": "11.59",
+            "depthHome": "1079.62",
+            "depthAway": "14.49",
+            "depthLayHome": "108.18",
+            "depthLayAway": "18.04"
+          },
+          {
+            "hdp": 3,
+            "home": "1.04",
+            "away": "10.09",
+            "layHome": "1.08",
+            "layAway": "23.05",
+            "depthHome": "1921.9",
+            "depthAway": "19.48",
+            "depthLayHome": "84.66",
+            "depthLayAway": "16.21"
+          },
+          {
+            "hdp": 3.25,
+            "home": "1.04",
+            "away": "10.22",
+            "layHome": "1.07",
+            "layAway": "24.35",
+            "depthHome": "1463.66",
+            "depthAway": "18.22",
+            "depthLayHome": "53.28",
+            "depthLayAway": "14.98"
+          },
+          {
+            "hdp": 3.5,
+            "home": "12.60",
+            "away": "10.35",
+            "layAway": "25.69",
+            "depthHome": "14.87",
+            "depthAway": "17.11",
+            "depthLayAway": "13.93"
+          },
+          {
+            "hdp": 3.75,
+            "home": "12.60",
+            "away": "10.35",
+            "layAway": "50.38",
+            "depthHome": "14.87",
+            "depthAway": "17.11",
+            "depthLayAway": "13.93"
+          },
+          {
+            "hdp": 4,
+            "home": "12.60",
+            "away": "10.35",
+            "depthHome": "14.87",
+            "depthAway": "17.11"
+          },
+          {
+            "hdp": 4.25,
+            "home": "12.60",
+            "depthHome": "14.87"
+          }
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2026-03-10T18:38:52.932Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "over": "1.05",
+            "under": "16.50",
+            "layOver": "1.07",
+            "layUnder": "19.61",
+            "depthOver": "17819.7",
+            "depthUnder": "17.41",
+            "depthLayOver": "1829.86",
+            "depthLayUnder": "49.14"
+          },
+          {
+            "hdp": 1.5,
+            "over": "1.26",
+            "under": "4.52",
+            "layOver": "1.29",
+            "layUnder": "4.85",
+            "depthOver": "258.75",
+            "depthUnder": "18.83",
+            "depthLayOver": "307.28",
+            "depthLayUnder": "67.22"
+          },
+          {
+            "hdp": 2.5,
+            "over": "1.77",
+            "under": "2.23",
+            "layOver": "1.80",
+            "layUnder": "2.30",
+            "depthOver": "67.18",
+            "depthUnder": "44.63",
+            "depthLayOver": "14.81",
+            "depthLayUnder": "103.81"
+          },
+          {
+            "hdp": 3.5,
+            "over": "2.94",
+            "under": "1.48",
+            "layOver": "3.08",
+            "layUnder": "1.52",
+            "depthOver": "38.19",
+            "depthUnder": "355.91",
+            "depthLayOver": "67.23",
+            "depthLayUnder": "214.83"
+          },
+          {
+            "hdp": 4.5,
+            "over": "5.76",
+            "under": "1.19",
+            "layOver": "6.17",
+            "layUnder": "1.21",
+            "depthOver": "14.12",
+            "depthUnder": "788.67",
+            "depthLayOver": "47.4",
+            "depthLayUnder": "67.22"
+          },
+          {
+            "hdp": 5.5,
+            "over": "12.11",
+            "under": "1.07",
+            "layOver": "14.92",
+            "layUnder": "1.09",
+            "depthOver": "20.98",
+            "depthUnder": "1597.78",
+            "depthLayOver": "41.81",
+            "depthLayUnder": "235.61"
+          },
+          {
+            "hdp": 0.75,
+            "over": "1.05",
+            "under": "12.11",
+            "layOver": "1.09",
+            "layUnder": "18.09",
+            "depthOver": "21045.16",
+            "depthUnder": "17.13",
+            "depthLayOver": "196.98",
+            "depthLayUnder": "54.78"
+          },
+          {
+            "hdp": 1,
+            "over": "1.06",
+            "under": "11.16",
+            "layOver": "1.10",
+            "layUnder": "16.57",
+            "depthOver": "5319.99",
+            "depthUnder": "19.51",
+            "depthLayOver": "272.11",
+            "depthLayUnder": "61.89"
+          },
+          {
+            "hdp": 1.25,
+            "over": "1.16",
+            "under": "6.31",
+            "max": 24,
+            "layOver": "1.19",
+            "layUnder": "7.17",
+            "depthOver": "1158.87",
+            "depthUnder": "24",
+            "depthLayOver": "271.48",
+            "depthLayUnder": "79.81"
+          },
+          {
+            "hdp": 1.75,
+            "over": "1.30",
+            "under": "3.42",
+            "layOver": "1.42",
+            "layUnder": "4.30",
+            "depthOver": "568.42",
+            "depthUnder": "27.52",
+            "depthLayOver": "133.25",
+            "depthLayUnder": "85.82"
+          },
+          {
+            "hdp": 2,
+            "over": "1.36",
+            "under": "3.08",
+            "layOver": "1.48",
+            "layUnder": "3.74",
+            "depthOver": "658.02",
+            "depthUnder": "38.59",
+            "depthLayOver": "80.32",
+            "depthLayUnder": "119.01"
+          },
+          {
+            "hdp": 2.25,
+            "over": "1.56",
+            "under": "2.56",
+            "layOver": "1.64",
+            "layUnder": "2.77",
+            "depthOver": "624.02",
+            "depthUnder": "16.2",
+            "depthLayOver": "25.28",
+            "depthLayUnder": "126.57"
+          },
+          {
+            "hdp": 2.75,
+            "over": "1.96",
+            "under": "1.77",
+            "layOver": "2.29",
+            "layUnder": "2.05",
+            "depthOver": "161.35",
+            "depthUnder": "174.18",
+            "depthLayOver": "67.15",
+            "depthLayUnder": "154.26"
+          },
+          {
+            "hdp": 3,
+            "over": "2.27",
+            "under": "1.62",
+            "layOver": "2.60",
+            "layUnder": "1.79",
+            "depthOver": "239.17",
+            "depthUnder": "355.68",
+            "depthLayOver": "110.45",
+            "depthLayUnder": "303.31"
+          },
+          {
+            "hdp": 3.25,
+            "over": "2.60",
+            "under": "1.54",
+            "layOver": "2.84",
+            "layUnder": "1.63",
+            "depthOver": "53.42",
+            "depthUnder": "453.02",
+            "depthLayOver": "96.58",
+            "depthLayUnder": "325.48"
+          },
+          {
+            "hdp": 3.75,
+            "over": "3.56",
+            "under": "1.28",
+            "layOver": "4.45",
+            "layUnder": "1.39",
+            "depthOver": "49.27",
+            "depthUnder": "473.71",
+            "depthLayOver": "67.18",
+            "depthLayUnder": "126.2"
+          },
+          {
+            "hdp": 4,
+            "over": "4.80",
+            "under": "1.22",
+            "layOver": "5.54",
+            "layUnder": "1.27",
+            "depthOver": "21.4",
+            "depthUnder": "339.95",
+            "depthLayOver": "74.86",
+            "depthLayUnder": "160.68"
+          },
+          {
+            "hdp": 4.25,
+            "over": "5.28",
+            "under": "1.20",
+            "layOver": "5.86",
+            "layUnder": "1.24",
+            "depthOver": "17.01",
+            "depthUnder": "907.71",
+            "depthLayOver": "58",
+            "depthLayUnder": "143.88"
+          },
+          {
+            "hdp": 4.75,
+            "over": "7.53",
+            "under": "1.11",
+            "layOver": "10.03",
+            "layUnder": "1.16",
+            "depthOver": "19.07",
+            "depthUnder": "1217.86",
+            "depthLayOver": "67.09",
+            "depthLayUnder": "415.79"
+          },
+          {
+            "hdp": 5,
+            "over": "11.00",
+            "under": "1.07",
+            "layOver": "14.04",
+            "layUnder": "1.10",
+            "depthOver": "25.4",
+            "depthUnder": "1832.36",
+            "depthLayOver": "51.05",
+            "depthLayUnder": "256.54"
+          },
+          {
+            "hdp": 5.25,
+            "over": "11.56",
+            "under": "1.07",
+            "layOver": "14.48",
+            "layUnder": "1.10",
+            "depthOver": "22.97",
+            "depthUnder": "1703.37",
+            "depthLayOver": "45.97",
+            "depthLayUnder": "350.63"
+          },
+          {
+            "hdp": 5.75,
+            "over": "12.60",
+            "under": "1.04",
+            "layOver": "25.54",
+            "layUnder": "1.07",
+            "depthOver": "14.87",
+            "depthUnder": "3327.29",
+            "depthLayOver": "66.97",
+            "depthLayUnder": "132.91"
+          }
+        ]
+      },
+      {
+        "name": "Both Teams To Score",
+        "updatedAt": "2026-03-10T18:38:52.931Z",
+        "odds": [
+          {
+            "hdp": 0,
+            "yes": "1.72",
+            "no": "2.28",
+            "layYes": "1.78",
+            "layNo": "2.40"
+          }
+        ]
+      }
+    ],
+    "DraftKings": [],
+    "Sbobet": [
+      {
+        "name": "ML",
+        "updatedAt": "2026-03-10T18:34:55.962Z",
+        "odds": [
+          {
+            "home": "3.610",
+            "draw": "3.430",
+            "away": "1.880"
+          }
+        ]
+      },
+      {
+        "name": "Spread",
+        "updatedAt": "2026-03-10T18:34:55.962Z",
+        "odds": [
+          {
+            "hdp": 0.5,
+            "home": "2.020",
+            "away": "1.880"
+          },
+          {
+            "hdp": 0.75,
+            "home": "1.790",
+            "away": "2.120"
+          },
+          {
+            "hdp": 0.25,
+            "home": "2.330",
+            "away": "1.650"
+          }
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2026-03-10T18:34:55.962Z",
+        "odds": [
+          {
+            "hdp": 2.75,
+            "over": "1.920",
+            "under": "1.960"
+          },
+          {
+            "hdp": 2.5,
+            "over": "1.720",
+            "under": "2.190"
+          },
+          {
+            "hdp": 3,
+            "over": "2.200",
+            "under": "1.710"
+          }
+        ]
+      },
+      {
+        "name": "Spread HT",
+        "updatedAt": "2026-03-10T18:34:55.962Z",
+        "odds": [
+          {
+            "hdp": 0.25,
+            "home": "1.810",
+            "away": "2.070"
+          },
+          {
+            "hdp": 0,
+            "home": "2.610",
+            "away": "1.500"
+          }
+        ]
+      },
+      {
+        "name": "Totals HT",
+        "updatedAt": "2026-03-10T18:34:55.962Z",
+        "odds": [
+          {
+            "hdp": 1.25,
+            "over": "2.210",
+            "under": "1.700"
+          },
+          {
+            "hdp": 1,
+            "over": "1.730",
+            "under": "2.170"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,798 @@
+{
+  "?xml": {
+    "@version": "1.0",
+    "@encoding": "utf-8"
+  },
+  "commentaries": {
+    "@sport": "soccer",
+    "tournament": {
+      "@name": "England - Premier League",
+      "@id": "1204",
+      "match": {
+        "@status": "Full-time",
+        "@timer": "",
+        "@date": "15.08.2025",
+        "@formatted_date": "15.08.2025",
+        "@time": "19:00",
+        "@static_id": "3692270",
+        "@id": "4199653",
+        "localteam": {
+          "@name": "Liverpool",
+          "@goals": "4",
+          "@ht_score": "1",
+          "@ft_score": "4",
+          "@et_score": "",
+          "@pen_score": "",
+          "@id": "9249"
+        },
+        "visitorteam": {
+          "@name": "AFC Bournemouth",
+          "@goals": "2",
+          "@ht_score": "0",
+          "@ft_score": "2",
+          "@et_score": "",
+          "@pen_score": "",
+          "@id": "9053"
+        },
+        "matchinfo": {
+          "stadium": {
+            "@name": "Anfield, Liverpool"
+          },
+          "attendance": {
+            "@name": "60315"
+          },
+          "time": {
+            "@name": "19:00",
+            "@addedTime_period1": "3",
+            "@addedTime_period2": "6"
+          },
+          "referee": {
+            "@name": "Anthony Taylor, England"
+          }
+        },
+        "summary": null,
+        "stats": {
+          "localteam": {
+            "shots": {
+              "@total": "19",
+              "@ongoal": "10",
+              "@offgoal": "7",
+              "@blocked": "2",
+              "@insidebox": "15",
+              "@outsidebox": "4",
+              "@total_h1": "7",
+              "@ongoal_h1": "4",
+              "@offgoal_h1": "2",
+              "@blocked_h1": "1",
+              "@insidebox_h1": "6",
+              "@outsidebox_h1": "1",
+              "@total_h2": "12",
+              "@ongoal_h2": "6",
+              "@offgoal_h2": "5",
+              "@blocked_h2": "1",
+              "@insidebox_h2": "9",
+              "@outsidebox_h2": "3"
+            },
+            "fouls": {
+              "@total": "7"
+            },
+            "corners": {
+              "@total": "6",
+              "@total_h1": "3",
+              "@total_h2": "3"
+            },
+            "offsides": {
+              "@total": "2",
+              "@total_h1": "1",
+              "@total_h2": "1"
+            },
+            "possestiontime": {
+              "@total": "61%",
+              "@total_h1": "61%",
+              "@total_h2": "61%"
+            },
+            "yellowcards": {
+              "@total": "1",
+              "@total_h1": "1",
+              "@total_h2": "0"
+            },
+            "redcards": {
+              "@total": "",
+              "@total_h1": "",
+              "@total_h2": ""
+            },
+            "saves": {
+              "@total": "1",
+              "@total_h1": "1",
+              "@total_h2": "0"
+            },
+            "passes": {
+              "@total": "489",
+              "@accurate": "401",
+              "@pct": "",
+              "@total_h1": "253",
+              "@accurate_h1": "211",
+              "@pct_h1": "",
+              "@total_h2": "236",
+              "@accurate_h2": "190",
+              "@pct_h2": ""
+            },
+            "expected_goals": {
+              "@total": "2.21",
+              "@total_h1": "1.24",
+              "@total_h2": "0.97"
+            },
+            "goals_prevented": {
+              "@total": "-0.95",
+              "@total_h1": "",
+              "@total_h2": ""
+            }
+          },
+          "visitorteam": {
+            "shots": {
+              "@total": "10",
+              "@ongoal": "3",
+              "@offgoal": "4",
+              "@blocked": "3",
+              "@insidebox": "8",
+              "@outsidebox": "2",
+              "@total_h1": "6",
+              "@ongoal_h1": "1",
+              "@offgoal_h1": "3",
+              "@blocked_h1": "2",
+              "@insidebox_h1": "5",
+              "@outsidebox_h1": "1",
+              "@total_h2": "4",
+              "@ongoal_h2": "2",
+              "@offgoal_h2": "1",
+              "@blocked_h2": "1",
+              "@insidebox_h2": "3",
+              "@outsidebox_h2": "1"
+            },
+            "fouls": {
+              "@total": "10"
+            },
+            "corners": {
+              "@total": "7",
+              "@total_h1": "2",
+              "@total_h2": "5"
+            },
+            "offsides": {
+              "@total": "2",
+              "@total_h1": "2",
+              "@total_h2": "0"
+            },
+            "possestiontime": {
+              "@total": "39%",
+              "@total_h1": "39%",
+              "@total_h2": "39%"
+            },
+            "yellowcards": {
+              "@total": "2",
+              "@total_h1": "1",
+              "@total_h2": "1"
+            },
+            "redcards": {
+              "@total": "",
+              "@total_h1": "",
+              "@total_h2": ""
+            },
+            "saves": {
+              "@total": "6",
+              "@total_h1": "3",
+              "@total_h2": "3"
+            },
+            "passes": {
+              "@total": "299",
+              "@accurate": "209",
+              "@pct": "",
+              "@total_h1": "161",
+              "@accurate_h1": "115",
+              "@pct_h1": "",
+              "@total_h2": "138",
+              "@accurate_h2": "94",
+              "@pct_h2": ""
+            },
+            "expected_goals": {
+              "@total": "1.70",
+              "@total_h1": "0.81",
+              "@total_h2": "0.89"
+            },
+            "goals_prevented": {
+              "@total": "-0.95",
+              "@total_h1": "",
+              "@total_h2": ""
+            }
+          }
+        },
+        "teams": {
+          "localteam": {
+            "@formation": "4-2-3-1",
+            "player": [
+              {
+                "@number": "1",
+                "@name": "Alisson",
+                "@pos": "G",
+                "@formation_pos": "1",
+                "@id": "102643"
+              },
+              {
+                "@number": "30",
+                "@name": "Jeremie Frimpong",
+                "@pos": "D",
+                "@formation_pos": "2",
+                "@id": "453104"
+              },
+              {
+                "@number": "5",
+                "@name": "Ibrahima Konat\u00e9",
+                "@pos": "D",
+                "@formation_pos": "3",
+                "@id": "416730"
+              },
+              {
+                "@number": "4",
+                "@name": "Virgil van Dijk",
+                "@pos": "D",
+                "@formation_pos": "4",
+                "@id": "188624"
+              },
+              {
+                "@number": "6",
+                "@name": "Milo\u0161 Kerkez",
+                "@pos": "D",
+                "@formation_pos": "5",
+                "@id": "646880"
+              },
+              {
+                "@number": "8",
+                "@name": "Dominik Szoboszlai",
+                "@pos": "M",
+                "@formation_pos": "6",
+                "@id": "463719"
+              },
+              {
+                "@number": "10",
+                "@name": "Alexis Mac Allister",
+                "@pos": "M",
+                "@formation_pos": "7",
+                "@id": "468060"
+              },
+              {
+                "@number": "11",
+                "@name": "Mohamed Salah",
+                "@pos": "M",
+                "@formation_pos": "8",
+                "@id": "138653"
+              },
+              {
+                "@number": "7",
+                "@name": "Florian Wirtz",
+                "@pos": "M",
+                "@formation_pos": "9",
+                "@id": "560015"
+              },
+              {
+                "@number": "18",
+                "@name": "Cody Gakpo",
+                "@pos": "M",
+                "@formation_pos": "10",
+                "@id": "436584"
+              },
+              {
+                "@number": "22",
+                "@name": "Hugo Ekitik\u00e9",
+                "@pos": "F",
+                "@formation_pos": "11",
+                "@id": "624582"
+              }
+            ]
+          },
+          "visitorteam": {
+            "@formation": "4-1-4-1",
+            "player": [
+              {
+                "@number": "1",
+                "@name": "\u0110or\u0111e Petrovi\u0107",
+                "@pos": "G",
+                "@formation_pos": "1",
+                "@id": "463402"
+              },
+              {
+                "@number": "15",
+                "@name": "Adam Smith",
+                "@pos": "D",
+                "@formation_pos": "2",
+                "@id": "88146"
+              },
+              {
+                "@number": "18",
+                "@name": "Bafod\u00e9 Diakit\u00e9",
+                "@pos": "D",
+                "@formation_pos": "3",
+                "@id": "567492"
+              },
+              {
+                "@number": "5",
+                "@name": "Marcos Senesi",
+                "@pos": "D",
+                "@formation_pos": "4",
+                "@id": "432117"
+              },
+              {
+                "@number": "3",
+                "@name": "Adrien Truffert",
+                "@pos": "D",
+                "@formation_pos": "5",
+                "@id": "590282"
+              },
+              {
+                "@number": "12",
+                "@name": "Tyler Adams",
+                "@pos": "M",
+                "@formation_pos": "6",
+                "@id": "400878"
+              },
+              {
+                "@number": "24",
+                "@name": "Antoine Semenyo",
+                "@pos": "M",
+                "@formation_pos": "7",
+                "@id": "529560"
+              },
+              {
+                "@number": "8",
+                "@name": "Alex Scott",
+                "@pos": "M",
+                "@formation_pos": "8",
+                "@id": "684945"
+              },
+              {
+                "@number": "16",
+                "@name": "Marcus Tavernier",
+                "@pos": "M",
+                "@formation_pos": "9",
+                "@id": "423982"
+              },
+              {
+                "@number": "7",
+                "@name": "David Brooks",
+                "@pos": "M",
+                "@formation_pos": "10",
+                "@id": "376315"
+              },
+              {
+                "@number": "9",
+                "@name": "Evanilson",
+                "@pos": "F",
+                "@formation_pos": "11",
+                "@id": "533328"
+              }
+            ]
+          }
+        },
+        "substitutes": {
+          "localteam": {
+            "player": [
+              {
+                "@number": "26",
+                "@name": "Andrew Robertson",
+                "@pos": "D",
+                "@id": "254527"
+              },
+              {
+                "@number": "3",
+                "@name": "Wataru Endo",
+                "@pos": "M",
+                "@id": "124613"
+              },
+              {
+                "@number": "2",
+                "@name": "Joe Gomez",
+                "@pos": "D",
+                "@id": "290182"
+              }
+            ]
+          },
+          "visitorteam": {
+            "player": [
+              {
+                "@number": "25",
+                "@name": "Hamed Junior Traor\u00e8",
+                "@pos": "M",
+                "@id": "495017"
+              },
+              {
+                "@number": "47",
+                "@name": "Ben Winterburn",
+                "@pos": "M",
+                "@id": "684429"
+              },
+              {
+                "@number": "23",
+                "@name": "James Hill",
+                "@pos": "D",
+                "@id": "530168"
+              }
+            ]
+          }
+        },
+        "substitutions": null,
+        "commentaries": null,
+        "coaches": null,
+        "player_stats": {
+          "localteam": {
+            "player": [
+              {
+                "@num": "1",
+                "@name": "Alisson",
+                "@pos": "G",
+                "@isCaptain": "",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "",
+                "@fouls_commited": "",
+                "@tackles": "",
+                "@blocks": "",
+                "@total_crosses": "",
+                "@acc_crosses": "",
+                "@interceptions": "",
+                "@clearances": "2",
+                "@dispossesed": "",
+                "@saves": "1",
+                "@punches": "2",
+                "@savesInsideBox": "1",
+                "@duelsTotal": "",
+                "@duelsWon": "",
+                "@aerials_won": "",
+                "@dribbleAttempts": "",
+                "@dribbleSucc": "",
+                "@dribbledPast": "",
+                "@yellowcards": "0",
+                "@big_chance_created": "",
+                "@big_chance_missed": "",
+                "@good_high_claim": "1",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "0",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "38",
+                "@passes_acc": "33",
+                "@keyPasses": "",
+                "@minutes_played": "90",
+                "@rating": "6.3",
+                "@id": "102643"
+              },
+              {
+                "@num": "30",
+                "@name": "Jeremie Frimpong",
+                "@pos": "D",
+                "@isCaptain": "",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "1",
+                "@fouls_commited": "",
+                "@tackles": "1",
+                "@blocks": "",
+                "@total_crosses": "1",
+                "@acc_crosses": "",
+                "@interceptions": "1",
+                "@clearances": "2",
+                "@dispossesed": "",
+                "@saves": "",
+                "@punches": "",
+                "@savesInsideBox": "",
+                "@duelsTotal": "4",
+                "@duelsWon": "3",
+                "@aerials_won": "",
+                "@dribbleAttempts": "1",
+                "@dribbleSucc": "1",
+                "@dribbledPast": "1",
+                "@yellowcards": "0",
+                "@big_chance_created": "",
+                "@big_chance_missed": "",
+                "@good_high_claim": "",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "16",
+                "@passes_acc": "12",
+                "@keyPasses": "",
+                "@minutes_played": "60",
+                "@rating": "6.9",
+                "@id": "453104"
+              },
+              {
+                "@num": "5",
+                "@name": "Ibrahima Konat\u00e9",
+                "@pos": "D",
+                "@isCaptain": "",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "",
+                "@fouls_commited": "",
+                "@tackles": "",
+                "@blocks": "1",
+                "@total_crosses": "",
+                "@acc_crosses": "",
+                "@interceptions": "",
+                "@clearances": "6",
+                "@dispossesed": "2",
+                "@saves": "",
+                "@punches": "",
+                "@savesInsideBox": "",
+                "@duelsTotal": "4",
+                "@duelsWon": "2",
+                "@aerials_won": "",
+                "@dribbleAttempts": "2",
+                "@dribbleSucc": "2",
+                "@dribbledPast": "",
+                "@yellowcards": "0",
+                "@big_chance_created": "",
+                "@big_chance_missed": "",
+                "@good_high_claim": "",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "33",
+                "@passes_acc": "29",
+                "@keyPasses": "",
+                "@minutes_played": "90",
+                "@rating": "6.5",
+                "@id": "416730"
+              }
+            ]
+          },
+          "visitorteam": {
+            "player": [
+              {
+                "@num": "1",
+                "@name": "\u0110or\u0111e Petrovi\u0107",
+                "@pos": "G",
+                "@isCaptain": "",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "",
+                "@fouls_commited": "",
+                "@tackles": "",
+                "@blocks": "",
+                "@total_crosses": "",
+                "@acc_crosses": "",
+                "@interceptions": "",
+                "@clearances": "4",
+                "@dispossesed": "",
+                "@saves": "6",
+                "@punches": "1",
+                "@savesInsideBox": "4",
+                "@duelsTotal": "",
+                "@duelsWon": "",
+                "@aerials_won": "",
+                "@dribbleAttempts": "",
+                "@dribbleSucc": "",
+                "@dribbledPast": "",
+                "@yellowcards": "0",
+                "@big_chance_created": "",
+                "@big_chance_missed": "",
+                "@good_high_claim": "2",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "0",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "35",
+                "@passes_acc": "22",
+                "@keyPasses": "",
+                "@minutes_played": "90",
+                "@rating": "7.5",
+                "@id": "463402"
+              },
+              {
+                "@num": "15",
+                "@name": "Adam Smith",
+                "@pos": "D",
+                "@isCaptain": "True",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "1",
+                "@fouls_commited": "1",
+                "@tackles": "1",
+                "@blocks": "",
+                "@total_crosses": "1",
+                "@acc_crosses": "",
+                "@interceptions": "1",
+                "@clearances": "7",
+                "@dispossesed": "",
+                "@saves": "",
+                "@punches": "",
+                "@savesInsideBox": "",
+                "@duelsTotal": "11",
+                "@duelsWon": "5",
+                "@aerials_won": "3",
+                "@dribbleAttempts": "",
+                "@dribbleSucc": "",
+                "@dribbledPast": "",
+                "@yellowcards": "0",
+                "@big_chance_created": "1",
+                "@big_chance_missed": "",
+                "@good_high_claim": "",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "25",
+                "@passes_acc": "16",
+                "@keyPasses": "1",
+                "@minutes_played": "89",
+                "@rating": "6.3",
+                "@id": "88146"
+              },
+              {
+                "@num": "18",
+                "@name": "Bafod\u00e9 Diakit\u00e9",
+                "@pos": "D",
+                "@isCaptain": "",
+                "@isSubst": "False",
+                "@shots_total": "",
+                "@shots_on_goal": "",
+                "@goals": "",
+                "@goals_conceded": "0",
+                "@minus_goals": "0",
+                "@assists": "0",
+                "@offsides": "",
+                "@fouls_drawn": "1",
+                "@fouls_commited": "",
+                "@tackles": "2",
+                "@blocks": "",
+                "@total_crosses": "",
+                "@acc_crosses": "",
+                "@interceptions": "1",
+                "@clearances": "6",
+                "@dispossesed": "",
+                "@saves": "",
+                "@punches": "",
+                "@savesInsideBox": "",
+                "@duelsTotal": "6",
+                "@duelsWon": "4",
+                "@aerials_won": "1",
+                "@dribbleAttempts": "",
+                "@dribbleSucc": "",
+                "@dribbledPast": "",
+                "@yellowcards": "0",
+                "@big_chance_created": "",
+                "@big_chance_missed": "",
+                "@good_high_claim": "",
+                "@clearance_offine": "",
+                "@error_lead_to_goal": "",
+                "@lastman_tackle": "",
+                "@redcards": "0",
+                "@pen_score": "0",
+                "@pen_miss": "0",
+                "@pen_save": "",
+                "@pen_committed": "",
+                "@pen_won": "",
+                "@hit_woodwork": "",
+                "@passes": "41",
+                "@passes_acc": "30",
+                "@keyPasses": "",
+                "@minutes_played": "90",
+                "@rating": "5.9",
+                "@id": "567492"
+              }
+            ]
+          }
+        },
+        "team_colors": {
+          "localteam": {
+            "player": {
+              "primary": {
+                "@color": "e41e2c"
+              },
+              "number": {
+                "@color": "ffffff"
+              },
+              "border": {
+                "@color": "e41e2c"
+              }
+            },
+            "goalkeeper": {
+              "primary": {
+                "@color": "18fffb"
+              },
+              "number": {
+                "@color": "f3f5f0"
+              },
+              "border": {
+                "@color": "18fffb"
+              }
+            }
+          },
+          "visitorteam": {
+            "player": {
+              "primary": {
+                "@color": "ff0000"
+              },
+              "number": {
+                "@color": "dbb85e"
+              },
+              "border": {
+                "@color": "ff0000"
+              }
+            },
+            "goalkeeper": {
+              "primary": {
+                "@color": "ebee03"
+              },
+              "number": {
+                "@color": "020300"
+              },
+              "border": {
+                "@color": "ebee03"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -166,7 +166,7 @@ class GoalserveClient:
         """
         all_live = await self.get_live_scores()
         for match in all_live:
-            if str(match.get("id")) == str(match_id):
+            if str(match.get("@id", match.get("id", ""))) == str(match_id):
                 return match
         return None
 
@@ -200,40 +200,74 @@ class GoalserveClient:
 
 
 def _extract_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract match list from Goalserve fixtures response.
+    """Extract match list from Goalserve fixtures/history response.
 
-    Goalserve nests matches under various structures depending on
-    whether a single matchday or multiple are returned.
+    Real API structure: ``results.tournament.week[].match[]``
+    Each match has @-prefixed fields: @id, @status, @date, etc.
     """
     matches: list[dict[str, Any]] = []
 
-    # Navigate into the response — structure varies by endpoint version
-    tournaments = data.get("scores", data)
-    if isinstance(tournaments, dict):
-        # Could be nested under 'category' -> 'match' or 'tournament' -> 'match'
-        categories = tournaments.get("category", tournaments)
-        if isinstance(categories, dict):
-            categories = [categories]
-        if isinstance(categories, list):
-            for cat in categories:
-                _collect_matches_from_category(cat, matches)
+    # Primary path: results.tournament.week[].match[]
+    results = data.get("results", {})
+    if isinstance(results, dict):
+        tournament = results.get("tournament", {})
+        if isinstance(tournament, dict):
+            weeks = tournament.get("week", [])
+            if isinstance(weeks, dict):
+                weeks = [weeks]
+            if isinstance(weeks, list):
+                for week in weeks:
+                    raw = week.get("match", [])
+                    if isinstance(raw, dict):
+                        raw = [raw]
+                    if isinstance(raw, list):
+                        matches.extend(raw)
+            # Also check for matches directly under tournament (history endpoint)
+            if not matches:
+                raw = tournament.get("match", [])
+                if isinstance(raw, dict):
+                    raw = [raw]
+                if isinstance(raw, list):
+                    matches.extend(raw)
+
+    # Fallback: scores.category structure (some endpoints)
+    if not matches:
+        scores = data.get("scores", {})
+        if isinstance(scores, dict):
+            categories = scores.get("category", [])
+            if isinstance(categories, dict):
+                categories = [categories]
+            if isinstance(categories, list):
+                for cat in categories:
+                    _collect_matches_from_node(cat, matches)
 
     return matches
 
 
-def _collect_matches_from_category(
-    category: dict[str, Any],
+def _collect_matches_from_node(
+    node: dict[str, Any],
     out: list[dict[str, Any]],
 ) -> None:
-    """Recursively collect match dicts from a Goalserve category/tournament."""
-    raw_matches = category.get("match", category.get("matches", []))
-    if isinstance(raw_matches, dict):
-        raw_matches = [raw_matches]
-    if isinstance(raw_matches, list):
-        out.extend(raw_matches)
+    """Collect match dicts from a Goalserve category/tournament node."""
+    # Direct match/matches keys
+    for key in ("match", "matches"):
+        raw = node.get(key)
+        if raw is None:
+            continue
+        if isinstance(raw, dict) and "match" in raw:
+            # Nested: matches.match[]
+            inner = raw["match"]
+            if isinstance(inner, dict):
+                inner = [inner]
+            if isinstance(inner, list):
+                out.extend(inner)
+        elif isinstance(raw, dict):
+            out.append(raw)
+        elif isinstance(raw, list):
+            out.extend(raw)
 
-    # Some responses nest under 'tournament'
-    tournaments = category.get("tournament", [])
+    # Recurse into tournament nodes
+    tournaments = node.get("tournament", [])
     if isinstance(tournaments, dict):
         tournaments = [tournaments]
     if isinstance(tournaments, list):
@@ -246,22 +280,39 @@ def _collect_matches_from_category(
 
 
 def _extract_match_stats(data: dict[str, Any]) -> dict[str, Any]:
-    """Extract the match stats payload from the Goalserve response wrapper."""
-    # The response may wrap under 'scores' or 'match' or return directly
+    """Extract the match stats payload from the Goalserve commentaries response.
+
+    Real API structure: ``commentaries.tournament.match``
+    """
+    # Primary path: commentaries.tournament.match
+    if "commentaries" in data:
+        commentaries = data["commentaries"]
+        if isinstance(commentaries, dict):
+            tournament = commentaries.get("tournament", {})
+            if isinstance(tournament, dict) and "match" in tournament:
+                match = tournament["match"]
+                if isinstance(match, dict):
+                    return match
+                if isinstance(match, list):
+                    return match[0] if match else {}
+
+    # Fallback: direct 'match' key (legacy / test fixtures)
     if "match" in data:
         match = data["match"]
         if isinstance(match, list):
             return match[0] if match else {}
         if isinstance(match, dict):
             return match
-        return {}
-    if "scores" in data:
-        return _extract_match_stats(data["scores"])
+
     return data
 
 
 def _extract_live_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract live match list from Goalserve soccernew response."""
+    """Extract live match list from Goalserve soccernew response.
+
+    Real API structure: ``scores.category[].matches.match[]``
+    The ``matches`` node contains a ``@date`` and nested ``match`` list.
+    """
     matches: list[dict[str, Any]] = []
 
     scores = data.get("scores", data)
@@ -271,6 +322,23 @@ def _extract_live_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
             categories = [categories]
         if isinstance(categories, list):
             for cat in categories:
+                # Primary path: category.matches.match[]
+                matches_node = cat.get("matches", {})
+                if isinstance(matches_node, dict):
+                    raw = matches_node.get("match", [])
+                    if isinstance(raw, dict):
+                        raw = [raw]
+                    if isinstance(raw, list):
+                        matches.extend(raw)
+                elif isinstance(matches_node, list):
+                    for mn in matches_node:
+                        raw = mn.get("match", []) if isinstance(mn, dict) else []
+                        if isinstance(raw, dict):
+                            raw = [raw]
+                        if isinstance(raw, list):
+                            matches.extend(raw)
+
+                # Fallback: category.match[] (some endpoints)
                 raw = cat.get("match", [])
                 if isinstance(raw, dict):
                     raw = [raw]
@@ -309,17 +377,22 @@ def parse_minute(minute: str, extra_min: str = "") -> float:
     return base + extra
 
 
+def _get_field(d: dict[str, Any], name: str, default: Any = "") -> Any:
+    """Get a field from a Goalserve dict, trying @-prefixed key first."""
+    return d.get(f"@{name}", d.get(name, default))
+
+
 def resolve_scoring_team(goal_event: dict[str, Any], recorded_team: str) -> str:
     """Flip scoring team for own goals.
 
     Args:
-        goal_event: Goalserve goal dict with 'owngoal' field.
+        goal_event: Goalserve goal dict with 'owngoal' or '@owngoal' field.
         recorded_team: The team key under which the goal was recorded.
 
     Returns:
         Actual scoring team: "localteam" or "visitorteam".
     """
-    if str(goal_event.get("owngoal", "")).lower() == "true":
+    if str(_get_field(goal_event, "owngoal")).lower() == "true":
         return "visitorteam" if recorded_team == "localteam" else "localteam"
     return recorded_team
 
@@ -328,15 +401,17 @@ def extract_goals(
     summary: dict[str, Any],
     team_key: str,
 ) -> list[dict[str, Any]]:
-    """Extract goal events from a team's summary, filtering VAR-cancelled.
+    """Extract goal events from a team's summary.
+
+    Handles both @-prefixed (real API) and plain (legacy) field names.
 
     Args:
         summary: The 'summary' dict from Goalserve match data.
         team_key: "localteam" or "visitorteam".
 
     Returns:
-        List of valid (non-VAR-cancelled) goal dicts with 'minute',
-        'scoring_team', 'recorded_team', and original fields.
+        List of goal dicts with 'parsed_minute', 'scoring_team',
+        'recorded_team', and boolean flags.
     """
     goals: list[dict[str, Any]] = []
     team_data = summary.get(team_key, {})
@@ -352,11 +427,13 @@ def extract_goals(
         goal["recorded_team"] = team_key
         goal["scoring_team"] = resolve_scoring_team(g, team_key)
         goal["parsed_minute"] = parse_minute(
-            g.get("minute", "0"), g.get("extra_min", "")
+            str(_get_field(g, "minute", "0")),
+            str(_get_field(g, "extra_min", "")),
         )
-        goal["is_var_cancelled"] = str(g.get("var_cancelled", "")).lower() == "true"
-        goal["is_owngoal"] = str(g.get("owngoal", "")).lower() == "true"
-        goal["is_penalty"] = str(g.get("penalty", "")).lower() == "true"
+        goal["is_var_cancelled"] = str(_get_field(g, "var_cancelled")).lower() == "true"
+        goal["is_owngoal"] = str(_get_field(g, "owngoal")).lower() == "true"
+        goal["is_penalty"] = str(_get_field(g, "penalty")).lower() == "true"
+        goal["name"] = _get_field(g, "name", "")
         goals.append(goal)
 
     return goals
@@ -368,12 +445,14 @@ def extract_red_cards(
 ) -> list[dict[str, Any]]:
     """Extract red card events from a team's summary.
 
+    Handles both @-prefixed (real API) and plain (legacy) field names.
+
     Args:
         summary: The 'summary' dict from Goalserve match data.
         team_key: "localteam" or "visitorteam".
 
     Returns:
-        List of red card dicts with 'minute', 'team', and original fields.
+        List of red card dicts with 'parsed_minute', 'team', and original fields.
     """
     cards: list[dict[str, Any]] = []
     team_data = summary.get(team_key, {})
@@ -388,8 +467,10 @@ def extract_red_cards(
         card: dict[str, Any] = dict(r)
         card["team"] = team_key
         card["parsed_minute"] = parse_minute(
-            r.get("minute", "0"), r.get("extra_min", "")
+            str(_get_field(r, "minute", "0")),
+            str(_get_field(r, "extra_min", "")),
         )
+        card["name"] = _get_field(r, "name", "")
         cards.append(card)
 
     return cards
@@ -398,10 +479,16 @@ def extract_red_cards(
 def extract_stoppage_time(match_data: dict[str, Any]) -> tuple[float, float]:
     """Extract first/second half stoppage times from matchinfo.
 
+    Handles both @-prefixed (real API) and plain (legacy) field names.
+
     Returns:
         (alpha_1, alpha_2) — stoppage time in minutes for each half.
     """
     time_info = match_data.get("matchinfo", {}).get("time", {})
-    alpha_1 = float(time_info.get("addedTime_period1") or 0)
-    alpha_2 = float(time_info.get("addedTime_period2") or 0)
+    alpha_1 = float(
+        _get_field(time_info, "addedTime_period1", 0) or 0
+    )
+    alpha_2 = float(
+        _get_field(time_info, "addedTime_period2", 0) or 0
+    )
     return alpha_1, alpha_2
