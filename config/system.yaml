@@ -1,0 +1,82 @@
+# config/system.yaml — loaded by MatchConfig.from_env()
+
+trading:
+  mode: "paper"                    # "paper" or "live"
+  fee_rate: 0.07                   # Kalshi fee
+  theta_entry: 0.02
+  theta_exit: 0.005
+  K_frac: 0.25
+  z: 1.645
+
+risk:
+  f_order_cap: 0.03
+  f_match_cap: 0.05
+  f_total_cap: 0.20
+
+alignment:
+  aligned_multiplier: 0.8
+  divergent_multiplier: 0.5
+  unavailable_multiplier: 0.6
+
+liquidity:
+  q_min: 20
+  depth_fraction: 0.30
+  min_fill_ratio: 0.50
+
+cooldown:
+  duration_seconds: 15
+  var_safety_wait: 5
+
+mc:
+  n_mc: 50000
+  executor_workers: 4
+
+paper:
+  bankroll: 10000
+  slippage_ticks: 1
+  fill_delay_min: 1.0
+  fill_delay_max: 3.0
+
+rapid_entry:
+  enabled: false
+  cumulative_trades_min: 200
+  edge_realization_min: 0.8
+  preliminary_accuracy_min: 0.95
+  var_cancellation_rate_max: 0.03
+
+websocket:
+  backoff_base: 1.0
+  backoff_max: 30.0
+  max_retries: 5
+
+infrastructure:
+  max_concurrent_matches: 8
+  max_match_duration_hours: 9
+  db_pool_min: 2
+  db_pool_max: 5
+  heartbeat_interval: 10
+  heartbeat_stale_threshold: 60
+  reservation_stale_timeout: 60
+
+scheduling:
+  match_discovery_interval_hours: 6
+  phase2_trigger_offset_minutes: -65
+  phase3_trigger_offset_minutes: -2
+  goalserve_poll_interval: 3
+  tick_interval: 1
+
+bookmakers:
+  - key: "bet365"
+    role: "primary_inplay"
+  - key: "betfair_exchange"
+    role: "baseline_benchmark"
+  - key: "sbobet"
+    role: "asian_sharp"
+  - key: "1xbet"
+    role: "wide_coverage"
+  - key: "draftkings"
+    role: "us_market"
+
+# Phase 1 calibration params are NOT in this config —
+# they are versioned in the production_params DB table.
+# Sanity thresholds (go/hold/ou) are also in production_params.
