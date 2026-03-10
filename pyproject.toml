@@ -53,6 +53,7 @@ disallow_untyped_defs = true
 [[tool.mypy.overrides]]
 module = [
     "numba.*",
+    "scipy.*",
     "xgboost.*",
     "hypothesis.*",
     "asyncpg.*",
