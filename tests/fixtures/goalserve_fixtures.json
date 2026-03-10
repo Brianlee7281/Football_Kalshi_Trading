@@ -1,0 +1,117 @@
+{
+  "scores": {
+    "category": {
+      "name": "England",
+      "id": "1204",
+      "tournament": {
+        "name": "Premier League",
+        "match": [
+          {
+            "id": "300001",
+            "status": "Full-time",
+            "localteam": {
+              "id": "101",
+              "name": "Arsenal",
+              "ht_score": "1",
+              "ft_score": "2"
+            },
+            "visitorteam": {
+              "id": "102",
+              "name": "Chelsea",
+              "ht_score": "0",
+              "ft_score": "1"
+            },
+            "matchinfo": {
+              "stadium": "Emirates Stadium",
+              "time": {
+                "addedTime_period1": "3",
+                "addedTime_period2": "5"
+              }
+            },
+            "summary": {
+              "localteam": {
+                "goals": {
+                  "player": [
+                    {
+                      "id": "201",
+                      "minute": "12",
+                      "extra_min": "",
+                      "name": "Bukayo Saka",
+                      "penalty": "False",
+                      "owngoal": "False",
+                      "var_cancelled": "False"
+                    },
+                    {
+                      "id": "202",
+                      "minute": "78",
+                      "extra_min": "",
+                      "name": "Gabriel Jesus",
+                      "penalty": "False",
+                      "owngoal": "False",
+                      "var_cancelled": "False"
+                    }
+                  ]
+                },
+                "redcards": null
+              },
+              "visitorteam": {
+                "goals": {
+                  "player": {
+                    "id": "301",
+                    "minute": "55",
+                    "extra_min": "",
+                    "name": "Nicolas Jackson",
+                    "penalty": "False",
+                    "owngoal": "False",
+                    "var_cancelled": "False"
+                  }
+                },
+                "redcards": null
+              }
+            }
+          },
+          {
+            "id": "300002",
+            "status": "Full-time",
+            "localteam": {
+              "id": "103",
+              "name": "Liverpool",
+              "ht_score": "0",
+              "ft_score": "0"
+            },
+            "visitorteam": {
+              "id": "104",
+              "name": "Man City",
+              "ht_score": "0",
+              "ft_score": "0"
+            },
+            "matchinfo": {
+              "stadium": "Anfield",
+              "time": {
+                "addedTime_period1": "2",
+                "addedTime_period2": "4"
+              }
+            },
+            "summary": {
+              "localteam": {
+                "goals": null,
+                "redcards": {
+                  "player": {
+                    "id": "401",
+                    "minute": "35",
+                    "extra_min": "",
+                    "name": "Virgil van Dijk"
+                  }
+                }
+              },
+              "visitorteam": {
+                "goals": null,
+                "redcards": null
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

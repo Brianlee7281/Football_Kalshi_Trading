@@ -1,0 +1,206 @@
+{
+  "match": {
+    "id": "227491",
+    "status": "Full-time",
+    "localteam": {
+      "id": "5529",
+      "name": "Argentina",
+      "ht_score": "2",
+      "ft_score": "3"
+    },
+    "visitorteam": {
+      "id": "5533",
+      "name": "France",
+      "ht_score": "0",
+      "ft_score": "3"
+    },
+    "matchinfo": {
+      "stadium": "Lusail Stadium",
+      "time": {
+        "addedTime_period1": "7",
+        "addedTime_period2": "8"
+      }
+    },
+    "summary": {
+      "localteam": {
+        "goals": {
+          "player": [
+            {
+              "id": "119",
+              "minute": "23",
+              "extra_min": "",
+              "name": "Lionel Messi",
+              "penalty": "True",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            },
+            {
+              "id": "323",
+              "minute": "36",
+              "extra_min": "",
+              "name": "Ángel Di María",
+              "penalty": "False",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            },
+            {
+              "id": "119",
+              "minute": "108",
+              "extra_min": "",
+              "name": "Lionel Messi",
+              "penalty": "False",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            }
+          ]
+        },
+        "redcards": null,
+        "yellowcards": {
+          "player": [
+            {
+              "id": "302",
+              "minute": "22",
+              "extra_min": "",
+              "name": "Enzo Fernández"
+            }
+          ]
+        }
+      },
+      "visitorteam": {
+        "goals": {
+          "player": [
+            {
+              "id": "404462",
+              "minute": "80",
+              "extra_min": "",
+              "name": "Kylian Mbappé",
+              "penalty": "True",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            },
+            {
+              "id": "404462",
+              "minute": "81",
+              "extra_min": "",
+              "name": "Kylian Mbappé",
+              "penalty": "False",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            },
+            {
+              "id": "404462",
+              "minute": "118",
+              "extra_min": "",
+              "name": "Kylian Mbappé",
+              "penalty": "True",
+              "owngoal": "False",
+              "var_cancelled": "False"
+            }
+          ]
+        },
+        "redcards": null,
+        "yellowcards": {
+          "player": [
+            {
+              "id": "404462",
+              "minute": "116",
+              "extra_min": "",
+              "name": "Kylian Mbappé"
+            }
+          ]
+        }
+      }
+    },
+    "substitutions": {
+      "localteam": {
+        "substitution": [
+          {
+            "player_in": {"id": "1001", "name": "Lautaro Martínez"},
+            "player_out": {"id": "323", "name": "Ángel Di María"},
+            "minute": "64",
+            "extra_min": ""
+          }
+        ]
+      },
+      "visitorteam": {
+        "substitution": [
+          {
+            "player_in": {"id": "2001", "name": "Marcus Thuram"},
+            "player_out": {"id": "2002", "name": "Olivier Giroud"},
+            "minute": "41",
+            "extra_min": ""
+          },
+          {
+            "player_in": {"id": "2003", "name": "Randal Kolo Muani"},
+            "player_out": {"id": "2004", "name": "Ousmane Dembélé"},
+            "minute": "63",
+            "extra_min": ""
+          }
+        ]
+      }
+    },
+    "teams": {
+      "localteam": {
+        "player": [
+          {"id": "119", "name": "Lionel Messi", "formation_pos": "10", "pos": "M"},
+          {"id": "323", "name": "Ángel Di María", "formation_pos": "11", "pos": "M"},
+          {"id": "302", "name": "Enzo Fernández", "formation_pos": "8", "pos": "M"}
+        ]
+      },
+      "visitorteam": {
+        "player": [
+          {"id": "404462", "name": "Kylian Mbappé", "formation_pos": "10", "pos": "F"},
+          {"id": "2002", "name": "Olivier Giroud", "formation_pos": "9", "pos": "F"}
+        ]
+      }
+    },
+    "stats": {
+      "localteam": {
+        "shots_total": "14",
+        "shots_ongoal": "5",
+        "possession": "54",
+        "corners": "6",
+        "fouls": "16",
+        "saves": "4"
+      },
+      "visitorteam": {
+        "shots_total": "10",
+        "shots_ongoal": "7",
+        "possession": "46",
+        "corners": "3",
+        "fouls": "19",
+        "saves": "2"
+      }
+    },
+    "player_stats": {
+      "localteam": {
+        "player": [
+          {
+            "id": "119",
+            "name": "Lionel Messi",
+            "rating": "8.6",
+            "goals": "2",
+            "assists": "1",
+            "shots_total": "5",
+            "passes": "51",
+            "minutes_played": "120"
+          }
+        ]
+      },
+      "visitorteam": {
+        "player": [
+          {
+            "id": "404462",
+            "name": "Kylian Mbappé",
+            "rating": "9.1",
+            "goals": "3",
+            "assists": "0",
+            "shots_total": "6",
+            "passes": "23",
+            "minutes_played": "120"
+          }
+        ]
+      }
+    }
+  }
+}
