@@ -13,6 +13,7 @@ from src.clients.odds_api import (
     SELECTED_BOOKMAKERS,
     OddsApiClient,
     _compute_odds_delta,
+    _extract_ml_odds,
     _filter_bookmakers,
     build_odds_features,
     extract_bet365_implied_probs,
@@ -28,15 +29,15 @@ FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 
 
 @pytest.fixture
-def historical_data() -> dict[str, Any]:
+def event_odds_data() -> dict[str, Any]:
     with open(FIXTURES_DIR / "odds_api_historical.json") as f:
         return json.load(f)
 
 
 @pytest.fixture
-def arsenal_bookmakers(historical_data: dict[str, Any]) -> list[dict[str, Any]]:
+def arsenal_bookmakers(event_odds_data: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     """Arsenal vs Chelsea bookmakers from the fixture."""
-    return historical_data["data"][0]["bookmakers"]
+    return event_odds_data["bookmakers"]
 
 
 # ---------------------------------------------------------------------------
@@ -68,18 +69,49 @@ class TestRemoveOverround:
 
 
 # ---------------------------------------------------------------------------
+# _extract_ml_odds
+# ---------------------------------------------------------------------------
+
+
+class TestExtractMlOdds:
+    def test_extracts_from_ml_market(self) -> None:
+        markets = [
+            {"name": "ML", "odds": [{"home": "2.10", "draw": "3.40", "away": "3.20"}]}
+        ]
+        h, d, a = _extract_ml_odds(markets)
+        assert h == pytest.approx(2.10)
+        assert d == pytest.approx(3.40)
+        assert a == pytest.approx(3.20)
+
+    def test_ignores_non_ml(self) -> None:
+        markets = [
+            {"name": "Totals", "odds": [{"hdp": 2.5, "over": "1.90", "under": "1.90"}]}
+        ]
+        h, d, a = _extract_ml_odds(markets)
+        assert h == 0.0
+
+    def test_empty_markets(self) -> None:
+        assert _extract_ml_odds([]) == (0.0, 0.0, 0.0)
+
+    def test_empty_odds_list(self) -> None:
+        markets = [{"name": "ML", "odds": []}]
+        assert _extract_ml_odds(markets) == (0.0, 0.0, 0.0)
+
+
+# ---------------------------------------------------------------------------
 # build_odds_features
 # ---------------------------------------------------------------------------
 
 
 class TestBuildOddsFeatures:
-    def test_with_betfair_exchange(self, arsenal_bookmakers: list[dict[str, Any]]) -> None:
+    def test_with_betfair_exchange(
+        self, arsenal_bookmakers: dict[str, list[dict[str, Any]]]
+    ) -> None:
         features = build_odds_features(arsenal_bookmakers)
         # Betfair Exchange: home=1.44, draw=3.50, away=12.00
         assert abs(features["exchange_home_prob"] - 0.653) < 0.001
         assert features["exchange_draw_prob"] > 0
         assert features["exchange_away_prob"] > 0
-        # Probabilities should sum to ~1
         total = (
             features["exchange_home_prob"]
             + features["exchange_draw_prob"]
@@ -87,7 +119,9 @@ class TestBuildOddsFeatures:
         )
         assert abs(total - 1.0) < 1e-10
 
-    def test_market_avg_populated(self, arsenal_bookmakers: list[dict[str, Any]]) -> None:
+    def test_market_avg_populated(
+        self, arsenal_bookmakers: dict[str, list[dict[str, Any]]]
+    ) -> None:
         features = build_odds_features(arsenal_bookmakers)
         assert features["market_avg_home_prob"] > 0
         assert features["market_avg_draw_prob"] > 0
@@ -95,69 +129,37 @@ class TestBuildOddsFeatures:
 
     def test_without_betfair_exchange_falls_back(self) -> None:
         """When Betfair Exchange is absent, exchange_*_prob = market average."""
-        bookmakers = [
-            {
-                "key": "bet365",
-                "markets": [
-                    {
-                        "key": "h2h",
-                        "outcomes": [
-                            {"name": "Home Team", "price": 2.00},
-                            {"name": "Draw", "price": 3.00},
-                            {"name": "Away Team", "price": 4.00},
-                        ],
-                    }
-                ],
-            },
-            {
-                "key": "sbobet",
-                "markets": [
-                    {
-                        "key": "h2h",
-                        "outcomes": [
-                            {"name": "Home Team", "price": 2.10},
-                            {"name": "Draw", "price": 3.10},
-                            {"name": "Away Team", "price": 3.80},
-                        ],
-                    }
-                ],
-            },
-        ]
+        bookmakers: dict[str, list[dict[str, Any]]] = {
+            "Bet365": [
+                {"name": "ML", "odds": [{"home": "2.00", "draw": "3.00", "away": "4.00"}]}
+            ],
+            "SBOBet": [
+                {"name": "ML", "odds": [{"home": "2.10", "draw": "3.10", "away": "3.80"}]}
+            ],
+        }
         features = build_odds_features(bookmakers)
-        # Should be market average of bet365 + sbobet
         assert features["exchange_home_prob"] == pytest.approx(
             features["market_avg_home_prob"], abs=1e-10
         )
 
     def test_empty_bookmakers(self) -> None:
-        features = build_odds_features([])
+        features = build_odds_features({})
         assert features["exchange_home_prob"] == 0.0
         assert features["market_avg_home_prob"] == 0.0
 
-    def test_bookmaker_without_h2h_skipped(self) -> None:
-        bookmakers = [
-            {
-                "key": "betfair_exchange",
-                "markets": [{"key": "totals", "outcomes": []}],
-            },
-            {
-                "key": "bet365",
-                "markets": [
-                    {
-                        "key": "h2h",
-                        "outcomes": [
-                            {"name": "Home Team", "price": 2.00},
-                            {"name": "Draw", "price": 3.00},
-                            {"name": "Away Team", "price": 4.00},
-                        ],
-                    }
-                ],
-            },
-        ]
+    def test_bookmaker_without_ml_skipped(self) -> None:
+        bookmakers: dict[str, list[dict[str, Any]]] = {
+            "Betfair Exchange": [
+                {"name": "Totals", "odds": [{"hdp": 2.5, "over": "1.90", "under": "1.90"}]}
+            ],
+            "Bet365": [
+                {"name": "ML", "odds": [{"home": "2.00", "draw": "3.00", "away": "4.00"}]}
+            ],
+        }
         features = build_odds_features(bookmakers)
-        # Betfair Exchange had no h2h, so falls back to bet365 average
+        # Betfair Exchange had no ML, so falls back to Bet365 average
         assert features["exchange_home_prob"] > 0
-        assert features["bookmaker_odds_std"] == 0.0  # only 1 bookmaker with h2h
+        assert features["bookmaker_odds_std"] == 0.0  # only 1 bookmaker with ML
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +168,9 @@ class TestBuildOddsFeatures:
 
 
 class TestExtractBet365ImpliedProbs:
-    def test_bet365_present(self, arsenal_bookmakers: list[dict[str, Any]]) -> None:
+    def test_bet365_present(
+        self, arsenal_bookmakers: dict[str, list[dict[str, Any]]]
+    ) -> None:
         probs = extract_bet365_implied_probs(arsenal_bookmakers)
         assert probs is not None
         assert probs["home_win"] > 0
@@ -175,11 +179,15 @@ class TestExtractBet365ImpliedProbs:
         assert abs(probs["home_win"] + probs["draw"] + probs["away_win"] - 1.0) < 1e-10
 
     def test_bet365_absent(self) -> None:
-        bookmakers = [{"key": "betfair_exchange", "markets": []}]
+        bookmakers: dict[str, list[dict[str, Any]]] = {
+            "Betfair Exchange": [
+                {"name": "ML", "odds": [{"home": "2.0", "draw": "3.0", "away": "4.0"}]}
+            ]
+        }
         assert extract_bet365_implied_probs(bookmakers) is None
 
     def test_empty_bookmakers(self) -> None:
-        assert extract_bet365_implied_probs([]) is None
+        assert extract_bet365_implied_probs({}) is None
 
 
 # ---------------------------------------------------------------------------
@@ -188,24 +196,18 @@ class TestExtractBet365ImpliedProbs:
 
 
 class TestFilterBookmakers:
-    def test_filters_to_selected(self, historical_data: dict[str, Any]) -> None:
-        event = historical_data["data"][0]
-        filtered = _filter_bookmakers(event)
-        for bm in filtered["bookmakers"]:
-            assert bm["key"] in SELECTED_BOOKMAKERS
+    def test_filters_to_selected(self, event_odds_data: dict[str, Any]) -> None:
+        filtered = _filter_bookmakers(event_odds_data)
+        for name in filtered["bookmakers"]:
+            assert name in SELECTED_BOOKMAKERS
 
-    def test_pinnacle_removed(self, historical_data: dict[str, Any]) -> None:
-        event = historical_data["data"][0]
-        original_keys = {bm["key"] for bm in event["bookmakers"]}
-        assert "pinnacle" in original_keys
+    def test_pinnacle_removed(self, event_odds_data: dict[str, Any]) -> None:
+        assert "Pinnacle" in event_odds_data["bookmakers"]
+        filtered = _filter_bookmakers(event_odds_data)
+        assert "Pinnacle" not in filtered["bookmakers"]
 
-        filtered = _filter_bookmakers(event)
-        filtered_keys = {bm["key"] for bm in filtered["bookmakers"]}
-        assert "pinnacle" not in filtered_keys
-
-    def test_five_bookmakers_kept(self, historical_data: dict[str, Any]) -> None:
-        event = historical_data["data"][0]
-        filtered = _filter_bookmakers(event)
+    def test_five_bookmakers_kept(self, event_odds_data: dict[str, Any]) -> None:
+        filtered = _filter_bookmakers(event_odds_data)
         assert len(filtered["bookmakers"]) == 5
 
 
@@ -224,7 +226,7 @@ class TestComputeOddsDelta:
     def test_subsequent_message_computes_delta(self) -> None:
         markets = [{"name": "ML", "odds": [{"home": "1.65"}]}]
         delta, last = _compute_odds_delta(markets, 1.50)
-        assert delta == pytest.approx(0.10, abs=0.001)  # |1.65-1.50|/1.50 = 0.10
+        assert delta == pytest.approx(0.10, abs=0.001)
         assert last == 1.65
 
     def test_no_ml_market_returns_zero(self) -> None:
@@ -251,79 +253,104 @@ class TestComputeOddsDelta:
 def _make_odds_client(handler: Any) -> OddsApiClient:
     client = OddsApiClient(api_key="test_key")
     client._http._client = httpx.AsyncClient(
-        base_url="https://api.the-odds-api.com",
+        base_url="https://api.odds-api.io/v3",
         transport=httpx.MockTransport(handler),
     )
     return client
 
 
-class TestOddsApiClientHistorical:
-    async def test_parses_historical_response(
-        self, historical_data: dict[str, Any]
-    ) -> None:
+class TestOddsApiClientGetEvents:
+    async def test_parses_event_list(self) -> None:
+        events_list = [
+            {
+                "id": 100001,
+                "home": "Arsenal",
+                "away": "Chelsea",
+                "date": "2024-03-16T15:00:00Z",
+                "status": "pending",
+            },
+            {
+                "id": 100002,
+                "home": "Liverpool",
+                "away": "Man City",
+                "date": "2024-03-16T17:30:00Z",
+                "status": "pending",
+            },
+        ]
+
         def handler(request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=historical_data)
+            return httpx.Response(200, json=events_list)
 
         client = _make_odds_client(handler)
-        events = await client.get_historical_odds(
-            sport="soccer_epl",
-            date="2024-03-15T12:00:00Z",
-        )
+        events = await client.get_events(sport="football")
         assert len(events) == 2
-        # First event: Arsenal vs Chelsea — Pinnacle filtered out, 5 kept
-        assert len(events[0]["bookmakers"]) == 5
-        # Second event: Liverpool vs Man City — only 2 of 5 selected present
-        assert len(events[1]["bookmakers"]) == 2
+        assert events[0]["home"] == "Arsenal"
         await client.close()
 
-    async def test_api_key_in_params(self, historical_data: dict[str, Any]) -> None:
+    async def test_api_key_in_params(self) -> None:
         captured_params: dict[str, str] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured_params.update(dict(request.url.params))
-            return httpx.Response(200, json=historical_data)
+            return httpx.Response(200, json=[])
 
         client = _make_odds_client(handler)
-        await client.get_historical_odds(
-            sport="soccer_epl",
-            date="2024-03-15T12:00:00Z",
-            event_id="event_001",
-        )
+        await client.get_events(sport="football", league="england-premier-league")
         assert captured_params["apiKey"] == "test_key"
-        assert captured_params["eventIds"] == "event_001"
-        assert "h2h" in captured_params["markets"]
+        assert captured_params["sport"] == "football"
+        assert captured_params["league"] == "england-premier-league"
         await client.close()
 
-    async def test_current_odds_list_format(self) -> None:
-        """Current odds endpoint returns a plain list, not wrapped in 'data'."""
-        plain_list = [
-            {
-                "id": "ev1",
-                "bookmakers": [
-                    {
-                        "key": "bet365",
-                        "markets": [
-                            {
-                                "key": "h2h",
-                                "outcomes": [
-                                    {"name": "Home Team", "price": 2.0},
-                                    {"name": "Draw", "price": 3.0},
-                                    {"name": "Away Team", "price": 4.0},
-                                ],
-                            }
-                        ],
-                    }
-                ],
-            }
-        ]
 
+class TestOddsApiClientGetOdds:
+    async def test_parses_odds_response(
+        self, event_odds_data: dict[str, Any]
+    ) -> None:
         def handler(request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=plain_list)
+            return httpx.Response(200, json=event_odds_data)
 
         client = _make_odds_client(handler)
-        events = await client.get_odds(sport="soccer_epl")
-        assert len(events) == 1
-        assert events[0]["bookmakers"][0]["key"] == "bet365"
+        result = await client.get_odds(event_id=100001, bookmakers="Bet365,Betfair Exchange")
+        # Pinnacle filtered out, 5 selected kept
+        assert len(result["bookmakers"]) == 5
+        assert "Pinnacle" not in result["bookmakers"]
+        await client.close()
+
+    async def test_odds_params_sent(self, event_odds_data: dict[str, Any]) -> None:
+        captured_params: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured_params.update(dict(request.url.params))
+            return httpx.Response(200, json=event_odds_data)
+
+        client = _make_odds_client(handler)
+        await client.get_odds(event_id=100001, bookmakers="Bet365")
+        assert captured_params["apiKey"] == "test_key"
+        assert captured_params["eventId"] == "100001"
+        assert captured_params["bookmakers"] == "Bet365"
+        await client.close()
+
+
+class TestOddsApiClientGetOddsMovements:
+    async def test_parses_movements(self) -> None:
+        movements_data = {
+            "eventid": "100001",
+            "bookmaker": "Bet365",
+            "opening": {"home": 2.0, "draw": 3.2, "away": 3.5, "timestamp": 1734400000},
+            "latest": {"home": 2.1, "draw": 3.3, "away": 3.4, "timestamp": 1734450000},
+            "movements": [
+                {"home": 2.0, "draw": 3.2, "away": 3.5, "timestamp": 1734400000},
+                {"home": 2.1, "draw": 3.3, "away": 3.4, "timestamp": 1734450000},
+            ],
+        }
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=movements_data)
+
+        client = _make_odds_client(handler)
+        result = await client.get_odds_movements(event_id=100001, bookmaker="Bet365")
+        assert result["opening"]["home"] == 2.0
+        assert len(result["movements"]) == 2
         await client.close()
 
 
@@ -334,8 +361,8 @@ class TestOddsApiClientHistorical:
 
 def test_selected_bookmakers_has_five() -> None:
     assert len(SELECTED_BOOKMAKERS) == 5
-    assert "betfair_exchange" in SELECTED_BOOKMAKERS
-    assert "bet365" in SELECTED_BOOKMAKERS
-    assert "sbobet" in SELECTED_BOOKMAKERS
-    assert "1xbet" in SELECTED_BOOKMAKERS
-    assert "draftkings" in SELECTED_BOOKMAKERS
+    assert "Betfair Exchange" in SELECTED_BOOKMAKERS
+    assert "Bet365" in SELECTED_BOOKMAKERS
+    assert "SBOBet" in SELECTED_BOOKMAKERS
+    assert "1xBet" in SELECTED_BOOKMAKERS
+    assert "DraftKings" in SELECTED_BOOKMAKERS

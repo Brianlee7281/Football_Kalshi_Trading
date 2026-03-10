@@ -16,10 +16,12 @@ logger = get_logger("goalserve")
 class GoalserveClient:
     """Async client for Goalserve Soccer API.
 
-    Endpoints used:
-        - soccerfixtures/league/{league_id} — historical fixtures & results
-        - soccerstats/match/{match_id}      — detailed match stats + player stats
-        - soccerlive/home                    — live scores (Phase 3 polling)
+    Endpoints used (per API reference):
+        - soccerfixtures/leagueid/{league_id}       — current season fixtures & results
+        - soccerhistory/leagueid/{league_id}-{season} — historical season data
+        - commentaries/match?id={match_id}&league={league_id} — match stats
+        - soccernew/home                            — live scores (Phase 3 polling)
+        - soccernew/d-{n}                           — past day scores
 
     Args:
         api_key: Goalserve API key.
@@ -46,7 +48,7 @@ class GoalserveClient:
         await self.close()
 
     # ------------------------------------------------------------------
-    # Fixtures / Results (Phase 1 — historical)
+    # Fixtures / Results (Phase 1 — current season)
     # ------------------------------------------------------------------
 
     async def get_fixtures(
@@ -55,7 +57,9 @@ class GoalserveClient:
         *,
         season: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Fetch historical fixtures for a league.
+        """Fetch fixtures for a league (current season).
+
+        API ref: /getfeed/{key}/soccerfixtures/leagueid/{league_id}
 
         Args:
             league_id: Goalserve league ID (e.g. 1204 for EPL).
@@ -64,7 +68,7 @@ class GoalserveClient:
         Returns:
             List of match dicts from the Goalserve response.
         """
-        path = f"/{self._api_key}/soccerfixtures/league/{league_id}"
+        path = f"/{self._api_key}/soccerfixtures/leagueid/{league_id}"
         params: dict[str, Any] = {"json": "1"}
         if season:
             params["season"] = season
@@ -75,21 +79,56 @@ class GoalserveClient:
         return _extract_matches(data)
 
     # ------------------------------------------------------------------
+    # Historical Fixtures (Phase 1 — past seasons)
+    # ------------------------------------------------------------------
+
+    async def get_historical_fixtures(
+        self,
+        league_id: int,
+        season: str,
+    ) -> list[dict[str, Any]]:
+        """Fetch historical fixtures for a league and season.
+
+        API ref: /getfeed/{key}/soccerhistory/leagueid/{league_id}-{season}
+
+        Args:
+            league_id: Goalserve league ID (e.g. 1204 for EPL).
+            season: Season string (e.g. "2022-2023").
+
+        Returns:
+            List of historical match dicts.
+        """
+        path = f"/{self._api_key}/soccerhistory/leagueid/{league_id}-{season}"
+        params: dict[str, Any] = {"json": "1"}
+
+        response = await self._http.get(path, params=params)
+        data = response.json()
+
+        return _extract_matches(data)
+
+    # ------------------------------------------------------------------
     # Match Stats (Phase 1 — detailed stats + player stats)
     # ------------------------------------------------------------------
 
-    async def get_match_stats(self, match_id: str) -> dict[str, Any]:
+    async def get_match_stats(
+        self,
+        match_id: str,
+        league_id: int,
+    ) -> dict[str, Any]:
         """Fetch detailed match statistics including player stats and xG.
+
+        API ref: /getfeed/{key}/commentaries/match?id={match_id}&league={league_id}
 
         Args:
             match_id: Goalserve match ID.
+            league_id: Goalserve league ID (required by API).
 
         Returns:
             Raw match stats dict with keys like 'stats', 'player_stats',
             'summary', 'matchinfo', 'teams', 'substitutions', etc.
         """
-        path = f"/{self._api_key}/soccerstats/match/{match_id}"
-        params: dict[str, Any] = {"json": "1"}
+        path = f"/{self._api_key}/commentaries/match"
+        params: dict[str, Any] = {"id": match_id, "league": str(league_id), "json": "1"}
 
         response = await self._http.get(path, params=params)
         data = response.json()
@@ -103,10 +142,12 @@ class GoalserveClient:
     async def get_live_scores(self) -> list[dict[str, Any]]:
         """Fetch all current live match scores.
 
+        API ref: /getfeed/{key}/soccernew/home
+
         Returns:
             List of live match dicts with score, minute, status, events.
         """
-        path = f"/{self._api_key}/soccerlive/home"
+        path = f"/{self._api_key}/soccernew/home"
         params: dict[str, Any] = {"json": "1"}
 
         response = await self._http.get(path, params=params)
@@ -128,6 +169,29 @@ class GoalserveClient:
             if str(match.get("id")) == str(match_id):
                 return match
         return None
+
+    # ------------------------------------------------------------------
+    # Past Scores (Phase 1 — recent results)
+    # ------------------------------------------------------------------
+
+    async def get_past_scores(self, days_ago: int = 1) -> list[dict[str, Any]]:
+        """Fetch match scores from a past day.
+
+        API ref: /getfeed/{key}/soccernew/d-{n}
+
+        Args:
+            days_ago: Number of days in the past (1-7).
+
+        Returns:
+            List of match dicts from that day.
+        """
+        path = f"/{self._api_key}/soccernew/d-{days_ago}"
+        params: dict[str, Any] = {"json": "1"}
+
+        response = await self._http.get(path, params=params)
+        data = response.json()
+
+        return _extract_live_matches(data)
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +261,7 @@ def _extract_match_stats(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def _extract_live_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
-    """Extract live match list from Goalserve soccerlive response."""
+    """Extract live match list from Goalserve soccernew response."""
     matches: list[dict[str, Any]] = []
 
     scores = data.get("scores", data)

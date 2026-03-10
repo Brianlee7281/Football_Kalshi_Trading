@@ -1,171 +1,79 @@
 {
-  "timestamp": "2024-03-15T12:00:00Z",
-  "previous_timestamp": "2024-03-15T11:55:00Z",
-  "next_timestamp": "2024-03-15T12:05:00Z",
-  "data": [
-    {
-      "id": "event_001",
-      "sport_key": "soccer_epl",
-      "sport_title": "EPL",
-      "commence_time": "2024-03-16T15:00:00Z",
-      "home_team": "Arsenal",
-      "away_team": "Chelsea",
-      "bookmakers": [
-        {
-          "key": "betfair_exchange",
-          "title": "Betfair Exchange",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.44},
-                {"name": "Draw", "price": 3.50},
-                {"name": "Chelsea", "price": 12.00}
-              ]
-            },
-            {
-              "key": "totals",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Over", "price": 1.85, "point": 2.5},
-                {"name": "Under", "price": 2.05, "point": 2.5}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "bet365",
-          "title": "Bet365",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.40},
-                {"name": "Draw", "price": 3.60},
-                {"name": "Chelsea", "price": 11.00}
-              ]
-            },
-            {
-              "key": "totals",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Over", "price": 1.83, "point": 2.5},
-                {"name": "Under", "price": 2.00, "point": 2.5}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "sbobet",
-          "title": "Sbobet",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.42},
-                {"name": "Draw", "price": 3.55},
-                {"name": "Chelsea", "price": 11.50}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "1xbet",
-          "title": "1xBet",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.45},
-                {"name": "Draw", "price": 3.45},
-                {"name": "Chelsea", "price": 12.50}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "draftkings",
-          "title": "DraftKings",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.43},
-                {"name": "Draw", "price": 3.50},
-                {"name": "Chelsea", "price": 11.00}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "pinnacle",
-          "title": "Pinnacle",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Arsenal", "price": 1.41},
-                {"name": "Draw", "price": 3.55},
-                {"name": "Chelsea", "price": 12.00}
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "event_002",
-      "sport_key": "soccer_epl",
-      "sport_title": "EPL",
-      "commence_time": "2024-03-16T17:30:00Z",
-      "home_team": "Liverpool",
-      "away_team": "Man City",
-      "bookmakers": [
-        {
-          "key": "betfair_exchange",
-          "title": "Betfair Exchange",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Liverpool", "price": 2.50},
-                {"name": "Draw", "price": 3.30},
-                {"name": "Man City", "price": 2.90}
-              ]
-            }
-          ]
-        },
-        {
-          "key": "bet365",
-          "title": "Bet365",
-          "last_update": "2024-03-15T12:00:00Z",
-          "markets": [
-            {
-              "key": "h2h",
-              "last_update": "2024-03-15T12:00:00Z",
-              "outcomes": [
-                {"name": "Liverpool", "price": 2.45},
-                {"name": "Draw", "price": 3.40},
-                {"name": "Man City", "price": 2.80}
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
+  "id": 100001,
+  "home": "Arsenal",
+  "away": "Chelsea",
+  "date": "2024-03-16T15:00:00Z",
+  "status": "settled",
+  "sport": {"name": "Football", "slug": "football"},
+  "league": {"name": "England - Premier League", "slug": "england-premier-league"},
+  "bookmakers": {
+    "Betfair Exchange": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.44", "draw": "3.50", "away": "12.00"}
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"hdp": 2.5, "over": "1.85", "under": "2.05"}
+        ]
+      }
+    ],
+    "Bet365": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.40", "draw": "3.60", "away": "11.00"}
+        ]
+      },
+      {
+        "name": "Totals",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"hdp": 2.5, "over": "1.83", "under": "2.00"}
+        ]
+      }
+    ],
+    "SBOBet": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.42", "draw": "3.55", "away": "11.50"}
+        ]
+      }
+    ],
+    "1xBet": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.45", "draw": "3.45", "away": "12.50"}
+        ]
+      }
+    ],
+    "DraftKings": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.43", "draw": "3.50", "away": "11.00"}
+        ]
+      }
+    ],
+    "Pinnacle": [
+      {
+        "name": "ML",
+        "updatedAt": "2024-03-15T12:00:00Z",
+        "odds": [
+          {"home": "1.41", "draw": "3.55", "away": "12.00"}
+        ]
+      }
+    ]
+  }
 }

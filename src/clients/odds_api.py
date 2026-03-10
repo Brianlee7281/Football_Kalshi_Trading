@@ -1,4 +1,8 @@
-"""Odds-API client: historical odds REST + live odds WebSocket."""
+"""Odds-API.io client: REST odds + live odds WebSocket.
+
+API reference: docs/api_reference_odds_api.md
+Base URL: https://api.odds-api.io/v3
+"""
 
 from __future__ import annotations
 
@@ -13,32 +17,37 @@ import websockets.exceptions
 from src.clients.base_client import BaseClient
 from src.common.logging import get_logger
 
-_REST_BASE_URL = "https://api.the-odds-api.com"
+_REST_BASE_URL = "https://api.odds-api.io/v3"
 _WS_BASE_URL = "wss://api.odds-api.io/v3/ws"
 
+# Bookmaker display names as used by the odds-api.io API.
+# These are the 5 bookmakers our system tracks for odds features.
 SELECTED_BOOKMAKERS = frozenset({
-    "bet365",
-    "betfair_exchange",
-    "sbobet",
-    "1xbet",
-    "draftkings",
+    "Bet365",
+    "Betfair Exchange",
+    "SBOBet",
+    "1xBet",
+    "DraftKings",
 })
 
 logger = get_logger("odds_api")
 
 
 class OddsApiClient:
-    """Async client for The Odds API (REST + WebSocket).
+    """Async client for Odds-API.io (REST + WebSocket).
 
     REST endpoints:
-        - /v4/historical/sports/{sport}/odds/ — historical odds snapshots
-        - /v4/sports/{sport}/odds/             — current odds
+        - /events                — list events (filter by sport/league/status)
+        - /odds                  — odds for a single event
+        - /odds/multi            — odds for multiple events (1 API call)
+        - /odds/movements        — historical odds movements
+        - /value-bets            — pre-computed value bets
 
     WebSocket:
         - wss://api.odds-api.io/v3/ws — live in-play odds push
 
     Args:
-        api_key: The Odds API key.
+        api_key: Odds-API.io API key.
         timeout: REST request timeout in seconds.
     """
 
@@ -62,81 +71,135 @@ class OddsApiClient:
         await self.close()
 
     # ------------------------------------------------------------------
-    # Historical Odds (Phase 1)
+    # Events (discover matches)
     # ------------------------------------------------------------------
 
-    async def get_historical_odds(
+    async def get_events(
         self,
         sport: str,
-        date: str,
         *,
-        event_id: str | None = None,
-        markets: str = "h2h,totals,spreads",
-        regions: str = "eu,us",
+        league: str | None = None,
+        status: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Fetch historical odds snapshot for a given date.
+        """Fetch events for a sport.
+
+        API ref: GET /events?apiKey=...&sport=...
 
         Args:
-            sport: Sport key (e.g. "soccer_epl").
-            date: ISO date string (e.g. "2024-03-15T12:00:00Z").
-            event_id: Optional specific event ID to filter.
-            markets: Comma-separated market types.
-            regions: Comma-separated region codes.
+            sport: Sport slug (e.g. "football").
+            league: Optional league slug filter (e.g. "england-premier-league").
+            status: Optional status filter (e.g. "pending", "live", "settled").
 
         Returns:
-            List of event dicts with bookmaker odds, filtered to selected bookmakers.
+            List of event dicts with id, home, away, date, status, etc.
         """
-        path = f"/v4/historical/sports/{sport}/odds/"
         params: dict[str, str] = {
             "apiKey": self._api_key,
-            "regions": regions,
-            "markets": markets,
-            "date": date,
+            "sport": sport,
         }
-        if event_id:
-            params["eventIds"] = event_id
+        if league:
+            params["league"] = league
+        if status:
+            params["status"] = status
 
-        response = await self._http.get(path, params=params)
+        response = await self._http.get("/events", params=params)
         data = response.json()
-
-        return _filter_and_parse_events(data)
+        return data if isinstance(data, list) else []
 
     # ------------------------------------------------------------------
-    # Current Odds
+    # Odds (single event)
     # ------------------------------------------------------------------
 
     async def get_odds(
         self,
-        sport: str,
-        *,
-        markets: str = "h2h,totals,spreads",
-        regions: str = "eu,us",
-        event_id: str | None = None,
-    ) -> list[dict[str, Any]]:
-        """Fetch current odds for a sport.
+        event_id: int | str,
+        bookmakers: str,
+    ) -> dict[str, Any]:
+        """Fetch odds for a single event from specified bookmakers.
+
+        API ref: GET /odds?apiKey=...&eventId=...&bookmakers=...
 
         Args:
-            sport: Sport key (e.g. "soccer_epl").
-            markets: Comma-separated market types.
-            regions: Comma-separated region codes.
-            event_id: Optional specific event ID.
+            event_id: Event ID.
+            bookmakers: Comma-separated bookmaker names (max 30).
 
         Returns:
-            List of event dicts with bookmaker odds, filtered to selected bookmakers.
+            Event odds dict with ``bookmakers`` object keyed by name.
         """
-        path = f"/v4/sports/{sport}/odds/"
         params: dict[str, str] = {
             "apiKey": self._api_key,
-            "regions": regions,
-            "markets": markets,
+            "eventId": str(event_id),
+            "bookmakers": bookmakers,
         }
-        if event_id:
-            params["eventIds"] = event_id
 
-        response = await self._http.get(path, params=params)
+        response = await self._http.get("/odds", params=params)
         data = response.json()
+        return _filter_bookmakers(data) if isinstance(data, dict) else {}
 
-        return _filter_and_parse_events(data)
+    # ------------------------------------------------------------------
+    # Odds Multi (batch, counts as 1 API call)
+    # ------------------------------------------------------------------
+
+    async def get_odds_multi(
+        self,
+        event_ids: list[int | str],
+        bookmakers: str,
+    ) -> list[dict[str, Any]]:
+        """Fetch odds for multiple events in a single API call (max 10).
+
+        API ref: GET /odds/multi?apiKey=...&eventIds=...&bookmakers=...
+
+        Args:
+            event_ids: List of event IDs (max 10).
+            bookmakers: Comma-separated bookmaker names (max 30).
+
+        Returns:
+            List of event odds dicts.
+        """
+        params: dict[str, str] = {
+            "apiKey": self._api_key,
+            "eventIds": ",".join(str(eid) for eid in event_ids),
+            "bookmakers": bookmakers,
+        }
+
+        response = await self._http.get("/odds/multi", params=params)
+        data = response.json()
+        if not isinstance(data, list):
+            return []
+        return [_filter_bookmakers(ev) for ev in data if isinstance(ev, dict)]
+
+    # ------------------------------------------------------------------
+    # Odds Movements (historical — Phase 1)
+    # ------------------------------------------------------------------
+
+    async def get_odds_movements(
+        self,
+        event_id: int | str,
+        bookmaker: str,
+        market: str = "ML",
+    ) -> dict[str, Any]:
+        """Fetch historical odds movements for an event/bookmaker/market.
+
+        API ref: GET /odds/movements?apiKey=...&eventId=...&bookmaker=...&market=...
+
+        Args:
+            event_id: Event ID.
+            bookmaker: Bookmaker name (e.g. "Bet365").
+            market: Market name (e.g. "ML", "Totals").
+
+        Returns:
+            Dict with ``opening``, ``latest``, and ``movements`` fields.
+        """
+        params: dict[str, str] = {
+            "apiKey": self._api_key,
+            "eventId": str(event_id),
+            "bookmaker": bookmaker,
+            "market": market,
+        }
+
+        response = await self._http.get("/odds/movements", params=params)
+        data = response.json()
+        return data if isinstance(data, dict) else {}
 
     # ------------------------------------------------------------------
     # Live Odds WebSocket (Phase 3)
@@ -149,7 +212,7 @@ class OddsApiClient:
         event_ids: set[str] | None = None,
         odds_threshold_pct: float = 0.10,
     ) -> AsyncIterator[dict[str, Any]]:
-        """Connect to Odds-API live odds WebSocket.
+        """Connect to Odds-API.io live odds WebSocket.
 
         Yields parsed messages filtered to tracked event IDs.
 
@@ -217,45 +280,25 @@ class OddsApiClient:
 # ---------------------------------------------------------------------------
 
 
-def _filter_and_parse_events(
-    data: Any,
-) -> list[dict[str, Any]]:
-    """Parse Odds-API response and filter bookmakers to selected set.
-
-    Handles both historical (wrapped in 'data' key) and current (direct list) formats.
-    """
-    events: list[dict[str, Any]]
-
-    if isinstance(data, dict):
-        # Historical endpoint wraps in {"data": [...], "timestamp": ...}
-        events = data.get("data", [])
-        if not isinstance(events, list):
-            events = []
-    elif isinstance(data, list):
-        events = data
-    else:
-        return []
-
-    result: list[dict[str, Any]] = []
-    for event in events:
-        filtered = _filter_bookmakers(event)
-        if filtered.get("bookmakers"):
-            result.append(filtered)
-
-    return result
-
-
 def _filter_bookmakers(event: dict[str, Any]) -> dict[str, Any]:
-    """Filter an event's bookmakers to the 5 selected ones."""
-    filtered_event = dict(event)
-    bookmakers = event.get("bookmakers", [])
-    if not isinstance(bookmakers, list):
-        bookmakers = []
+    """Filter an event's bookmakers object to the selected set.
 
-    filtered_event["bookmakers"] = [
-        bm for bm in bookmakers
-        if bm.get("key") in SELECTED_BOOKMAKERS
-    ]
+    Odds-API.io returns bookmakers as an object keyed by name:
+    ``{"Bet365": [...markets...], "Pinnacle": [...markets...]}``
+
+    We keep only bookmakers in SELECTED_BOOKMAKERS.
+    """
+    filtered_event = dict(event)
+    bookmakers = event.get("bookmakers", {})
+    if not isinstance(bookmakers, dict):
+        filtered_event["bookmakers"] = {}
+        return filtered_event
+
+    filtered_event["bookmakers"] = {
+        name: markets
+        for name, markets in bookmakers.items()
+        if name in SELECTED_BOOKMAKERS
+    }
     return filtered_event
 
 
@@ -264,6 +307,8 @@ def _compute_odds_delta(
     last_home_odds: float | None,
 ) -> tuple[float, float | None]:
     """Compute home-odds change rate from ML market.
+
+    WebSocket market format: ``{"name": "ML", "odds": [{"home": "1.85", ...}]}``
 
     Returns:
         (delta, updated_last_home_odds)
@@ -283,7 +328,7 @@ def _compute_odds_delta(
 
 
 # ---------------------------------------------------------------------------
-# Odds feature extraction (used by Step 1.3)
+# Odds feature extraction (used by Step 1.3 and Phase 3/4)
 # ---------------------------------------------------------------------------
 
 
@@ -302,14 +347,17 @@ def remove_overround(h: float, d: float, a: float) -> tuple[float, float, float]
     return (1.0 / h) / total, (1.0 / d) / total, (1.0 / a) / total
 
 
-def build_odds_features(bookmakers: list[dict[str, Any]]) -> dict[str, float]:
-    """Extract odds features from Odds-API bookmaker list.
+def build_odds_features(
+    bookmakers: dict[str, list[dict[str, Any]]],
+) -> dict[str, float]:
+    """Extract odds features from Odds-API.io bookmakers object.
 
     Betfair Exchange is the primary baseline. If unavailable, falls back to
     market average of the remaining bookmakers.
 
     Args:
-        bookmakers: List of bookmaker dicts from Odds-API response.
+        bookmakers: Dict mapping bookmaker name to list of market dicts.
+                    Format: ``{"Bet365": [{"name": "ML", "odds": [...]}], ...}``
 
     Returns:
         Feature dict with exchange_home_prob, market_avg_home_prob, etc.
@@ -317,26 +365,15 @@ def build_odds_features(bookmakers: list[dict[str, Any]]) -> dict[str, float]:
     all_probs: list[tuple[float, float, float]] = []
     exchange_prob: tuple[float, float, float] | None = None
 
-    for bm in bookmakers:
-        h2h = next((m for m in bm.get("markets", []) if m.get("key") == "h2h"), None)
-        if not h2h:
-            continue
-
-        outcomes = {o["name"]: float(o["price"]) for o in h2h.get("outcomes", [])}
-
-        # Odds-API uses team names as keys; handle both formats
-        keys = list(outcomes.keys())
-        h = outcomes.get("Home Team", outcomes.get(keys[0], 0.0) if keys else 0.0)
-        d = outcomes.get("Draw", 0.0)
-        a = outcomes.get("Away Team", outcomes.get(keys[-1], 0.0) if keys else 0.0)
-
+    for bm_name, markets in bookmakers.items():
+        h, d, a = _extract_ml_odds(markets)
         if not (h > 0 and d > 0 and a > 0):
             continue
 
         prob = remove_overround(h, d, a)
         all_probs.append(prob)
 
-        if bm.get("key") == "betfair_exchange":
+        if bm_name == "Betfair Exchange":
             exchange_prob = prob
 
     if not all_probs:
@@ -375,33 +412,51 @@ def build_odds_features(bookmakers: list[dict[str, Any]]) -> dict[str, float]:
 
 
 def extract_bet365_implied_probs(
-    bookmakers: list[dict[str, Any]],
+    bookmakers: dict[str, list[dict[str, Any]]],
 ) -> dict[str, float] | None:
-    """Extract bet365 implied probabilities for Phase 3/4 alignment checks.
+    """Extract Bet365 implied probabilities for Phase 3/4 alignment checks.
 
     Args:
-        bookmakers: List of bookmaker dicts from Odds-API response.
+        bookmakers: Dict mapping bookmaker name to list of market dicts.
 
     Returns:
-        Dict with home_win, draw, away_win probabilities, or None if bet365 absent.
+        Dict with home_win, draw, away_win probabilities, or None if Bet365 absent.
     """
-    for bm in bookmakers:
-        if bm.get("key") != "bet365":
+    markets = bookmakers.get("Bet365")
+    if not markets:
+        return None
+    h, d, a = _extract_ml_odds(markets)
+    if not (h > 0 and d > 0 and a > 0):
+        return None
+    prob = remove_overround(h, d, a)
+    return {
+        "home_win": prob[0],
+        "draw": prob[1],
+        "away_win": prob[2],
+    }
+
+
+def _extract_ml_odds(markets: list[dict[str, Any]]) -> tuple[float, float, float]:
+    """Extract home/draw/away odds from an ML market.
+
+    Odds-API.io format: ``[{"name": "ML", "odds": [{"home": "2.10", "draw": "3.40", "away": "3.20"}]}]``
+
+    Returns:
+        (home, draw, away) as floats, or (0, 0, 0) if ML not found.
+    """
+    for market in markets:
+        if market.get("name") != "ML":
             continue
-        h2h = next((m for m in bm.get("markets", []) if m.get("key") == "h2h"), None)
-        if not h2h:
-            return None
-        outcomes = {o["name"]: float(o["price"]) for o in h2h.get("outcomes", [])}
-        keys = list(outcomes.keys())
-        h = outcomes.get("Home Team", outcomes.get(keys[0], 0.0) if keys else 0.0)
-        d = outcomes.get("Draw", 0.0)
-        a = outcomes.get("Away Team", outcomes.get(keys[-1], 0.0) if keys else 0.0)
-        if not (h > 0 and d > 0 and a > 0):
-            return None
-        prob = remove_overround(h, d, a)
-        return {
-            "home_win": prob[0],
-            "draw": prob[1],
-            "away_win": prob[2],
-        }
-    return None
+        odds_list = market.get("odds", [])
+        if not odds_list:
+            return 0.0, 0.0, 0.0
+        odds = odds_list[0]
+        try:
+            return (
+                float(odds.get("home", 0)),
+                float(odds.get("draw", 0)),
+                float(odds.get("away", 0)),
+            )
+        except (ValueError, TypeError):
+            return 0.0, 0.0, 0.0
+    return 0.0, 0.0, 0.0

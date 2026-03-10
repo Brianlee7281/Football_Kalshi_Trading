@@ -228,7 +228,7 @@ class TestGoalserveClientGetMatchStats:
             return httpx.Response(200, json=raw)
 
         client = _make_goalserve_client(handler)
-        stats = await client.get_match_stats("227491")
+        stats = await client.get_match_stats("227491", league_id=1204)
         assert stats["id"] == "227491"
         assert stats["localteam"]["name"] == "Argentina"
         assert stats["visitorteam"]["name"] == "France"
