@@ -1,0 +1,93 @@
+{
+  "id": "227491",
+  "status": "Full-time",
+  "localteam": {
+    "id": "5529",
+    "name": "Argentina",
+    "ht_score": "2",
+    "ft_score": "3"
+  },
+  "visitorteam": {
+    "id": "5533",
+    "name": "France",
+    "ht_score": "0",
+    "ft_score": "3"
+  },
+  "matchinfo": {
+    "stadium": "Lusail Stadium",
+    "time": {
+      "addedTime_period1": "7",
+      "addedTime_period2": "8"
+    }
+  },
+  "summary": {
+    "localteam": {
+      "goals": {
+        "player": [
+          {
+            "id": "119",
+            "minute": "23",
+            "extra_min": "",
+            "name": "Lionel Messi",
+            "penalty": "True",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          },
+          {
+            "id": "323",
+            "minute": "36",
+            "extra_min": "",
+            "name": "Ángel Di María",
+            "penalty": "False",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          },
+          {
+            "id": "119",
+            "minute": "108",
+            "extra_min": "",
+            "name": "Lionel Messi",
+            "penalty": "False",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          }
+        ]
+      },
+      "redcards": null
+    },
+    "visitorteam": {
+      "goals": {
+        "player": [
+          {
+            "id": "404462",
+            "minute": "80",
+            "extra_min": "",
+            "name": "Kylian Mbappé",
+            "penalty": "True",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          },
+          {
+            "id": "404462",
+            "minute": "81",
+            "extra_min": "",
+            "name": "Kylian Mbappé",
+            "penalty": "False",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          },
+          {
+            "id": "404462",
+            "minute": "118",
+            "extra_min": "",
+            "name": "Kylian Mbappé",
+            "penalty": "True",
+            "owngoal": "False",
+            "var_cancelled": "False"
+          }
+        ]
+      },
+      "redcards": null
+    }
+  }
+}
