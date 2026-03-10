@@ -13,9 +13,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from src.clients.goalserve import (
+    _get_field,
+    ensure_list,
     extract_goals,
     extract_red_cards,
     extract_stoppage_time,
+    parse_minute,
 )
 from src.common.types import IntervalRecord, RedCardTransition
 
@@ -169,30 +172,76 @@ def build_intervals_from_goalserve(
 
 
 def _collect_events(match_data: dict[str, Any]) -> list[_Event]:
-    """Gather goals and red cards from match summary."""
+    """Gather goals and red cards from match data.
+
+    Handles two Goalserve formats:
+        1. ``summary.{team}.goals.player[]`` (commentaries endpoint)
+        2. ``goals.goal[]`` with ``@team``, ``@minute`` (fixtures endpoint)
+    """
     events: list[_Event] = []
-    summary = match_data.get("summary", {})
+    summary = match_data.get("summary")
 
-    for team_key in ("localteam", "visitorteam"):
-        for g in extract_goals(summary, team_key):
-            if g["is_var_cancelled"]:
-                continue
-            events.append(
-                _Event(
-                    kind="goal",
-                    minute=g["parsed_minute"],
-                    team=g["scoring_team"],
-                    is_owngoal=g["is_owngoal"],
+    if summary:
+        # Format 1: commentaries endpoint — summary.{team}.goals.player[]
+        for team_key in ("localteam", "visitorteam"):
+            for g in extract_goals(summary, team_key):
+                if g["is_var_cancelled"]:
+                    continue
+                events.append(
+                    _Event(
+                        kind="goal",
+                        minute=g["parsed_minute"],
+                        team=g["scoring_team"],
+                        is_owngoal=g["is_owngoal"],
+                    )
                 )
-            )
 
-        for c in extract_red_cards(summary, team_key):
-            events.append(
-                _Event(
-                    kind="red_card",
-                    minute=c["parsed_minute"],
-                    team=c["team"],
+            for c in extract_red_cards(summary, team_key):
+                events.append(
+                    _Event(
+                        kind="red_card",
+                        minute=c["parsed_minute"],
+                        team=c["team"],
+                    )
                 )
-            )
+    else:
+        # Format 2: fixtures endpoint — goals.goal[] flat array
+        _collect_events_from_fixtures(match_data, events)
 
     return events
+
+
+def _collect_events_from_fixtures(
+    match_data: dict[str, Any],
+    events: list[_Event],
+) -> None:
+    """Extract goals from the fixtures ``goals.goal[]`` format.
+
+    Each goal has ``@team`` (localteam/visitorteam), ``@minute``, and
+    optionally ``@owngoal``, ``@penalty``.
+    """
+    goals_node = match_data.get("goals", {})
+    if not goals_node:
+        return
+
+    raw_goals = goals_node.get("goal", [])
+    for g in ensure_list(raw_goals):
+        team = _get_field(g, "team", "")
+        if team not in ("localteam", "visitorteam"):
+            continue
+        minute_str = str(_get_field(g, "minute", "0"))
+        extra_str = str(_get_field(g, "extra_min", ""))
+        is_owngoal = str(_get_field(g, "owngoal")).lower() == "true"
+
+        scoring_team = team
+        if is_owngoal:
+            scoring_team = "visitorteam" if team == "localteam" else "localteam"
+
+        events.append(
+            _Event(
+                kind="goal",
+                minute=parse_minute(minute_str, extra_str),
+                team=scoring_team,
+                is_owngoal=is_owngoal,
+            )
+        )
