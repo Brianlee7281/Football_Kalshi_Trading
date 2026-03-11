@@ -21,9 +21,13 @@ from __future__ import annotations
 import asyncio
 import contextlib
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
+
+if TYPE_CHECKING:
+    import asyncpg
+    import redis.asyncio as aioredis
 
 from src.common.logging import get_logger
 from src.common.types import Phase2Result, TickData
@@ -185,6 +189,12 @@ class LiveFootballQuantModel:
     phase4_queue: asyncio.Queue[TickData] = field(
         default_factory=lambda: asyncio.Queue(maxsize=1),
     )
+
+    # ------------------------------------------------------------------
+    # Infrastructure connections (injected by match_engine/main.py)
+    # ------------------------------------------------------------------
+    db_pool: asyncpg.Pool | None = field(default=None, repr=False)
+    redis: aioredis.Redis | None = field(default=None, repr=False)
 
     # ------------------------------------------------------------------
     # Event handling runtime state

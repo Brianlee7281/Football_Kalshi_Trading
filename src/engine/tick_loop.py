@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import TYPE_CHECKING
 
 import structlog
 
@@ -42,9 +41,6 @@ from src.engine.model import (
     LiveFootballQuantModel,
 )
 
-if TYPE_CHECKING:
-    import redis.asyncio as aioredis
-
 logger = get_logger("tick_loop")
 
 
@@ -55,19 +51,18 @@ logger = get_logger("tick_loop")
 
 async def run_engine(
     model: LiveFootballQuantModel,
-    redis_client: aioredis.Redis | None = None,
 ) -> None:
     """Run Phase 3: tick loop + event source coroutines concurrently.
 
     Note: event source coroutines (live_odds_listener, live_score_poller)
     are defined in event_sources.py and plugged in by the match engine.
     Only the tick loop is started here to allow unit testing in isolation.
+    Redis is injected via model.redis before calling run_engine.
 
     Args:
-        model: Live match state container.
-        redis_client: Optional Redis client for dashboard publishing.
+        model: Live match state container (model.redis set by caller).
     """
-    await tick_loop(model, redis_client=redis_client)
+    await tick_loop(model)
 
 
 # ---------------------------------------------------------------------------
@@ -77,17 +72,16 @@ async def run_engine(
 
 async def tick_loop(
     model: LiveFootballQuantModel,
-    redis_client: aioredis.Redis | None = None,
 ) -> None:
     """Main 1-second pricing loop, wall-clock synchronized.
 
     Updates model.t from wall clock on every tick to prevent drift
     from slow MC computation or GC pauses. Halftime duration is
     excluded from model.t via halftime_accumulated.
+    Redis publishing uses model.redis (injected by caller).
 
     Args:
         model: Mutable live match state.
-        redis_client: Optional Redis client passed through to emit_to_phase4.
     """
     model.kickoff_wall_clock = time.monotonic()
     model.halftime_accumulated = 0.0
@@ -125,7 +119,6 @@ async def tick_loop(
                 sigma_MC,
                 model.order_allowed,
                 model,
-                redis_client=redis_client,
             )
 
             # ── Backpressure monitoring ───────────────────────────────────

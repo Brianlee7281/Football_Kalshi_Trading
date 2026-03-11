@@ -1,37 +1,42 @@
-"""Phase 3 → Phase 4 emit layer.
+"""Phase 3 → Phase 4 emit layer + infrastructure writes.
 
-Pushes each tick's pricing output to two sinks:
+Pushes each tick's pricing output to three sinks:
   1. asyncio.Queue (maxsize=1) — consumed by Phase 4 signal_generator
-  2. Redis PUBLISH — consumed by dashboard + monitoring
+  2. tick_snapshots DB table  — sampled write for analytics / replay
+  3. Redis PUBLISH            — consumed by dashboard + monitoring
+
+Also provides record_event() for writing confirmed in-match events to
+event_log (DB) and publishing to the Redis event:{match_id} channel.
 
 Queue maxsize=1 semantics:
   If Phase 4 hasn't consumed the previous tick, the old tick is replaced
   (always-fresh guarantee). This ensures Phase 4 sees the latest state
   even if it's momentarily slow.
 
-Redis channel: "p_true:{match_id}"
-  JSON payload: {"P_true": {...}, "sigma_MC": {...}, "order_allowed": bool,
-                 "t": float, "pricing_mode": str}
+tick_snapshots sampling:
+  - During events (event_state != IDLE) or cooldown: every tick (1s)
+  - Normal play: every 10s (int(t_seconds) % 10 == 0)
 
-Both sinks are fire-and-forget: a failure in either does not raise;
-errors are logged and counted in Prometheus.
+Redis channels:
+  tick:{match_id}   — full tick payload for live dashboard
+  event:{match_id}  — confirmed match events (goals, cards, etc.)
 
-Reference: docs/phase3.md §emit_to_phase4, patterns.md #1
+All DB and Redis operations are fire-and-forget (asyncio.create_task).
+Failures are logged and counted via Prometheus; they never raise.
+
+Reference: docs/phase3.md §emit_to_phase4, §record_event, patterns.md #1
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
-from typing import TYPE_CHECKING
 
 from src.common.logging import get_logger
 from src.common.metrics import emit_queue_full_total, redis_publish_error_total
-from src.common.types import TickData
+from src.common.types import NormalizedEvent, TickData
 from src.engine.model import LiveFootballQuantModel
-
-if TYPE_CHECKING:
-    import redis.asyncio as aioredis
 
 logger = get_logger("emit")
 
@@ -41,24 +46,27 @@ def emit_to_phase4(
     sigma_MC: dict[str, float],
     order_allowed: bool,
     model: LiveFootballQuantModel,
-    redis_client: aioredis.Redis | None = None,
 ) -> None:
-    """Push tick data to Phase 4 and optionally publish to Redis.
+    """Push tick data to Phase 4, tick_snapshots DB, and Redis.
 
     Constructs a TickData and pushes it to model.phase4_queue with
-    stale-replacement semantics (non-blocking). If a Redis client is
-    provided, fires an asyncio.Task to publish asynchronously.
+    stale-replacement semantics (non-blocking).
 
-    This function is intentionally synchronous for the queue push so that
-    it matches the call site in tick_loop.py (no await needed). The Redis
-    publish is handled via asyncio.create_task() as a background coroutine.
+    If model.db_pool is set, fires an asyncio.Task to write a sampled
+    row to tick_snapshots (every 10s in normal play, every 1s during
+    events / cooldown).
+
+    If model.redis is set, fires an asyncio.Task to publish the tick
+    payload to Redis channel tick:{match_id}.
+
+    This function is intentionally synchronous for the queue push so
+    it matches the call site in tick_loop.py (no await needed).
 
     Args:
         P_true: Market → probability dict for this tick.
         sigma_MC: Market → σ_MC dict for this tick.
         order_allowed: Whether Phase 4 may place orders this tick.
-        model: Live match model (provides queue, match_id, t, etc.).
-        redis_client: Optional async Redis client for dashboard publish.
+        model: Live match model (provides queue, db_pool, redis, etc.).
     """
     tick_data = TickData(
         P_true=P_true,
@@ -82,65 +90,184 @@ def emit_to_phase4(
 
     model.phase4_queue.put_nowait(tick_data)
 
-    # ── Redis publish (fire-and-forget) ───────────────────────────────────
-    if redis_client is not None:
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            return  # no event loop running — skip Redis publish
+    # ── Sampling decision for tick_snapshot write ─────────────────────────
+    # Always write during events/cooldown; every 10s in normal play.
+    t_seconds = model.t * 60.0
+    during_event = (model.event_state != "IDLE") or model.cooldown
+    should_write = during_event or (int(t_seconds) % 10 == 0)
 
-        loop.create_task(
-            _redis_publish(
-                redis_client,
-                model.match_id,
-                model.t,
-                P_true,
-                sigma_MC,
-                order_allowed,
-                model.pricing_mode,
+    # ── DB write: tick_snapshots (fire-and-forget) ────────────────────────
+    if model.db_pool is not None and should_write:
+        with contextlib.suppress(RuntimeError):
+            asyncio.create_task(
+                _write_tick_snapshot(model, P_true, sigma_MC, order_allowed)
             )
-        )
+
+    # ── Redis publish: tick:{match_id} (fire-and-forget) ──────────────────
+    if model.redis is not None:
+        with contextlib.suppress(RuntimeError):
+            asyncio.create_task(
+                _publish_tick_to_redis(model, P_true, sigma_MC, order_allowed)
+            )
 
 
-async def _redis_publish(
-    redis_client: aioredis.Redis,
-    match_id: str,
-    t: float,
+async def record_event(
+    model: LiveFootballQuantModel,
+    event: NormalizedEvent,
+) -> None:
+    """Write a confirmed match event to event_log and Redis.
+
+    Called (via asyncio.create_task) after every confirmed event:
+    goal_confirmed, score_rollback, red_card, period_change,
+    match_finished, source_failure.
+
+    Both operations are fire-and-forget within this coroutine —
+    failures are logged but never re-raised so they don't disrupt
+    the event pipeline.
+
+    Args:
+        model: Live match model with db_pool and redis attributes.
+        event: The confirmed NormalizedEvent to record.
+    """
+    payload = {
+        "score": [model.score_home, model.score_away],
+        "team": event.team,
+        "minute": event.minute if event.minute is not None else model.t,
+        "var_cancelled": event.var_cancelled or False,
+        "t": model.t,
+    }
+
+    # ── DB: INSERT INTO event_log ─────────────────────────────────────────
+    if model.db_pool is not None:
+        try:
+            async with model.db_pool.acquire() as conn:
+                await conn.execute(
+                    """INSERT INTO event_log (match_id, event_type, source, payload)
+                       VALUES ($1, $2, $3, $4)""",
+                    model.match_id,
+                    event.type,
+                    event.source,
+                    json.dumps(payload),
+                )
+        except Exception:
+            logger.error(
+                "event_log_write_failed",
+                match_id=model.match_id,
+                event_type=event.type,
+            )
+
+    # ── Redis: PUBLISH event:{match_id} ───────────────────────────────────
+    if model.redis is not None:
+        try:
+            await model.redis.publish(
+                f"event:{model.match_id}",
+                json.dumps(
+                    {
+                        "type": "event",
+                        "match_id": model.match_id,
+                        "event_type": event.type,
+                        "t": model.t,
+                        "payload": payload,
+                    }
+                ),
+            )
+        except Exception:
+            redis_publish_error_total.labels(match_id=model.match_id).inc()
+            logger.warning(
+                "redis_event_publish_failed",
+                match_id=model.match_id,
+                event_type=event.type,
+            )
+
+
+# ---------------------------------------------------------------------------
+# Internal fire-and-forget coroutines
+# ---------------------------------------------------------------------------
+
+
+async def _write_tick_snapshot(
+    model: LiveFootballQuantModel,
     P_true: dict[str, float],
     sigma_MC: dict[str, float],
     order_allowed: bool,
-    pricing_mode: str,
 ) -> None:
-    """Publish tick data to Redis channel p_true:{match_id}.
+    """Insert a sampled tick row into tick_snapshots.
 
-    Silently swallows errors to avoid disrupting the tick loop.
-    Errors are logged and counted in Prometheus.
+    Silently swallows errors so a DB hiccup never disrupts the tick loop.
 
-    Args:
-        redis_client: Async Redis client.
-        match_id: Match identifier (used as channel suffix).
-        t: Current effective play time in minutes.
-        P_true: Market probabilities.
-        sigma_MC: Per-market MC standard errors.
-        order_allowed: Whether orders are allowed this tick.
-        pricing_mode: "analytical" or "mc".
+    P_kalshi is omitted here (Phase 4 territory). P_bet365 is taken from
+    model.bet365_odds_prev (the previous tick's Odds-API bet365 prices).
     """
-    channel = f"p_true:{match_id}"
+    if model.db_pool is None:
+        return
+    try:
+        async with model.db_pool.acquire() as conn:
+            await conn.execute(
+                """INSERT INTO tick_snapshots
+                   (match_id, t, mu_H, mu_A, P_true, P_kalshi, P_bet365,
+                    sigma_MC, engine_phase, event_state, cooldown, ob_freeze,
+                    order_allowed)
+                   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)""",
+                model.match_id,
+                float(model.t),
+                model.mu_H,
+                model.mu_A,
+                json.dumps(P_true),
+                None,   # P_kalshi tracked by Phase 4, not Phase 3
+                json.dumps(model.bet365_odds_prev) if model.bet365_odds_prev else None,
+                json.dumps(sigma_MC),
+                model.engine_phase,
+                model.event_state,
+                model.cooldown,
+                model.ob_freeze,
+                order_allowed,
+            )
+    except Exception:
+        logger.error(
+            "tick_snapshot_write_failed",
+            match_id=model.match_id,
+            t=model.t,
+        )
+
+
+async def _publish_tick_to_redis(
+    model: LiveFootballQuantModel,
+    P_true: dict[str, float],
+    sigma_MC: dict[str, float],
+    order_allowed: bool,
+) -> None:
+    """Publish tick payload to Redis channel tick:{match_id}.
+
+    Used by the live dashboard to stream real-time P_true updates.
+    Silently swallows errors; errors counted via Prometheus.
+    """
+    if model.redis is None:
+        return
+    channel = f"tick:{model.match_id}"
     payload = json.dumps(
         {
+            "type": "tick",
+            "match_id": model.match_id,
+            "t": round(model.t, 4),
+            "engine_phase": model.engine_phase,
             "P_true": P_true,
             "sigma_MC": sigma_MC,
+            "P_bet365": model.bet365_odds_prev or {},
             "order_allowed": order_allowed,
-            "t": round(t, 4),
-            "pricing_mode": pricing_mode,
+            "cooldown": model.cooldown,
+            "ob_freeze": model.ob_freeze,
+            "event_state": model.event_state,
+            "mu_H": model.mu_H,
+            "mu_A": model.mu_A,
+            "score": [model.score_home, model.score_away],
         }
     )
     try:
-        await redis_client.publish(channel, payload)
+        await model.redis.publish(channel, payload)
     except Exception:
-        redis_publish_error_total.labels(match_id=match_id).inc()
+        redis_publish_error_total.labels(match_id=model.match_id).inc()
         logger.warning(
-            "redis_publish_failed",
-            match_id=match_id,
+            "redis_tick_publish_failed",
+            match_id=model.match_id,
             channel=channel,
         )

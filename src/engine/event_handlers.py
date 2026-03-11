@@ -24,6 +24,7 @@ Reference: docs/phase3.md §Event Handlers, §ob_freeze Release Conditions
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import time
 from functools import partial
 from typing import TYPE_CHECKING
@@ -33,6 +34,7 @@ import structlog
 from src.common.logging import get_logger
 from src.common.types import NormalizedEvent
 from src.engine.compute_mu import compute_remaining_mu
+from src.engine.emit import record_event
 from src.engine.event_queue import EventQueue as _EventQueue  # re-exported
 from src.engine.model import EVENT_IDLE, EVENT_PRELIMINARY, FINISHED
 
@@ -46,6 +48,16 @@ EventQueue = _EventQueue
 
 # Cooldown duration in seconds after a confirmed event
 _COOLDOWN_SECONDS = 15
+
+# Event types that are written to event_log and published to Redis
+_RECORDABLE_EVENTS: frozenset[str] = frozenset({
+    "goal_confirmed",
+    "score_rollback",
+    "red_card",
+    "period_change",
+    "match_finished",
+    "source_failure",
+})
 
 # ob_freeze timeout in seconds (false-positive protection)
 _OB_FREEZE_TIMEOUT = 10.0
@@ -406,6 +418,11 @@ def dispatch_event(
             match_id=model.match_id,
             event_type=t,
         )
+
+    # Record confirmed events to event_log DB + Redis (fire-and-forget)
+    if t in _RECORDABLE_EVENTS:
+        with contextlib.suppress(RuntimeError):
+            asyncio.create_task(record_event(model, event))
 
 
 # ---------------------------------------------------------------------------
