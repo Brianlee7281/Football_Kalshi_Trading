@@ -29,6 +29,9 @@ if TYPE_CHECKING:
     import asyncpg
     import redis.asyncio as aioredis
 
+    from src.execution.execution_router import ExecutionRouter
+    from src.execution.order_book_sync import OrderBookSync
+
 from src.common.logging import get_logger
 from src.common.types import Phase2Result, TickData
 from src.engine.event_queue import EventQueue
@@ -61,6 +64,20 @@ def _default_basis_bounds() -> np.ndarray:
     a1 = _DEFAULT_ALPHA_1
     a2 = _DEFAULT_ALPHA_2
     return np.array([0.0, 15.0, 30.0, 45.0 + a1, 60.0 + a1, 75.0 + a1, 90.0 + a1 + a2])
+
+
+# ---------------------------------------------------------------------------
+# Phase 4 configuration (injected at container startup)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class Phase4Config:
+    """Tunable parameters for Phase 4 signal generation and Kelly sizing."""
+
+    fee_rate: float = 0.07    # Kalshi fee rate (c)
+    z: float = 1.645          # Conservative-P z-score (95th pct one-tailed)
+    K_frac: float = 0.25      # Fractional Kelly coefficient
 
 
 # ---------------------------------------------------------------------------
@@ -197,6 +214,24 @@ class LiveFootballQuantModel:
     redis: aioredis.Redis | None = field(default=None, repr=False)
 
     # ------------------------------------------------------------------
+    # Phase 4 execution (injected by match_engine/main.py)
+    # ------------------------------------------------------------------
+    config: Phase4Config = field(default_factory=Phase4Config)
+    execution: ExecutionRouter | None = field(default=None, repr=False)
+
+    # Active Kalshi tickers for this match (set at startup from MatchConfig)
+    active_tickers: list[str] = field(default_factory=list)
+
+    # Maps Kalshi ticker → Phase 3 model key (e.g. "SOCC-...-YES" → "home_win")
+    ticker_to_model_key: dict[str, str] = field(default_factory=dict)
+
+    # Per-ticker OrderBookSync instances (one per active market)
+    ob_syncs: dict[str, OrderBookSync] = field(default_factory=dict, repr=False)
+
+    # bet365 implied probability per model key (refreshed each tick from Odds-API)
+    bet365_implied: dict[str, float] = field(default_factory=dict)
+
+    # ------------------------------------------------------------------
     # Event handling runtime state
     # ------------------------------------------------------------------
 
@@ -216,6 +251,11 @@ class LiveFootballQuantModel:
     # ------------------------------------------------------------------
     # Properties
     # ------------------------------------------------------------------
+
+    @property
+    def is_paper(self) -> bool:
+        """Whether this match is running in paper (non-live) trading mode."""
+        return self.trading_mode == "paper"
 
     @property
     def score(self) -> tuple[int, int]:
