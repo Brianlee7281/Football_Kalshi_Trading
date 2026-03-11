@@ -370,3 +370,59 @@ async def _sleep_poll(interval: float) -> None:
     import asyncio
 
     await asyncio.sleep(interval)
+
+
+# ---------------------------------------------------------------------------
+# Top-level coroutines — wired into asyncio.gather by match_engine/main.py
+# ---------------------------------------------------------------------------
+
+
+async def live_odds_listener(model: Any) -> None:
+    """Phase 3 Odds-API WebSocket listener coroutine.
+
+    Connects to the Odds-API WebSocket stream, normalises incoming odds
+    updates into NormalizedEvent objects, and dispatches them via
+    dispatch_event(model, event).
+
+    Stub for Sprint 5 — full implementation in Sprint 6.
+    """
+    import asyncio
+
+    from src.engine.model import FINISHED
+
+    while getattr(model, "engine_phase", None) != FINISHED:
+        await asyncio.sleep(1.0)
+
+
+async def live_score_poller(model: Any) -> None:
+    """Phase 3 Goalserve REST polling coroutine.
+
+    Polls Goalserve every 3 seconds for score updates, red cards, period
+    changes, and VAR cancellations.  Dispatches confirmed events via
+    dispatch_event(model, event).
+
+    Stub for Sprint 5 — full implementation in Sprint 6.
+    """
+    import asyncio
+
+    from src.engine.model import FINISHED
+
+    while getattr(model, "engine_phase", None) != FINISHED:
+        await asyncio.sleep(3.0)
+
+
+async def order_book_sync_loop(model: Any) -> None:
+    """Phase 4 Kalshi WebSocket order-book sync coroutine.
+
+    Subscribes to Kalshi order-book WebSocket streams for all active tickers
+    and feeds updates into the per-ticker OrderBookSync instances stored in
+    model.ob_syncs.
+
+    Stub for Sprint 5 — full implementation in Sprint 6.
+    """
+    import asyncio
+
+    from src.engine.model import FINISHED
+
+    while getattr(model, "engine_phase", None) != FINISHED:
+        await asyncio.sleep(1.0)
