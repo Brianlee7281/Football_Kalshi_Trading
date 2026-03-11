@@ -131,6 +131,7 @@ class Position:
     quantity: int
     status: str = "OPEN"  # PENDING | OPEN | AWAITING_SETTLEMENT | SETTLED | CLOSED
     is_paper: bool = False
+    kelly_multiplier: float = 0.8  # alignment multiplier at entry (for trim calc)
     entry_time: datetime | None = None
     exit_time: datetime | None = None
     exit_price: float | None = None
@@ -165,12 +166,18 @@ class FillResult:
 
 @dataclass
 class ExitSignal:
-    """Signal to exit an existing position."""
+    """Signal to exit (fully or partially) an existing position."""
 
-    reason: str  # EDGE_DECAY, EDGE_REVERSAL, EXPIRY_EVAL, BET365_DIVERGENCE
-    EV: float | None = None
-    E_hold: float | None = None
-    E_exit: float | None = None
+    reason: str  # EDGE_DECAY | EDGE_REVERSAL | EXPIRY_EVAL | BET365_DIVERGENCE
+                 # | POSITION_TRIM | OPPORTUNITY_COST
+    EV: float | None = None           # Trigger 1: current position EV
+    E_hold: float | None = None       # Trigger 3: expected value if held
+    E_exit: float | None = None       # Trigger 3: expected value if exited now
+    trim_quantity: int | None = None  # Trigger 5: contracts to trim (partial exit)
+    f_optimal: float | None = None    # Trigger 5: current optimal Kelly fraction
+    f_existing: float | None = None   # Trigger 5: existing fraction of bankroll
+    current_EV: float | None = None   # Trigger 6: EV of current position
+    opposite_EV: float | None = None  # Trigger 6: EV of opposite direction
 
 
 @dataclass
