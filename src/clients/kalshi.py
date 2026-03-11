@@ -430,6 +430,26 @@ class KalshiClient:
         _raise_for_kalshi_error(resp)
         return resp.json()  # type: ignore[no-any-return]
 
+    async def get_order(self, order_id: str) -> dict[str, Any]:
+        """Fetch the current state of an order by ID.
+
+        Args:
+            order_id: Kalshi order UUID.
+
+        Returns:
+            Response dict with "order" key containing status, filled_count, etc.
+
+        Raises:
+            KalshiApiError: If the order is not found or another API error occurs.
+        """
+        endpoint = f"/portfolio/orders/{order_id}"
+        resp = await self._http.get(
+            f"{_API_PREFIX}{endpoint}",
+            headers=self._auth("GET", endpoint),
+        )
+        _raise_for_kalshi_error(resp)
+        return resp.json()  # type: ignore[no-any-return]
+
     async def cancel_order(self, order_id: str) -> None:
         """Cancel an existing order by ID.
 
