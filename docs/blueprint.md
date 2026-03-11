@@ -106,7 +106,7 @@ mmpp-soccer/
 │   │   ├── signal_generator.py         # Multi-market loop: dict→float decomposition
 │   │   ├── edge_detection.py           # compute_signal_with_vwap, 2-pass EV, market alignment
 │   │   ├── kelly.py                    # compute_kelly (incremental), risk_limits
-│   │   ├── exit_logic.py               # 4 triggers: edge_decay, reversal, expiry, bet365_diverge
+│   │   ├── exit_logic.py               # 6 triggers: edge_decay, reversal, expiry, bet365, trim, opportunity_cost
 │   │   ├── execution_router.py         # ExecutionRouter: paper/live mode switch
 │   │   ├── live_executor.py            # execute_order: Kalshi API submission
 │   │   ├── paper_executor.py           # PaperExecutionLayer: directional slippage, fill delay

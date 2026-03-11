@@ -422,25 +422,33 @@ class GoalserveLiveScoreSource(EventSource):
         home_goals = int(match["localteam"]["goals"] or 0)
         away_goals = int(match["visitorteam"]["goals"] or 0)
 
-        if home_goals > self._last_score["home"]:
-            for _ in range(home_goals - self._last_score["home"]):
+        # Multi-goal same poll: if 2 goals scored in same 3s interval,
+        # yield them one at a time with INTERMEDIATE scores so handlers
+        # commit state correctly between goals (ΔS transitions step-by-step).
+        running_home = self._last_score["home"]
+        running_away = self._last_score["away"]
+
+        if home_goals > running_home:
+            for i in range(home_goals - running_home):
+                running_home += 1
                 yield NormalizedEvent(
                     type="goal_confirmed",
                     source="live_score",
                     confidence="confirmed",
-                    score=(home_goals, away_goals),
+                    score=(running_home, running_away),  # intermediate, not final
                     team="localteam",
-                    var_cancelled=False,  # Extracted from Live Score events
+                    var_cancelled=False,
                     timestamp=time.time()
                 )
 
-        if away_goals > self._last_score["away"]:
-            for _ in range(away_goals - self._last_score["away"]):
+        if away_goals > running_away:
+            for i in range(away_goals - running_away):
+                running_away += 1
                 yield NormalizedEvent(
                     type="goal_confirmed",
                     source="live_score",
                     confidence="confirmed",
-                    score=(home_goals, away_goals),
+                    score=(running_home, running_away),  # intermediate, not final
                     team="visitorteam",
                     var_cancelled=False,
                     timestamp=time.time()
@@ -1301,7 +1309,14 @@ async def step_3_4_async(model, μ_H, μ_A):
 
     if model.X == 0 and model.delta_S == 0 and not model.DELTA_SIGNIFICANT:
         P_true = analytical_pricing(μ_H, μ_A, model.S)
-        σ_MC = {market: 0.0 for market in P_true}  # no MC uncertainty in analytical mode
+        # Analytical mode has no sampling uncertainty, but model error still exists.
+        # Use a synthetic σ floor so P_cons provides conservative protection
+        # during the most common state (0-0 first half, no red cards).
+        # Without this, P_cons = P_true and z-adjustment gives zero protection.
+        σ_MC = {
+            market: max(math.sqrt(p * (1 - p) / N_MC), 0.005)
+            for market, p in P_true.items()
+        }
         return P_true, σ_MC
 
     else:
@@ -1397,7 +1412,9 @@ Every second:
 - `σ_MC(t): dict` — Monte Carlo standard error per market (e.g., `{"home_win": 0.0022, "over_25": 0.0021, ...}`)
 - `pricing_mode`: Analytical / Monte Carlo
 
-> **Analytical mode:** `σ_MC = {market: 0.0 for market in P_true}` (all zeros, no MC uncertainty).
+> **Analytical mode:** σ_MC uses a synthetic floor `max(sqrt(p*(1-p)/N_MC), 0.005)` per market.
+> This ensures P_cons always has conservative protection, even when there is no MC sampling uncertainty.
+> Without this floor, the 0-0 first half (60-70% of match time) would have P_cons = P_true with zero protection.
 
 ---
 

@@ -111,9 +111,36 @@ class OrderBookSync:
         self.kalshi_best_ask = None
         self.kalshi_depth_ask = []  # [(price, qty), ...] ascending
         self.kalshi_depth_bid = []  # [(price, qty), ...] descending
+        self.kalshi_last_update = 0.0    # timestamp of last Kalshi WS message
 
         # bet365 reference prices
         self.bet365_implied = {}
+        self.bet365_last_update = 0.0    # timestamp of last bet365 odds update
+
+    KALSHI_STALE_THRESHOLD = 5.0    # seconds — skip trading if order book older than this
+    BET365_STALE_THRESHOLD = 30.0   # seconds — treat as UNAVAILABLE if older than this
+
+    @property
+    def kalshi_is_stale(self) -> bool:
+        """True if Kalshi order book data is too old to trade on."""
+        if self.kalshi_last_update == 0.0:
+            return True
+        return (time.time() - self.kalshi_last_update) > self.KALSHI_STALE_THRESHOLD
+
+    @property
+    def bet365_is_stale(self) -> bool:
+        """True if bet365 data is too old for alignment check."""
+        if self.bet365_last_update == 0.0:
+            return True
+        return (time.time() - self.bet365_last_update) > self.BET365_STALE_THRESHOLD
+
+    def get_bet365_for_alignment(self, market_key: str) -> Optional[float]:
+        """Return bet365 implied prob, or None if data is stale.
+        Stale data yields UNAVAILABLE alignment (multiplier 0.6) instead of
+        false ALIGNED/DIVERGENT on outdated information."""
+        if self.bet365_is_stale:
+            return None
+        return self.bet365_implied.get(market_key)
 
     def compute_vwap_buy(self, target_qty: int) -> Optional[float]:
         """
@@ -595,7 +622,19 @@ async def signal_generator(model):
             amount = f_incremental * model.bankroll
 
             # ─── Risk limits + execution ───
-            await execute_with_reservation(signal, amount, ob_sync, model)
+            # IMPORTANT: await completes the full reserve→execute→confirm cycle
+            # before processing the next ticker. This prevents within-container
+            # race conditions where ticker B's Kelly reads stale exposure from ticker A.
+            fill = await execute_with_reservation(signal, amount, ob_sync, model)
+
+            # ─── Bankroll refresh after fill ───
+            # Without this, subsequent Kelly calculations use startup bankroll,
+            # overestimating available capital after each fill.
+            if fill and fill.quantity > 0:
+                fill_cost = fill.price * fill.quantity
+                model.bankroll -= fill_cost
+                log.info(f"Bankroll updated: -{fill_cost:.2f}, "
+                         f"remaining={model.bankroll:.2f}")
 ```
 
 > **Queue interface:** `emit_to_phase4()` in Phase 3 pushes `{"P_true": dict, "σ_MC": dict, "order_allowed": bool}`
@@ -861,7 +900,7 @@ After risk limits, the liquidity gate further caps contracts against visible dep
 
 Close positions when edge decays or reverses due to changing in-match conditions.
 
-### Four Exit Triggers
+### Six Exit Triggers
 
 > **Trigger interaction:** Triggers are evaluated in order (1→2→3→4).
 > Trigger 1 (edge decay) catches gradual EV erosion, while Trigger 2 (edge reversal)
@@ -1037,22 +1076,128 @@ def check_bet365_divergence(position, P_bet365: float) -> Optional[DivergenceAle
 **Trigger 4 is logging-only initially.**
 Enable auto-exit after enough data in Step 4.6.
 
+#### Trigger 5: Position Trimming (Partial Exit)
+
+> When edge weakens but remains above θ_exit, the position stays at its original
+> oversized allocation. This dead zone can persist for minutes.
+> Trigger 5 checks if the current optimal allocation is materially below the
+> existing position, and trims to the new optimal.
+
+```python
+def check_position_trim(position, P_true, sigma_MC, P_kalshi_bid,
+                        c, z, K_frac, bankroll) -> Optional[ExitSignal]:
+    """
+    Partial exit: if optimal allocation has shrunk to less than half
+    of existing position, trim down to optimal.
+
+    Without this, positions remain oversized when edge weakens
+    but stays above θ_exit (0.5¢).
+    """
+    if position.direction == "BUY_YES":
+        P_cons = P_true - z * sigma_MC
+    else:
+        P_cons = P_true + z * sigma_MC
+
+    # Compute current optimal f
+    P_effective = P_kalshi_bid  # use current market for trim evaluation
+    if position.direction == "BUY_YES":
+        W = (1 - c) * (1 - P_effective)
+        L = P_effective
+        EV = P_cons * W - (1 - P_cons) * L
+    else:
+        W = (1 - c) * P_effective
+        L = (1 - P_effective)
+        EV = (1 - P_cons) * W - P_cons * L
+
+    if EV <= 0 or W * L <= 0:
+        return None  # edge_decay (Trigger 1) will handle this
+
+    f_optimal = K_frac * (EV / (W * L)) * position.kelly_multiplier
+    existing_fraction = (position.entry_price * position.quantity) / bankroll
+
+    # Trim if optimal is less than half of existing
+    if f_optimal < existing_fraction * 0.5:
+        trim_qty = position.quantity - int(f_optimal * bankroll / P_effective)
+        return ExitSignal(
+            reason="POSITION_TRIM",
+            trim_quantity=trim_qty,  # partial, not full exit
+            f_optimal=f_optimal,
+            f_existing=existing_fraction,
+        )
+
+    return None
+```
+
+#### Trigger 6: Opportunity Cost Exit (Direction Flip)
+
+> If the model now strongly favors the opposite direction but the current
+> position's EV is marginally positive, the system is deadlocked:
+> can't enter new direction (no_opposite_position filter), won't exit old one.
+> This trigger resolves the deadlock by exiting when the opportunity cost is high.
+
+```python
+def check_opportunity_cost_exit(position, P_true, sigma_MC,
+                                 P_kalshi_ask, P_kalshi_bid,
+                                 c, z) -> Optional[ExitSignal]:
+    """
+    Exit if opposite direction has strong edge AND current position's
+    edge has weakened below 2x θ_exit.
+
+    Scenario: was Buy Yes, goal changes dynamic, model now favors Buy No.
+    Current Buy Yes EV = +0.8¢ (above θ_exit 0.5¢, so no decay trigger).
+    Opposite Buy No EV = +3.5¢ (strong signal being missed).
+    """
+    # Compute current position's EV
+    if position.direction == "BUY_YES":
+        P_cons_current = P_true - z * sigma_MC
+        current_EV = (P_cons_current * (1-c) * (1-P_kalshi_bid)
+                      - (1-P_cons_current) * P_kalshi_bid)
+    else:
+        P_cons_current = P_true + z * sigma_MC
+        current_EV = ((1-P_cons_current) * (1-c) * P_kalshi_bid
+                      - P_cons_current * (1-P_kalshi_bid))
+
+    # Compute opposite direction's EV
+    if position.direction == "BUY_YES":
+        # Opposite = BUY_NO
+        P_cons_opp = P_true + z * sigma_MC
+        opp_EV = ((1-P_cons_opp) * (1-c) * P_kalshi_bid
+                  - P_cons_opp * (1-P_kalshi_bid))
+    else:
+        # Opposite = BUY_YES
+        P_cons_opp = P_true - z * sigma_MC
+        opp_EV = (P_cons_opp * (1-c) * (1-P_kalshi_ask)
+                  - (1-P_cons_opp) * P_kalshi_ask)
+
+    # Exit if: opposite has strong edge AND current is weak
+    if opp_EV > THETA_ENTRY and current_EV < 2 * THETA_EXIT:
+        return ExitSignal(
+            reason="OPPORTUNITY_COST",
+            current_EV=current_EV,
+            opposite_EV=opp_EV,
+        )
+
+    return None
+```
+
 ### Full Exit Evaluation Loop
 
 ```python
 async def evaluate_exit(position, P_true, sigma_MC, P_kalshi_bid,
-                        P_bet365, c, z, t, T) -> Optional[ExitSignal]:
-    """Call this each tick for all open positions"""
+                        P_kalshi_ask, P_bet365, c, z, t, T,
+                        K_frac, bankroll) -> Optional[ExitSignal]:
+    """Call this each tick for all open positions.
+    6 triggers evaluated in order — first match wins."""
 
-    # Trigger 1: edge decay
+    # Trigger 1: edge decay (EV below 0.5¢)
     exit = check_edge_decay(position, P_true, sigma_MC, P_kalshi_bid, c, z)
     if exit: return exit
 
-    # Trigger 2: edge reversal
+    # Trigger 2: edge reversal (model flipped sides)
     exit = check_edge_reversal(position, P_true, sigma_MC, P_kalshi_bid, z)
     if exit: return exit
 
-    # Trigger 3: expiry eval
+    # Trigger 3: expiry eval (last 3 minutes)
     exit = check_expiry_eval(position, P_true, sigma_MC, P_kalshi_bid, c, z, t, T)
     if exit: return exit
 
@@ -1069,6 +1214,16 @@ async def evaluate_exit(position, P_true, sigma_MC, P_kalshi_bid,
         }
         if BET365_DIVERGENCE_AUTO_EXIT:
             return ExitSignal(reason="BET365_DIVERGENCE")
+
+    # Trigger 5: position trimming (edge weakened but above θ_exit)
+    trim = check_position_trim(position, P_true, sigma_MC, P_kalshi_bid,
+                               c, z, K_frac, bankroll)
+    if trim: return trim
+
+    # Trigger 6: opportunity cost (opposite direction has strong edge)
+    opp = check_opportunity_cost_exit(position, P_true, sigma_MC,
+                                       P_kalshi_ask, P_kalshi_bid, c, z)
+    if opp: return opp
 
     return None
 ```
@@ -1098,6 +1253,13 @@ async def evaluate_exit(position, P_true, sigma_MC, P_kalshi_bid,
 async def execute_order(signal: Signal, amount: float,
                         ob_sync: OrderBookSync,
                         urgent: bool = False) -> Optional[FillResult]:
+    """Submit order to Kalshi with error handling for rejections."""
+
+    # --- Staleness gate: skip if order book is stale ---
+    if ob_sync.kalshi_is_stale:
+        log.warning("Kalshi order book stale, skipping order")
+        return None
+
     P_kalshi = signal.P_kalshi  # VWAP effective price
     contracts = int(amount / P_kalshi)
 
@@ -1119,7 +1281,29 @@ async def execute_order(signal: Signal, amount: float,
                      else (100 - price_cents),
     }
 
-    response = await kalshi_api.submit_order(order)
+    # --- Submit with error handling ---
+    try:
+        response = await kalshi_api.submit_order(order)
+    except KalshiApiError as e:
+        if e.code == "market_closed":
+            # Market closed (e.g., halftime) — suppress until reopened.
+            # Without this, every tick retries for ~15 minutes of halftime.
+            log.warning(f"Market closed: {signal.market_ticker}, "
+                        f"suppressing orders for this ticker")
+            ob_sync.market_closed_tickers.add(signal.market_ticker)
+            return None
+        elif e.code == "insufficient_balance":
+            log.error(f"Insufficient Kalshi balance, halting new orders")
+            return None
+        elif e.code == "price_out_of_range":
+            log.warning(f"Price {price_cents}¢ out of range for "
+                        f"{signal.market_ticker}, skipping")
+            return None
+        else:
+            # Transient error — log and skip this tick
+            log.error(f"Kalshi order error: {e.code} — {e.message}")
+            return None
+
     order_id = response["order"]["id"]
 
     filled = await wait_for_fill(order_id, timeout=5)
@@ -1737,11 +1921,11 @@ def adaptive_parameter_update(analytics: dict):
 │      [v2]        │  │    No:  P_bet365 > entry + 5pp [v2]   │
 │  • Match cap     │  │       → logging first, then optional   │
 │    pro-rata      │  │         auto-exit after data           │
-│  • 3-layer risk  │  │                                        │
-│    (3%/5%/20%)   │  │                                        │
-│  • [EXT] Liq.    │  │                                        │
-│    gate (30%     │  │                                        │
-│    depth cap)    │  │                                        │
+│  • 3-layer risk  │  │  Trigger 5: Position trim       [v3]  │
+│    (3%/5%/20%)   │  │    f_optimal < existing * 0.5 → trim  │
+│  • [EXT] Liq.    │  │  Trigger 6: Opportunity cost    [v3]  │
+│    gate (30%     │  │    Opposite EV > θ_entry AND           │
+│    depth cap)    │  │    current EV < 2× θ_exit → exit      │
 │  • [EXT] Cross-  │  │                                        │
 │    market cov    │  │                                        │
 │    optimization  │  │                                        │
@@ -1943,3 +2127,17 @@ Step 4.6 (Post-Match Analytics)
 | 18 | Phase 3→4 interface | P_true: float, σ_MC: float | P_true: dict, σ_MC: dict (per-market), decomposed in signal_generator |
 | 19 | Phase 4 | No signal_generator; no multi-market loop | `signal_generator()` coroutine: per-ticker decomposition + execution loop |
 | 20 | Phase 3 σ_MC | Single float for all markets | Per-market `math.sqrt(p*(1-p)/N)` via `compute_mc_stderr()` |
+
+## v4 Change Tracking (Review Gap Fixes)
+
+| # | Gap | Location | Before | After |
+|---|-----|------|--------|--------|
+| 21 | #1 σ_MC analytical | Phase 3 `step_3_4_async` | σ_MC = 0.0 in analytical mode | σ_MC = max(sqrt(p*(1-p)/N_MC), 0.005) — synthetic floor |
+| 22 | #2 Partial exit | Phase 4 Step 4.4 | 4 exit triggers, binary only | 6 triggers: added Trigger 5 (position trim when f_optimal < existing * 0.5) |
+| 23 | #3 Direction flip | Phase 4 Step 4.4 | No opportunity cost exit | Added Trigger 6: exit if opposite EV > θ_entry AND current EV < 2× θ_exit |
+| 24 | #4 Within-container race | Phase 4 signal_generator | Sequential but not explicitly awaited | Explicit: await execute_with_reservation completes before next ticker |
+| 25 | #5 Bankroll staleness | Phase 4 signal_generator | model.bankroll static from startup | model.bankroll decremented by fill_cost after each fill |
+| 26 | #6 Multi-goal same poll | Phase 3 GoalserveLiveScoreSource | All goals in poll use final score tuple | Intermediate score tracking: running_home/away incremented per goal |
+| 27 | #7 Stale bet365 | Phase 4 OrderBookSync | No timestamp on bet365_implied | bet365_last_update + 30s threshold → UNAVAILABLE if stale |
+| 28 | #8 Kalshi rejection | Phase 4 execute_order | No error handling on submit_order | KalshiApiError catch: market_closed, insufficient_balance, price_out_of_range |
+| 29 | #10 Kalshi WS stale | Phase 4 OrderBookSync | No timestamp on Kalshi WS data | kalshi_last_update + 5s threshold → skip trading if stale |
