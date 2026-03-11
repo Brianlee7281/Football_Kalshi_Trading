@@ -171,6 +171,37 @@ class GoalserveClient:
         return None
 
     # ------------------------------------------------------------------
+    # Commentaries by league (Phase 1 — historical with red cards)
+    # ------------------------------------------------------------------
+
+    async def get_commentaries_by_league(
+        self,
+        league_id: int,
+        date: str,
+    ) -> list[dict[str, Any]]:
+        """Fetch commentaries for all matches in a league on a given date.
+
+        Returns full match dicts with ``summary`` (goals, red cards),
+        ``matchinfo`` (stoppage time), ``stats``, ``player_stats``, etc.
+
+        API ref: /getfeed/{key}/commentaries/{league_id}?date={date}
+
+        Args:
+            league_id: Goalserve league ID (e.g. 1204 for EPL).
+            date: Date string in DD.MM.YYYY format (e.g. "15.01.2024").
+
+        Returns:
+            List of match dicts with full commentary data.
+        """
+        path = f"/{self._api_key}/commentaries/{league_id}"
+        params: dict[str, Any] = {"date": date, "json": "1"}
+
+        response = await self._http.get(path, params=params)
+        data = response.json()
+
+        return _extract_commentaries_matches(data)
+
+    # ------------------------------------------------------------------
     # Past Scores (Phase 1 — recent results)
     # ------------------------------------------------------------------
 
@@ -307,6 +338,38 @@ def _extract_match_stats(data: dict[str, Any]) -> dict[str, Any]:
     return data
 
 
+def _extract_commentaries_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Extract match list from Goalserve commentaries-by-league response.
+
+    Structure: ``commentaries.tournament.match`` (single dict or list).
+    Falls back to ``_extract_matches`` if structure doesn't match.
+    """
+    matches: list[dict[str, Any]] = []
+
+    commentaries = data.get("commentaries", {})
+    if isinstance(commentaries, dict):
+        tournament = commentaries.get("tournament", {})
+        if isinstance(tournament, dict):
+            raw = tournament.get("match", [])
+            if isinstance(raw, dict):
+                matches.append(raw)
+            elif isinstance(raw, list):
+                matches.extend(raw)
+        elif isinstance(tournament, list):
+            for t in tournament:
+                raw = t.get("match", []) if isinstance(t, dict) else []
+                if isinstance(raw, dict):
+                    matches.append(raw)
+                elif isinstance(raw, list):
+                    matches.extend(raw)
+
+    # Fallback: try generic extraction
+    if not matches:
+        matches = _extract_matches(data)
+
+    return matches
+
+
 def _extract_live_matches(data: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract live match list from Goalserve soccernew response.
 
@@ -368,12 +431,30 @@ def parse_minute(minute: str, extra_min: str = "") -> float:
     """Parse Goalserve minute + extra_min into a float timestamp.
 
     Examples:
-        parse_minute("23", "")   -> 23.0
-        parse_minute("90", "3")  -> 93.0
-        parse_minute("45", "2")  -> 47.0
+        parse_minute("23", "")          -> 23.0
+        parse_minute("90", "3")         -> 93.0
+        parse_minute("45", "2")         -> 47.0
+        parse_minute("90+5", "")        -> 95.0
+        parse_minute("pen miss 22", "") -> 22.0
     """
-    base = float(minute) if minute else 0.0
-    extra = float(extra_min) if extra_min else 0.0
+    # Handle "90+5" format (common in historical fixtures)
+    if minute and "+" in minute:
+        parts = minute.split("+", 1)
+        try:
+            return float(parts[0]) + float(parts[1])
+        except (ValueError, TypeError):
+            pass
+    try:
+        base = float(minute) if minute else 0.0
+    except (ValueError, TypeError):
+        # Extract trailing number from strings like "pen miss 22"
+        import re
+        match = re.search(r"(\d+(?:\.\d+)?)\s*$", minute)
+        base = float(match.group(1)) if match else 0.0
+    try:
+        extra = float(extra_min) if extra_min else 0.0
+    except (ValueError, TypeError):
+        extra = 0.0
     return base + extra
 
 

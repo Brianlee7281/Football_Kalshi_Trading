@@ -207,13 +207,19 @@ def _zero_tier2_features() -> dict[str, float]:
 
 
 def _zero_odds_features() -> dict[str, float]:
+    """Return NaN for all odds features when odds are unavailable.
+
+    XGBoost handles NaN natively as missing values, so partial odds
+    coverage (e.g. only Dec 2025+ matches have odds) works correctly.
+    """
+    nan = float("nan")
     return {
-        "exchange_home_prob": 0.0,
-        "exchange_draw_prob": 0.0,
-        "exchange_away_prob": 0.0,
-        "market_avg_home_prob": 0.0,
-        "market_avg_draw_prob": 0.0,
-        "bookmaker_odds_std": 0.0,
+        "exchange_home_prob": nan,
+        "exchange_draw_prob": nan,
+        "exchange_away_prob": nan,
+        "market_avg_home_prob": nan,
+        "market_avg_draw_prob": nan,
+        "bookmaker_odds_std": nan,
     }
 
 

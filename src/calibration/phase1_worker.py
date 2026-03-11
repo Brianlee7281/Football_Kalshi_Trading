@@ -10,11 +10,16 @@ Runs the full offline calibration pipeline:
 Results are returned as a Phase1Result dataclass. In production,
 this would write to the ``production_params`` DB table.
 
+For historical data, use :func:`fetch_season_commentaries` to get match
+dicts with full ``summary`` data (goals + red cards). The fixtures endpoint
+only provides goals — no red card events for the Q matrix.
+
 Reference: docs/implementation_roadmap.md Sprint 3 Task 3.3
 """
 
 from __future__ import annotations
 
+import asyncio
 import math
 from dataclasses import dataclass
 from typing import Any
@@ -49,10 +54,93 @@ from src.calibration.step_1_5_validation import (
     poisson_1x2,
     run_validation,
 )
+from src.clients.goalserve import GoalserveClient
 from src.common.logging import get_logger
 from src.common.types import IntervalRecord
 
 logger = get_logger("phase1_worker")
+
+
+# ---------------------------------------------------------------------------
+# Historical data fetching (commentaries endpoint — includes red cards)
+# ---------------------------------------------------------------------------
+
+
+async def fetch_season_commentaries(
+    client: GoalserveClient,
+    league_id: int,
+    season: str,
+    *,
+    concurrency: int = 5,
+) -> list[dict[str, Any]]:
+    """Fetch full-season match data via commentaries endpoint.
+
+    First fetches fixtures to discover match dates, then calls
+    ``get_commentaries_by_league`` for each unique matchday. This gives
+    us ``summary`` data with goals AND red cards, unlike fixtures which
+    only have goals.
+
+    Args:
+        client: Active GoalserveClient.
+        league_id: Goalserve league ID (e.g. 1204 for EPL).
+        season: Season string (e.g. "2023-2024").
+        concurrency: Max concurrent API calls.
+
+    Returns:
+        List of match dicts with full commentary data.
+    """
+    # Step 1: Get fixtures to discover unique matchday dates
+    fixtures = await client.get_historical_fixtures(league_id, season)
+    if not fixtures:
+        logger.warning("no_fixtures_found", league_id=league_id, season=season)
+        return []
+
+    # Collect unique dates (format: DD.MM.YYYY)
+    dates: set[str] = set()
+    for m in fixtures:
+        raw_date = m.get("@formatted_date", m.get("@date", m.get("date", "")))
+        if not raw_date:
+            continue
+        # Goalserve dates are DD.MM.YYYY
+        dates.add(str(raw_date))
+
+    logger.info(
+        "fetching_commentaries",
+        league_id=league_id,
+        season=season,
+        n_fixtures=len(fixtures),
+        n_dates=len(dates),
+    )
+
+    # Step 2: Fetch commentaries for each date with concurrency limit
+    sem = asyncio.Semaphore(concurrency)
+    all_matches: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+
+    async def _fetch_date(date: str) -> list[dict[str, Any]]:
+        async with sem:
+            try:
+                return await client.get_commentaries_by_league(league_id, date)
+            except Exception as e:
+                logger.debug("commentaries_date_failed", date=date, error=str(e))
+                return []
+
+    tasks = [_fetch_date(d) for d in sorted(dates)]
+    results = await asyncio.gather(*tasks)
+
+    for batch in results:
+        for m in batch:
+            mid = str(m.get("@id", m.get("id", "")))
+            if mid and mid not in seen_ids:
+                seen_ids.add(mid)
+                all_matches.append(m)
+
+    logger.info(
+        "commentaries_fetched",
+        n_matches=len(all_matches),
+        n_with_summary=sum(1 for m in all_matches if m.get("summary")),
+    )
+    return all_matches
 
 # ---------------------------------------------------------------------------
 # Phase 1 result
@@ -137,6 +225,7 @@ def step_1_2_estimate_Q(
 def step_1_3_ml_prior(
     intervals_by_match: dict[str, list[IntervalRecord]],
     match_stats: dict[str, dict[str, Any]] | None = None,
+    odds_by_match: dict[str, dict[str, list[dict[str, Any]]]] | None = None,
 ) -> tuple[list[str], np.ndarray, np.ndarray, list[str]]:
     """Step 1.3: Train XGBoost prior and compute initial a_H, a_A.
 
@@ -146,6 +235,9 @@ def step_1_3_ml_prior(
     Args:
         intervals_by_match: Match intervals from Step 1.1.
         match_stats: Optional per-match Goalserve stats dicts.
+        odds_by_match: Optional per-match Odds-API bookmakers dicts.
+            Matches without odds get NaN for odds features (XGBoost
+            handles NaN natively as missing values).
 
     Returns:
         (match_ids, a_H_init, a_A_init, feature_mask)
@@ -153,7 +245,9 @@ def step_1_3_ml_prior(
     match_ids = list(intervals_by_match.keys())
 
     if match_stats and _has_enough_features(match_stats):
-        return _step_1_3_xgboost(intervals_by_match, match_stats, match_ids)
+        return _step_1_3_xgboost(
+            intervals_by_match, match_stats, match_ids, odds_by_match,
+        )
 
     return _step_1_3_mle_fallback(intervals_by_match, match_ids)
 
@@ -170,8 +264,15 @@ def _step_1_3_xgboost(
     intervals_by_match: dict[str, list[IntervalRecord]],
     match_stats: dict[str, dict[str, Any]],
     match_ids: list[str],
+    odds_by_match: dict[str, dict[str, list[dict[str, Any]]]] | None = None,
 ) -> tuple[list[str], np.ndarray, np.ndarray, list[str]]:
-    """Full XGBoost pipeline when detailed stats are available."""
+    """Full XGBoost pipeline when detailed stats are available.
+
+    When odds_by_match is provided, matches WITH odds get real Tier 3
+    features. Matches WITHOUT odds get NaN for odds features — XGBoost
+    handles NaN natively as missing values, so partial odds coverage
+    is fine.
+    """
     feature_dicts_H: list[dict[str, float]] = []
     feature_dicts_A: list[dict[str, float]] = []
     y_H: list[float] = []
@@ -185,8 +286,14 @@ def _step_1_3_xgboost(
         ivs = intervals_by_match[mid]
         h_goals, a_goals = goals_from_intervals(ivs, mid)
 
-        feature_dicts_H.append(build_match_features(stats, None, is_home=True))
-        feature_dicts_A.append(build_match_features(stats, None, is_home=False))
+        # Odds: use real data if available, else None → NaN features
+        odds_bm = odds_by_match.get(mid) if odds_by_match else None
+        feature_dicts_H.append(
+            build_match_features(stats, odds_bm, is_home=True),
+        )
+        feature_dicts_A.append(
+            build_match_features(stats, odds_bm, is_home=False),
+        )
         y_H.append(float(h_goals))
         y_A.append(float(a_goals))
         valid_ids.append(mid)
@@ -337,6 +444,7 @@ def run_phase1(
     *,
     league_id: int = 0,
     match_stats: dict[str, dict[str, Any]] | None = None,
+    odds_by_match: dict[str, dict[str, list[dict[str, Any]]]] | None = None,
     exchange_preds: np.ndarray | None = None,
     sigma_a: float = _DEFAULT_SIGMA_A,
     num_epochs: int = _DEFAULT_NUM_EPOCHS,
@@ -345,9 +453,11 @@ def run_phase1(
     """Run the complete Phase 1 calibration pipeline.
 
     Args:
-        matches: List of Goalserve match dicts.
+        matches: List of Goalserve match dicts (from commentaries or fixtures).
+            For red card data, use commentaries (via ``fetch_season_commentaries``).
         league_id: League identifier.
         match_stats: Optional per-match detailed stats (for XGBoost).
+        odds_by_match: Optional per-match Odds-API bookmakers dicts.
         exchange_preds: Optional (N, 3) Betfair Exchange close probs.
         sigma_a: ML prior regularization strength.
         num_epochs: NLL optimization epochs.
@@ -371,7 +481,7 @@ def run_phase1(
 
     # Step 1.3: ML prior
     match_ids, a_H_init, a_A_init, feature_mask = step_1_3_ml_prior(
-        intervals_by_match, match_stats,
+        intervals_by_match, match_stats, odds_by_match,
     )
 
     # Step 1.4: NLL optimization
