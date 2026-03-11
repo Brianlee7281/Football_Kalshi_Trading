@@ -27,6 +27,7 @@ import numpy as np
 
 from src.common.logging import get_logger
 from src.common.types import Phase2Result, TickData
+from src.engine.event_queue import EventQueue
 
 logger = get_logger("model")
 
@@ -184,6 +185,23 @@ class LiveFootballQuantModel:
     phase4_queue: asyncio.Queue[TickData] = field(
         default_factory=lambda: asyncio.Queue(maxsize=1),
     )
+
+    # ------------------------------------------------------------------
+    # Event handling runtime state
+    # ------------------------------------------------------------------
+
+    # EventQueue: buffers events arriving during PRELIMINARY_DETECTED
+    event_queue: EventQueue = field(default_factory=EventQueue)
+
+    # ob_freeze tracking (for stabilization + timeout release)
+    _ob_stable_ticks: int = field(default=0, repr=False)
+    _ob_freeze_start: float = field(default=0.0, repr=False)
+
+    # Active cooldown asyncio.Task (cancelled and replaced on rapid events)
+    _cooldown_task: asyncio.Task[None] | None = field(default=None, repr=False)
+
+    # MC version counter for stale-result detection (incremented each MC call)
+    _mc_version: int = field(default=0, repr=False)
 
     # ------------------------------------------------------------------
     # Properties

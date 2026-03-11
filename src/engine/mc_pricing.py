@@ -219,12 +219,8 @@ async def step_3_4_async(
         return P_true, sigma_MC
 
     # MC path
-    # Ensure model has _mc_version attribute
-    if not hasattr(model, "_mc_version"):
-        model._mc_version = 0  # type: ignore[attr-defined]
-
-    model._mc_version += 1  # type: ignore[attr-defined]
-    my_version = model._mc_version  # type: ignore[attr-defined]
+    model._mc_version += 1
+    my_version = model._mc_version
 
     # Deterministic seed from match state
     seed = (
@@ -258,7 +254,7 @@ async def step_3_4_async(
     )
 
     # Stale check: model state changed during MC execution
-    if my_version != model._mc_version:  # type: ignore[attr-defined]
+    if my_version != model._mc_version:
         return None, None
     if model.event_state == EVENT_PRELIMINARY:
         return None, None
