@@ -66,9 +66,11 @@ Each sprint has: prerequisites, files to create (in order), per-file specs, test
 **Depends on:** `src/clients/base_client.py` (Task 1.1), `src/common/types.py` (S0)
 - Reference: `docs/phase1.md` Input Data section (Goalserve endpoints)
 - Methods:
-  - `get_fixtures(league_id, season)` → match list
-  - `get_match_stats(match_id)` → events, lineups, formations
+  - `get_fixtures(league_id, season)` → match list (used for date discovery)
+  - `get_commentaries_by_league(league_id, date)` → minute-level events, red cards, lineups (primary data source for Phase 1)
+  - `get_match_stats(match_id)` → detailed stats including player stats, xG
   - `get_live_score(match_id)` → current score, minute, status (for Phase 3)
+  - Helper exports: `parse_minute`, `resolve_scoring_team`, `extract_goals`, `extract_red_cards`, `extract_stoppage_time`
 - Parse Goalserve XML/JSON into typed dicts
 - Test with real API call → save response as `tests/fixtures/goalserve_*.json`
 
@@ -76,12 +78,15 @@ Each sprint has: prerequisites, files to create (in order), per-file specs, test
 
 **File:** `src/clients/odds_api.py`
 **Depends on:** `src/clients/base_client.py` (Task 1.1), `src/common/types.py` (S0)
-- Reference: `docs/phase1.md` Step 1.3 (Odds-API schema: `bookmakers[].markets[].outcomes[]`)
+- Reference: `docs/phase1.md` Input Data section (Odds-API endpoints), `docs/api_reference_odds_api.md`
+- Base URL: `https://api.odds-api.io/v3`
 - Methods:
-  - `get_historical_odds(sport, date, event_id)` → bookmaker odds
-  - `connect_live_ws(api_key, markets, status)` → async iterator (for Phase 3)
-- Filter to 5 bookmakers: bet365, betfair_exchange, sbobet, 1xbet, draftkings
-- Extract Betfair Exchange as baseline (key: `betfair_exchange`)
+  - `get_events(sport, league, status)` → event list (pending/live/settled)
+  - `get_odds(event_id, bookmakers)` → odds for single event
+  - `get_odds_multi(event_ids, bookmakers)` → odds for up to 10 events (1 API call)
+  - `connect_live_ws(markets, sport, status)` → async iterator (for Phase 3)
+- Filter to 5 bookmakers: Bet365, Betfair Exchange, Sbobet, 1xBet, DraftKings
+- **Historical data available from Dec 2025 onwards only.** Return NaN for unavailable matches.
 - Test with real API call → save response as `tests/fixtures/odds_api_*.json`
 
 ### Task 1.4: Step 1.1 — Interval Segmentation
@@ -163,6 +168,7 @@ Two layers: synthetic fixtures (from design docs, exact expected values) + real 
 - Output: XGBoost model predicting a_H, a_A per match
 - Key logic:
   - `build_odds_features()` — extract from Odds-API JSON (Betfair Exchange primary, market average fallback)
+  - **Missing odds (pre-Dec 2025):** return NaN, not 0.0. XGBoost handles NaN natively as missing values.
   - 4-tier feature architecture (phase1.md Step 1.3)
   - Poisson regression objective in XGBoost
   - Feature importance via Poisson deviance
@@ -441,7 +447,7 @@ Two layers: synthetic fixtures (from design docs, exact expected values) + real 
 **File:** `src/execution/exit_logic.py`
 **Depends on:** `src/common/types.py` (S0 — Position, ExitSignal), `src/execution/edge_detection.py` (Task 5.4 — compute_conservative_P)
 - Reference: `docs/phase4.md` Step 4.4
-- 4 triggers: edge_decay, edge_reversal, expiry_eval, bet365_divergence
+- 6 triggers: edge_decay, edge_reversal, expiry_eval, bet365_divergence, position_trim, opportunity_cost
 - `evaluate_exit()` — per-position evaluation loop
 
 ### Task 5.8: Signal Generator
@@ -502,6 +508,14 @@ All concrete values below come from `docs/phase4.md` validation examples.
   - v1 (wrong): would need `0.46 > 0.65` → no trigger (broken)
 - Test: expiry_eval Buy No — `entry=0.40, P_cons=0.35, c=0.07`:
   - `E_hold = 0.65*0.93*0.40 - 0.35*0.60 = 0.2418 - 0.21 = +0.0318` (hold is better)
+- Test: position_trim (Trigger 5) — `K_frac=0.25, bankroll=10000, existing=500 (5%)`:
+  - If f_optimal=0.018 (1.8%): `0.018 < 0.05 * 0.5 = 0.025` → trim fires, trim_qty > 0
+  - If f_optimal=0.035 (3.5%): `0.035 > 0.025` → no trim
+- Test: opportunity_cost (Trigger 6) — `current_EV=0.008 (0.8¢), opposite_EV=0.035 (3.5¢)`:
+  - `opposite_EV > THETA_ENTRY (0.02)` AND `current_EV < 2 * THETA_EXIT (0.01)` → fires
+  - `current_EV=0.015` → `0.015 > 0.01` → no trigger (current still strong enough)
+- Test: Kalshi staleness — `kalshi_last_update = 6s ago` → `kalshi_is_stale = True` → execute_order returns None
+- Test: bet365 staleness — `bet365_last_update = 35s ago` → `get_bet365_for_alignment` returns None → UNAVAILABLE multiplier
 
 **File:** `tests/unit/test_paper_executor.py`
 - Test: BUY_YES slippage → `fill_price = P_effective + 0.01` (price goes up = worse for buyer)

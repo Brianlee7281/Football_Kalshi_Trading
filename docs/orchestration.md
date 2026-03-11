@@ -122,7 +122,7 @@ class MatchDiscovery:
 | `match_discovery` | Every 6h (00:00, 06:00, 12:00, 18:00 UTC) | Scan upcoming 48h, enqueue new matches |
 | `phase1_recalibration` | Weekly (Sunday 02:00 UTC) | Retrain MMPP parameters |
 | `phase1_recalibration` | On trigger from Step 4.6 drift detection | Emergency retrain |
-| `odds_backfill` | Daily 04:00 UTC | Backfill yesterday's Odds-API historical odds |
+| `odds_backfill` | Daily 04:00 UTC | Fetch yesterday's settled events from Odds-API → `data/odds_cache/{league}.jsonl`. Available Dec 2025+ only. |
 | `stats_backfill` | Daily 05:00 UTC | Backfill yesterday's Goalserve match stats |
 | `health_check` | Every 5 min | Verify all services alive |
 | `stale_reservation_cleanup` | Every 5 min | Release RESERVED exposure entries older than 60s |

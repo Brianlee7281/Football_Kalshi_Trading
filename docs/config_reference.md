@@ -15,6 +15,11 @@ which phase uses it, whether it's tunable at runtime, and its adaptive tuning ra
 | `z` | 1.645 | [1.0, 2.5] | phase4.md Step 4.2 | 4 | Yes — directional tuning based on No-side realization |
 | `c` (fee_rate) | 0.07 (7%) | fixed | phase4.md Step 4.2 | 4 | No — set by Kalshi |
 | `DIVERGENCE_THRESHOLD` | 0.05 (5pp) | [0.03, 0.10] | phase4.md Step 4.4 Trigger 4 | 4 | No |
+| `TRIM_THRESHOLD` | 0.5 | [0.3, 0.7] | phase4.md Step 4.4 Trigger 5 | 4 | No — trim when f_optimal < existing × this |
+| `OPP_COST_CURRENT_MAX` | 2× THETA_EXIT | — | phase4.md Step 4.4 Trigger 6 | 4 | No — exit if current EV below this |
+| `σ_MC_FLOOR` | 0.005 | [0.003, 0.01] | phase3.md Step 3.4 | 3 | No — minimum σ_MC in analytical mode |
+| `KALSHI_STALE_THRESHOLD` | 5.0s | [3, 10] | phase4.md Step 4.1 | 4 | No — skip trading if Kalshi WS older than this |
+| `BET365_STALE_THRESHOLD` | 30.0s | [15, 60] | phase4.md Step 4.1 | 4 | No — treat as UNAVAILABLE if older than this |
 
 ## Risk Limits
 
@@ -124,6 +129,10 @@ which phase uses it, whether it's tunable at runtime, and its adaptive tuning ra
 | `SLACK_WEBHOOK` | dashboard.md | Slack (alerts) |
 
 ## Bookmakers (Odds-API, 5 selected)
+
+> **Historical data limitation:** Odds-API historical events are available from **December 2025 onwards** only.
+> Pre-Dec-2025 seasons train XGBoost without odds features (NaN → XGBoost handles natively).
+> `scripts/odds_backfill.py` accumulates settled events daily for future retraining.
 
 | Bookmaker | Odds-API Key | Role |
 |-----------|-------------|------|

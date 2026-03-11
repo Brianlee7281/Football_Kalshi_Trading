@@ -16,9 +16,10 @@ This removes schema mismatches and ID-mapping errors.
 
 | Data Source | Role in Phase 1 | Core Data |
 |------------------|-----------------|-----------|
-| **Goalserve Fixtures/Results** | Interval segmentation + event timeline | goals (minute+VAR), red cards (minute), stoppage time, halftime score, lineups |
+| **Goalserve Commentaries** | Interval segmentation + event timeline | goals (minute+VAR), red cards (minute), stoppage time, halftime score, lineups, substitutions |
+| **Goalserve Fixtures** | Match discovery + season schedule | match dates, teams, league IDs (used to discover which dates to fetch commentaries for) |
 | **Goalserve Live Game Stats** | Team/player stats + xG | per-half team stats, detailed player stats (rating, passes, shots, etc.), xG |
-| **Odds-API Historical Odds** | Odds features + market baseline | 5 bookmaker odds (open/close), 50+ markets |
+| **Odds-API Historical Events** | Odds features + market baseline | 5 bookmaker odds, ML/Totals/Spread markets. **Available from Dec 2025 onwards only.** |
 
 ### Scoring Intensity Function (Final Form)
 
@@ -41,19 +42,36 @@ $$\lambda_A(t \mid X, \Delta S) = \exp\!\left(a_A + b_{i(t)} + \gamma^A_{X(t)} +
 
 ## Input Data
 
-From Goalserve (fixtures + stats) and Odds-API (odds):
+From Goalserve (commentaries + fixtures + stats) and Odds-API (odds):
 
-**1. Fixtures/Results — historical 5+ seasons, 500+ leagues:**
+**1. Commentaries — historical match events (minute-level detail):**
 
 ```
-GET /getfeed/{api_key}/soccerfixtures/league/{league_id}?json=1
+GET /getfeed/{api_key}/commentaries/{league_id}?date={DD.MM.YYYY}&json=1
 ```
 
-- Match-level event timeline: `summary.{team}.goals`, `summary.{team}.redcards`, `summary.{team}.yellowcards`
-- Lineups: `teams.{team}.player[]` (formation_pos, pos, id)
-- Substitutions: `substitutions.{team}.substitution[]`
-- Match metadata: `matchinfo.time.addedTime_period1/2`, `{team}.ht_score`, `{team}.ft_score`
-- Status: `status` (Full-time, Postponed, Cancelled, etc.)
+- Goals: minute, scorer, team, penalty, own_goal, VAR cancelled
+- Red cards: minute, player, team (critical for Q matrix estimation)
+- Substitutions: minute, player_in, player_out, team
+- Lineups: formation, starting 11
+- Stoppage time: addedTime_period1/2
+- Match metadata: ht_score, ft_score, status
+
+> **Why commentaries, not fixtures:** The fixtures endpoint provides scores and basic events,
+> but does NOT include red card data. The commentaries endpoint provides minute-level events
+> including red cards, which are essential for Q matrix estimation (Step 1.2).
+> Phase 1 uses `fetch_season_commentaries()` which discovers matchday dates from fixtures,
+> then fetches commentaries for each date.
+
+**1b. Fixtures — match discovery and season schedule:**
+
+```
+GET /getfeed/{api_key}/soccerfixtures/leagueid/{league_id}?json=1
+```
+
+- Used to discover which dates have matches (for commentaries fetching)
+- Match metadata: teams, kickoff times, league IDs
+- NOT used for interval segmentation (commentaries is the source)
 
 **2. Live Game Stats — detailed historical match stats (100+ leagues):**
 
@@ -65,16 +83,19 @@ GET /getfeed/{api_key}/soccerstats/match/{match_id}?json=1
 - Player stats: `player_stats.{team}.player[]` — rating, goals, assists, shots, passes, tackles, interceptions, minutes_played, etc.
 - xG: Expected Goals (included in the Live Game Stats package)
 
-**3. Odds-API Historical Odds — 5 bookmakers:**
+**3. Odds-API Historical Events — 5 bookmakers (Dec 2025+ only):**
 
 ```
-GET https://api.the-odds-api.com/v4/historical/sports/{sport}/odds/?apiKey={key}&regions=eu,us&markets=h2h,totals,spreads&date={iso_date}
+GET https://api.odds-api.io/v3/events?apiKey={key}&sport=football&league={league_slug}&status=settled&from={date}&to={date}
+GET https://api.odds-api.io/v3/odds?apiKey={key}&eventId={id}&bookmakers=Bet365,Betfair Exchange,Sbobet,1xBet,DraftKings
 ```
 
-- Bookmaker odds: `bookmakers[].markets[].outcomes[]` (name, price)
-- Markets: h2h (Match Winner), totals (Over/Under), spreads (Asian Handicap), etc.
-- Historical odds: snapshot at any past date via `date` parameter
-- 5 bookmakers (Bet365, Betfair Exchange, Sbobet, 1xBet, DraftKings)
+- Bookmaker odds: `bookmakers.{name}[].odds[]` (home, draw, away)
+- Markets: ML (Match Winner), Totals (Over/Under), Asian Handicap
+- 5 bookmakers: Bet365, Betfair Exchange, Sbobet, 1xBet, DraftKings
+- **Historical data available from December 2025 onwards only.**
+  Pre-Dec-2025 seasons train without odds features (XGBoost handles NaN natively).
+  `scripts/odds_backfill.py` accumulates data daily for future retraining.
 
 ---
 
@@ -302,7 +323,7 @@ class IntervalRecord:
 
 ```python
 def build_intervals_from_goalserve(match_data: dict) -> List[IntervalRecord]:
-    """Goalserve Fixtures/Results -> interval record transformation."""
+    """Goalserve Commentaries -> interval record transformation."""
 
     # 1. Extract stoppage time
     alpha_1 = float(match_data["matchinfo"]["time"]["addedTime_period1"] or 0)
@@ -522,7 +543,7 @@ $$\gamma^H_3 = \gamma^H_1 + \gamma^H_2, \quad \gamma^A_3 = \gamma^A_1 + \gamma^A
 
 ### League-Stratified Estimation
 
-Because Goalserve Fixtures/Results covers 500+ leagues, there is enough data to estimate league-specific Q.
+Because Goalserve Commentaries covers major leagues with minute-level event data, there is enough data to estimate league-specific Q.
 
 - **Option A — independent Q per league:** independent estimates for Kalshi-tradable leagues (EPL, La Liga, Bundesliga, Serie A, Ligue 1, MLS, Brasileirão, Liga Argentina)
 - **Option B — hierarchical Bayesian:** use all leagues as a prior pool and update each league posterior; better for low-data leagues
@@ -1508,12 +1529,12 @@ Fix the final parameter set that passes all criteria as **production parameters*
 ## Phase 1 Pipeline Summary
 
 ```
-[Goalserve (Fixtures + Stats) + Odds-API (Odds): 5+ Seasons, 500+ Leagues]
+[Goalserve (Commentaries + Stats) + Odds-API (Odds, Dec 2025+ only)]
               |
               v
 +---------------------------------------------------------------+
 |  Step 1.1: Interval Segmentation (Data Engineering)            |
-|  • Fixtures/Results -> goals (VAR filtering) + red-card events |
+|  • Commentaries -> goals (VAR filtering) + red-card events     |
 |  • addedTime_period1/2 -> match-level T_m                      |
 |  • var_cancelled=True -> exclude, owngoal -> exclude point term|
 |  • Tag each interval with (X, ΔS), store ΔS_before + scorer    |
