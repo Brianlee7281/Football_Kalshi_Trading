@@ -36,7 +36,7 @@ from src.clients.goalserve import GoalserveClient
 
 EPL_LEAGUE_ID = 1204
 LA_LIGA_LEAGUE_ID = 1399
-MLS_LEAGUE_ID = 1005
+MLS_LEAGUE_ID = 1440
 
 
 def load_env() -> None:

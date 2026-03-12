@@ -54,10 +54,10 @@ TRADABLE_LEAGUES: dict[int, str] = {
     1229: "Bundesliga",
     1269: "Serie A",
     1221: "Ligue 1",
-    # Americas (Tier 2)
-    1005: "MLS",
-    1572: "Brasileirão",
-    1300: "Liga Argentina",
+    # Americas (Tier 2) — IDs verified via /soccerfixtures/data/mapping
+    1440: "MLS",
+    1141: "Brasileirão",
+    1081: "Liga Argentina",
 }
 
 

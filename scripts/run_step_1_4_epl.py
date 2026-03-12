@@ -38,8 +38,8 @@ import torch
 # ---------------------------------------------------------------------------
 
 EPL_LEAGUE_ID = 1204
-BRASILEIRAO_LEAGUE_ID = 1572
-LIGA_ARGENTINA_LEAGUE_ID = 1300
+BRASILEIRAO_LEAGUE_ID = 1141
+LIGA_ARGENTINA_LEAGUE_ID = 1081
 
 SIGMA_A = 0.3
 NUM_EPOCHS = 1000
