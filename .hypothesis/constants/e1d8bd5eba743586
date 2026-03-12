@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/common/redis_client.py
+# hypothesis_version: 6.151.9
+
+[0.0, 2.0, 'EV', 'IDLE', 'P_bet365', 'P_cons', 'P_kalshi', 'P_true', 'S', 'alignment', 'bet365_implied', 'cooldown', 'direction', 'engine_phase', 'event_state', 'exposure_lock', 'kelly_multiplier', 'match_id', 'mu_A', 'mu_H', 'ob_freeze', 'order_allowed', 'redis_client', 'redis_subscribed', 'score', 'sigma_MC', 'signal', 't', 'tick', 'ticker', 'timestamp', 'type', 'unknown', 'utf-8', 'μ_A', 'μ_H']

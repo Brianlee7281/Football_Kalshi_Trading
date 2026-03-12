@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/paper_executor.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.01, 1.0, 3.0, 100.0, 100, 'BUY_YES', 'paper_executor', 'paper_fill']

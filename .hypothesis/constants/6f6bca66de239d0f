@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/engine/emit.py
+# hypothesis_version: 6.151.9
+
+[60.0, 'IDLE', 'P_bet365', 'P_true', 'cooldown', 'emit', 'engine_phase', 'event', 'event_state', 'event_type', 'match_id', 'minute', 'mu_A', 'mu_H', 'ob_freeze', 'order_allowed', 'payload', 'score', 'sigma_MC', 't', 'team', 'tick', 'type', 'var_cancelled']

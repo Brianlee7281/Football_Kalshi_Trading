@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/engine/model.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.03, 0.05, 0.07, 0.2, 0.25, 1.0, 1.645, 2.0, 4.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0, 96.0, 'CONFIRMED', 'FINISHED', 'FIRST_HALF', 'GO', 'HALFTIME', 'IDLE', 'PRELIMINARY_DETECTED', 'Q_by_delta_S', 'Q_global', 'SECOND_HALF', 'WAITING_FOR_KICKOFF', 'analytical', 'b', 'beta_A', 'beta_H', 'delta_A', 'delta_H', 'gamma_A', 'gamma_H', 'halftime_entered', 'kappa_A', 'kappa_H', 'match_finished', 'mc', 'model', 'model_initialized', 'paper', 'second_half_started', 'state_transition', 'tau_A', 'tau_H']

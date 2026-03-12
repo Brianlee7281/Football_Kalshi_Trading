@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/live_executor.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.5, 5.0, 100.0, 100, 'BUY_YES', 'buy', 'canceled', 'expired', 'filled', 'filled_count', 'id', 'insufficient_balance', 'live_executor', 'live_order_api_error', 'live_order_filled', 'market_closed', 'no', 'order', 'price_out_of_range', 'resting', 'status', 'yes', 'yes_price']

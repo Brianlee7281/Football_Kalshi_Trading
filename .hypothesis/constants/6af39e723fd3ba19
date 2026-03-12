@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/engine/mc_pricing.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.005, 1.0, 50000, 'away_win', 'btts_yes', 'draw', 'home_win', 'mc', 'mc_pricing', 'over_15', 'over_25', 'over_35']

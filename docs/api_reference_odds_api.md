@@ -97,7 +97,7 @@ Example: /leagues?apiKey=YOUR_KEY&sport=football
 Response:
 [
   {"name": "England - Premier League", "slug": "england-premier-league", "eventsCount": 32},
-  {"name": "Spain - La Liga", "slug": "spain-la-liga", "eventsCount": 28},
+  {"name": "Spain - La Liga", "slug": "spain-laliga", "eventsCount": 28},
   ...
 ]
 
@@ -435,7 +435,7 @@ IMPORTANT:
 
 Example URLs:
 wss://api.odds-api.io/v3/ws?apiKey=xxx&markets=ML,Spread,Totals&sport=football&status=live
-wss://api.odds-api.io/v3/ws?apiKey=xxx&markets=ML&leagues=england-premier-league,spain-la-liga
+wss://api.odds-api.io/v3/ws?apiKey=xxx&markets=ML&leagues=england-premier-league,spain-laliga
 wss://api.odds-api.io/v3/ws?apiKey=xxx&markets=ML,Totals&eventIds=12345,67890
 
 Message Types:

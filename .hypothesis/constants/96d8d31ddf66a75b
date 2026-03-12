@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/signal_generator.py
+# hypothesis_version: 6.151.9
+
+[0.0, 'EV', 'FINISHED', 'HOLD', 'P_cons', 'P_kalshi', 'alignment', 'bankroll_updated', 'direction', 'exposure_lock', 'fill_price', 'fill_qty', 'id', 'kelly_fraction', 'match_id', 'new_fill', 'position_update', 'price', 'quantity', 'signal', 'signal_generator', 'ticker', 'timestamp', 'total', 'type']

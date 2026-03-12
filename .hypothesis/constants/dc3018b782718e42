@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/common/types.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.8, 90.0, 'FIRST_HALF', 'IDLE', 'OPEN', 'SCHEDULED', 'analytical', 'paper']

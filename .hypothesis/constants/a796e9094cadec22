@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/order_book_sync.py
+# hypothesis_version: 6.151.9
+
+[0.0, 2.5, 5.0, 30.0, 100, 'ML', 'STALE', 'Totals', 'away', 'away_win', 'bet365_updated', 'draw', 'fresh', 'hdp', 'home', 'home_win', 'kalshi_ob_updated', 'markets', 'name', 'odds', 'order_book_sync', 'over', 'under', '—']

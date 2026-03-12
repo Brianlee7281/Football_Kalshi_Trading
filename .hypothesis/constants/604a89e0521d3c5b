@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/calibration/step_1_3_ml_prior.py
+# hypothesis_version: 6.151.9
+
+[0.0, 1e-06, 0.05, 0.8, 0.95, 1.0, 1.3, 3.0, 90.0, 200, '@rating', 'bookmaker_odds_std', 'colsample_bytree', 'corners', 'count:poisson', 'eta', 'eval_metric', 'exchange_away_prob', 'exchange_draw_prob', 'exchange_home_prob', 'expected_goals', 'fouls', 'gain', 'home_away_flag', 'localteam', 'market_avg_draw_prob', 'market_avg_home_prob', 'max_depth', 'min_child_weight', 'nan', 'num_players_rated', 'objective', 'ongoal', 'pass_accuracy', 'passes', 'passes_total', 'player', 'player_stats', 'poisson-nloglik', 'possession', 'possestiontime', 'rating', 'rest_days', 'saves', 'seed', 'shots', 'shots_on_target', 'shots_ongoal', 'shots_total', 'stats', 'subsample', 'team_avg_rating', 'total', 'visitorteam', 'w', 'xg']

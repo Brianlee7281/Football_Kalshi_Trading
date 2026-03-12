@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/orchestrator/scheduler.py
+# hypothesis_version: 6.151.9
+
+[30.0, 48.0, 1081, 1141, 1204, 1221, 1229, 1269, 1399, 1440, 86400, ' 1', '+00:00', '@id', '@localteam_name', '@visitorteam_name', 'Brasileirão', 'Bundesliga', 'EPL', 'La Liga', 'Liga Argentina', 'Ligue 1', 'MLS', 'Serie A', 'Z', '_kickoff_utc', '_league_id', 'close_time', 'discovery_complete', 'end_date', 'event_ticker', 'fixtures_fetched', 'fixtures_matched', 'kalshi_tickers', 'kickoff_utc', 'league_id', 'market_tickers', 'markets', 'match_id', 'odds_api_event_id', 'paper', 'phase2_trigger_error', 'phase2_trigger_fired', 'phase3_trigger_error', 'phase3_trigger_fired', 'scheduler', 'title']

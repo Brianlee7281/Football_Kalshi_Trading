@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/calibration/step_1_1_intervals.py
+# hypothesis_version: 6.151.9
+
+[0.0, 45.0, 90.0, 120.0, '0', '@id', 'extra_min', 'goal', 'goals', 'id', 'is_owngoal', 'is_var_cancelled', 'localteam', 'minute', 'owngoal', 'parsed_minute', 'red_card', 'scoring_team', 'summary', 'team', 'true', 'visitorteam']

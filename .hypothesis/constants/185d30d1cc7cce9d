@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/match_engine/config.py
+# hypothesis_version: 6.151.9
+
+[0.07, 0.25, 1.645, '0.07', '0.25', '1.645', 'DB_URL', 'FEE_RATE', 'GOALSERVE_API_KEY', 'KALSHI_API_KEY', 'KALSHI_TICKERS', 'K_FRAC', 'MATCH_ID', 'ODDS_API_KEY', 'PARAM_VERSION', 'REDIS_URL', 'TRADING_MODE', 'Z_SCORE', '[]', 'live', 'paper']

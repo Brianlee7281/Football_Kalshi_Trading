@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/clients/kalshi.py
+# hypothesis_version: 6.151.9
+
+[1.0, 2.0, 15.0, 100, 200, 400, 1000, 1000000, '/portfolio/balance', '/portfolio/orders', '/portfolio/positions', '/trade-api/v2', '/trade-api/ws/v2', 'Content-Type', 'DELETE', 'GET', 'KALSHI-ACCESS-KEY', 'POST', 'SOCCER', 'action', 'application/json', 'channels', 'client_order_id', 'cmd', 'code', 'count', 'cursor', 'delta', 'error', 'events', 'id', 'kalshi', 'limit', 'market', 'market_ticker', 'market_tickers', 'message', 'msg', 'no', 'open', 'order_cancelled', 'orderbook', 'orderbook_delta', 'orderbook_snapshot', 'params', 'positions', 'price', 'series_ticker', 'side', 'status', 'subscribe', 'subscribed', 'ticker', 'ts', 'type', 'ws_connected', 'ws_error', 'ws_reconnecting', 'ws_subscribed', 'yes', 'yes_price']

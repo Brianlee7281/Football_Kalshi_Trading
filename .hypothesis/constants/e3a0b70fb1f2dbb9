@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/orchestrator/lifecycle.py
+# hypothesis_version: 6.151.9
+
+[10.0, 60.0, 3600, 'ARCHIVED', 'C_time', 'EMERGENCY_FREEZE', 'ExitCode', 'FAILED', 'FINISHED', 'PHASE2_DONE', 'PHASE2_RUNNING', 'PHASE3_RUNNING', 'SETTLING', 'SKIP', 'SKIPPED', 'State', 'Status', '__getitem__', 'a_A', 'a_H', 'archive_logs', 'container_launched', 'emergency_freeze', 'exited', 'feature_mask', 'get', 'heartbeat_stale', 'id', 'league_id', 'lifecycle', 'lifecycle_archived', 'lifecycle_failed', 'lifecycle_skipped', 'lifecycle_start', 'live_engine_start', 'match_events', 'match_id', 'match_status_error', 'match_status_updated', 'median_values', 'odds_api_event_id', 'params', 'phase2_complete', 'phase2_params', 'timestamp', 'type', 'verdict', 'warning', 'xgb_model_path']

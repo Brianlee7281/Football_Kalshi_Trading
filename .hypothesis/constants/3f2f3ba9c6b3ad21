@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/edge_detection.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.02, 0.5, 0.6, 0.8, 1.0, 1.645, 100.0, 'ALIGNED', 'BUY_NO', 'BUY_YES', 'DIVERGENT', 'HOLD', 'UNAVAILABLE', 'edge_detection', 'signal_computed', 'signal_generated']

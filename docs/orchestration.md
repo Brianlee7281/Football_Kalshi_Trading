@@ -79,10 +79,10 @@ class MatchDiscovery:
         1229: "Bundesliga",
         1269: "Serie A",
         1221: "Ligue 1",
-        # Americas (Tier 2)
-        1005: "MLS",
-        1572: "Brasileirão",     # Verify Goalserve league_id
-        1300: "Liga Argentina",  # Verify Goalserve league_id
+        # Americas (Tier 2) — IDs verified via /soccerfixtures/data/mapping
+        1440: "MLS",
+        1141: "Brasileirão",
+        1081: "Liga Argentina",
     }
 
     async def discover(self) -> List[MatchSchedule]:

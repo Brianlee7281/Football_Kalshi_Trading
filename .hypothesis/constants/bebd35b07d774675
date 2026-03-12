@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/common/exposure.py
+# hypothesis_version: 6.151.9
+
+[0.0, 'bankroll', 'db_pool', 'execution', 'exposure', 'exposure_confirmed', 'exposure_released', 'exposure_reserved', 'fill_price', 'fill_quantity', 'id', 'is_paper', 'market_ticker', 'match_id', 'price', 'quantity', 'redis', 'total', 'unknown']

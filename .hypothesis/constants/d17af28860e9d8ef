@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/exit_logic.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.005, 0.02, 0.05, 0.5, 1.0, 2.0, 3.0, 'BET365_DIVERGENCE', 'BUY_NO', 'BUY_YES', 'EDGE_DECAY', 'EDGE_REVERSAL', 'EXPIRY_EVAL', 'OPPORTUNITY_COST', 'POSITION_TRIM', 'exit_logic']

@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/common/db.py
+# hypothesis_version: 6.151.9
+
+[0.0, 10000.0, 300, 'P_kalshi', 'balance', 'db', 'db_insert_no_id', 'db_pool', 'direction', 'entry_price', 'entry_time', 'execution', 'fill_price', 'fill_quantity', 'id', 'is_paper', 'market_ticker', 'match_id', 'position_opened', 'price', 'quantity', 'total']

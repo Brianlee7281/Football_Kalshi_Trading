@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/clients/base_client.py
+# hypothesis_version: 6.151.9
+
+[1.0, 30.0, 60.0, 429, 500, 502, 503, 504, '/', 'GET', 'POST', 'base_client', 'rate_limit_exceeded', 'request_complete', 'request_failed', 'request_start', 'retryable_status', 'timeout_retry']

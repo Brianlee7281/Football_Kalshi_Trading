@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/clients/odds_api.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.1, 0.5, 1.0, 30.0, ',', '/events', '/odds', '/odds/movements', '/odds/multi', '1xbet', 'Bet365', 'Betfair Exchange', 'DraftKings', 'ML', 'ML,Totals', 'Sbobet', 'apiKey', 'away', 'away_win', 'bookmaker', 'bookmaker_odds_std', 'bookmakers', 'created', 'deleted', 'draw', 'eventId', 'eventIds', 'exchange_away_prob', 'exchange_draw_prob', 'exchange_home_prob', 'home', 'home_win', 'id', 'is_spike', 'league', 'market', 'market_avg_draw_prob', 'market_avg_home_prob', 'markets', 'name', 'odds', 'odds_api', 'odds_delta', 'sport', 'status', 'type', 'updated', 'welcome', 'ws_connected', 'ws_connection_closed', 'ws_fatal_error']

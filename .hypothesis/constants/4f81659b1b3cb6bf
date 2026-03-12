@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/orchestrator/container_manager.py
+# hypothesis_version: 6.151.9
+
+[1024, 50000, '512m', 'A_A', 'A_H', 'COMPOSE_NETWORK', 'C_TIME', 'CpuQuota', 'DB_URL', 'Env', 'GOALSERVE_API_KEY', 'HostConfig', 'Image', 'KALSHI_API_KEY', 'KALSHI_TICKERS', 'LEAGUE_ID', 'Labels', 'MATCH_ID', 'Memory', 'Name', 'NetworkMode', 'ODDS_API_EVENT_ID', 'ODDS_API_KEY', 'PARAM_VERSION', 'REDIS_URL', 'RestartPolicy', 'TRADING_MODE', '__getitem__', 'container_launched', 'container_manager', 'container_removed', 'container_stopped', 'containers', 'docker', 'g', 'get', 'image', 'k', 'kalshi_tickers', 'league', 'league_id', 'logs', 'm', 'match-engine', 'match_id', 'mmpp-net', 'no', 'odds_api_event_id', 'paper', 'param_version', 'service', 'trading_mode', 'utf-8']

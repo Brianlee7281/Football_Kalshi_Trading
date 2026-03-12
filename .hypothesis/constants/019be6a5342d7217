@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/execution/market_mapping.py
+# hypothesis_version: 6.151.9
+
+['-', '-D-', 'BOTH-SCOR', 'BOTHSCOR', 'BTTS', 'D', 'DRAW', 'O2.5', 'O3.5', 'OU-25', 'OU-35', 'OU25', 'OU35', 'OVER-25', 'OVER-35', 'OVER2', 'OVER25', 'OVER3', 'OVER35', 'OVER_25', 'OVER_35', 'TIE', '_D_', 'away_win', 'btts', 'btts_yes', 'draw', 'duplicate_model_key', 'home_win', 'kalshi_ticker', 'market_mapping', 'match_winner_away', 'match_winner_draw', 'match_winner_home', 'model_key', 'over_25', 'over_35', 'over_under_2.5', 'over_under_3.5', 'ticker_mapping_built', 'ticker_unrecognised']

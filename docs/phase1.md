@@ -1250,7 +1250,7 @@ performance is concentrated in certain leagues:
 ```python
 LEAGUE_TIERS = {
     "tier_1": {1204, 1399, 1229, 1269, 1221,   # Europe: EPL, La Liga, BuLi, SerA, L1
-               1005, 1572, 1300},                # Americas: MLS, Brasileirão, Liga Argentina
+               1440, 1141, 1081},                # Americas: MLS, Brasileirão, Liga Argentina
     "tier_2": {1007, 1352, ...},                 # non-tradable (training data only)
     "tier_3": set(),  # catch-all
 }

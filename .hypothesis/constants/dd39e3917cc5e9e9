@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/clients/goalserve.py
+# hypothesis_version: 6.151.9
+
+[0.0, 1.0, 30.0, 48.0, '%Y-%m-%d', '%d.%m.%Y', '%m/%d/%Y', '(\\d+(?:\\.\\d+)?)\\s*$', '+', '0', '00:00', '1', ':', '@date', '@id', '@time', '_kickoff_utc', '_league_id', 'addedTime_period1', 'addedTime_period2', 'category', 'commentaries', 'date', 'extra_min', 'get_fixtures_failed', 'goals', 'goalserve', 'id', 'is_owngoal', 'is_penalty', 'is_var_cancelled', 'json', 'league', 'localteam', 'match', 'matches', 'matchinfo', 'minute', 'name', 'owngoal', 'parsed_minute', 'penalty', 'player', 'recorded_team', 'redcards', 'results', 'scores', 'scoring_team', 'season', 'team', 'time', 'tournament', 'true', 'var_cancelled', 'visitorteam', 'week']

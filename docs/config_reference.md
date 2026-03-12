@@ -153,9 +153,9 @@ which phase uses it, whether it's tunable at runtime, and its adaptive tuning ra
 | Bundesliga | Europe | 1229 | Aug-May | ~9 | |
 | Serie A | Europe | 1269 | Aug-May | ~10 | |
 | Ligue 1 | Europe | 1221 | Aug-May | ~10 | |
-| MLS | Americas | 1005 | Mar-Oct | ~14 | Different season window from Europe |
-| Brasileirão | Americas | 1572 | Apr-Nov | ~10 | Verify Goalserve league_id |
-| Liga Argentina | Americas | 1300 | Feb-Dec | ~7 | Verify Goalserve league_id |
+| MLS | Americas | 1440 | Mar-Oct | ~14 | Different season window from Europe |
+| Brasileirão | Americas | 1141 | Apr-Nov | ~10 | Verified via commentaries endpoint |
+| Liga Argentina | Americas | 1081 | Feb-Dec | ~7 | Verified via commentaries endpoint |
 
 > **Timezone note:** Europe matches typically 12:00-21:00 UTC, Americas 00:00-04:00 UTC.
 > Peak concurrent load is Saturday afternoon UTC (Europe) overlapping with Americas evening.

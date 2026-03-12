@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/engine/period_handler.py
+# hypothesis_version: 6.151.9
+
+['2H', '2nd Half', 'FT', 'Finished', 'Full Time', 'HT', 'Half', 'Half Time', 'Halftime', 'Paused', 'Second Half', 'halftime_accumulated', 'halftime_entered', 'match_finished', 'period_handler', 'second_half_started', 'unknown_period']

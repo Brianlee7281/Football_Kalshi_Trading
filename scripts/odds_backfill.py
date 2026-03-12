@@ -40,10 +40,13 @@ from src.clients.odds_api import OddsApiClient, build_odds_features
 
 LEAGUES = {
     "epl": "england-premier-league",
-    "la_liga": "spain-la-liga",
+    "la_liga": "spain-laliga",
     "serie_a": "italy-serie-a",
     "bundesliga": "germany-bundesliga",
     "ligue_1": "france-ligue-1",
+    "mls": "usa-mls",
+    "brasileirao": "brazil-brasileiro-serie-a",
+    "liga_argentina": "argentina-liga-profesional",
 }
 BOOKMAKERS = "Bet365,Betfair Exchange,Sbobet,1xbet,DraftKings"
 CACHE_DIR = Path("data/odds_cache")

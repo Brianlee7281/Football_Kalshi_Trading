@@ -1,0 +1,4 @@
+# file: /Users/euijinlee/Documents/GitHub/FKT_v3/src/calibration/step_1_5_validation.py
+# hypothesis_version: 6.151.9
+
+[0.0, 1e-15, 1.0, 2.5, 1005, 1007, 1204, 1221, 1229, 1269, 1300, 1352, 1399, 1572, ', ', 'cross_season', 'delta_A(ΔS=+1)', 'delta_A(ΔS=-1)', 'delta_H(ΔS=+1)', 'delta_H(ΔS=-1)', 'gamma_A_1', 'gamma_A_2', 'gamma_H_1', 'gamma_H_2', 'in_season', 'negative', 'positive', 'tier_1', 'tier_2']
