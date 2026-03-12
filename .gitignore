@@ -50,3 +50,7 @@ out/
 
 # Docker
 docker-compose.override.yml
+
+# Claude
+CLAUDE.md
+.claude/

@@ -635,6 +635,40 @@ async def signal_generator(model):
                 model.bankroll -= fill_cost
                 log.info(f"Bankroll updated: -{fill_cost:.2f}, "
                          f"remaining={model.bankroll:.2f}")
+
+                # ─── Redis publish for dashboard ───
+                # signal:{match_id} for signal log, position_update for position table
+                asyncio.create_task(_publish_signal_to_redis(
+                    model, ticker, signal, fill))
+
+
+async def _publish_signal_to_redis(model, ticker, signal, fill):
+    """Publish signal + fill to Redis for live dashboard."""
+    try:
+        await model.redis.publish(f"signal:{model.match_id}", json.dumps({
+            "type": "signal",
+            "match_id": model.match_id,
+            "ticker": ticker,
+            "direction": signal.direction,
+            "EV": signal.EV,
+            "P_cons": signal.P_cons,
+            "P_kalshi": signal.P_kalshi,
+            "alignment": signal.alignment_status,
+            "kelly_fraction": signal.kelly_multiplier,
+            "fill_qty": fill.quantity,
+            "fill_price": fill.price,
+            "timestamp": time.time(),
+        }))
+        await model.redis.publish("position_update", json.dumps({
+            "type": "new_fill",
+            "match_id": model.match_id,
+            "ticker": ticker,
+            "direction": signal.direction,
+            "quantity": fill.quantity,
+            "price": fill.price,
+        }))
+    except Exception:
+        pass  # fire-and-forget, Prometheus counter in emit.py
 ```
 
 > **Queue interface:** `emit_to_phase4()` in Phase 3 pushes `{"P_true": dict, "σ_MC": dict, "order_allowed": bool}`

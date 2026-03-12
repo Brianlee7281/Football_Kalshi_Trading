@@ -565,6 +565,8 @@ async def tick_loop(model):
 def emit_to_phase4(P_true: dict, σ_MC: dict, order_allowed: bool, model):
     """Push tick data to Phase 4 signal_generator via asyncio.Queue.
 
+    Also: write to tick_snapshots DB table + publish to Redis for dashboard.
+
     Queue maxsize=1: if Phase 4 hasn't consumed the previous tick,
     the old tick is replaced (Phase 4 always sees the latest state).
     """
@@ -580,6 +582,63 @@ def emit_to_phase4(P_true: dict, σ_MC: dict, order_allowed: bool, model):
         except asyncio.QueueEmpty:
             pass
     model.phase4_queue.put_nowait(tick_data)
+
+    # ─── Write to tick_snapshots (sampled: every 10s normal, every 1s during events) ───
+    should_write = (
+        model.event_state != "IDLE"           # always write during events
+        or model.cooldown                      # always write during cooldown
+        or int(model.t * 60) % 10 == 0        # every 10s in normal play
+    )
+    if should_write:
+        asyncio.create_task(_write_tick_snapshot(model, P_true, σ_MC, order_allowed))
+
+    # ─── Publish to Redis for live dashboard (channel: tick:{match_id}) ───
+    asyncio.create_task(_publish_tick_to_redis(model, P_true, σ_MC, order_allowed))
+
+
+async def _write_tick_snapshot(model, P_true: dict, σ_MC: dict, order_allowed: bool):
+    """Insert tick snapshot to DB. Fire-and-forget — errors logged, not raised."""
+    try:
+        await model.db_pool.execute(
+            """INSERT INTO tick_snapshots
+               (match_id, t, mu_H, mu_A, P_true, P_kalshi, P_bet365,
+                sigma_MC, engine_phase, event_state, cooldown, ob_freeze, order_allowed)
+               VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)""",
+            model.match_id, float(model.t), model.μ_H, model.μ_A,
+            json.dumps(P_true),
+            json.dumps(model.latest_P_kalshi) if model.latest_P_kalshi else None,
+            json.dumps(model.bet365_implied) if model.bet365_implied else None,
+            json.dumps(σ_MC),
+            model.engine_phase, model.event_state,
+            model.cooldown, model.ob_freeze, order_allowed,
+        )
+    except Exception as e:
+        log.error("tick_snapshot write failed", error=str(e))
+
+
+async def _publish_tick_to_redis(model, P_true: dict, σ_MC: dict, order_allowed: bool):
+    """Publish tick to Redis channel tick:{match_id} for live dashboard.
+    Fire-and-forget — errors counted via Prometheus, not raised."""
+    try:
+        await model.redis.publish(f"tick:{model.match_id}", json.dumps({
+            "type": "tick",
+            "match_id": model.match_id,
+            "t": model.t,
+            "engine_phase": model.engine_phase,
+            "P_true": P_true,
+            "σ_MC": σ_MC,
+            "P_bet365": model.bet365_implied,
+            "order_allowed": order_allowed,
+            "cooldown": model.cooldown,
+            "ob_freeze": model.ob_freeze,
+            "event_state": model.event_state,
+            "mu_H": model.μ_H,
+            "mu_A": model.μ_A,
+            "score": [model.score_home, model.score_away],
+        }))
+    except Exception as e:
+        redis_publish_error_total.inc()
+        log.warning("Redis tick publish failed", error=str(e))
 
         # ─── Backpressure monitoring ───
         tick_duration = time.monotonic() - tick_start
@@ -622,18 +681,62 @@ async def live_score_poller(model):
             handle_preliminary_goal(model, event)
         elif event.type == "goal_confirmed":
             handle_confirmed_goal(model, event)
+            await record_event(model, event)
         elif event.type == "score_rollback":
             handle_score_rollback(model, event)
+            await record_event(model, event)
         elif event.type == "red_card":
             handle_confirmed_red_card(model, event)
+            await record_event(model, event)
         elif event.type == "period_change":
             handle_confirmed_period(model, event)
+            await record_event(model, event)
         elif event.type == "stoppage_entered":
             model.stoppage_mgr.update_from_live_score(event.minute, event.period)
         elif event.type == "match_finished":
             model.engine_phase = FINISHED
+            await record_event(model, event)
         elif event.type == "source_failure":
             handle_live_score_failure(model)
+            await record_event(model, event)
+
+
+async def record_event(model, event: NormalizedEvent):
+    """Write to event_log DB table + publish to Redis channel event:{match_id}.
+
+    Called after every confirmed event (goals, red cards, period changes, etc.).
+    Both operations are fire-and-forget — failures are logged but don't block
+    the event processing pipeline.
+    """
+    payload = {
+        "score": [model.score_home, model.score_away],
+        "team": event.team,
+        "minute": event.minute if hasattr(event, "minute") else model.t,
+        "var_cancelled": getattr(event, "var_cancelled", False),
+    }
+
+    # DB write
+    try:
+        await model.db_pool.execute(
+            """INSERT INTO event_log (match_id, event_type, source, payload)
+               VALUES ($1, $2, $3, $4)""",
+            model.match_id, event.type, event.source, json.dumps(payload),
+        )
+    except Exception as e:
+        log.error("event_log write failed", error=str(e))
+
+    # Redis publish for dashboard
+    try:
+        await model.redis.publish(f"event:{model.match_id}", json.dumps({
+            "type": "event",
+            "match_id": model.match_id,
+            "event_type": event.type,
+            "t": model.t,
+            "payload": payload,
+        }))
+    except Exception as e:
+        redis_publish_error_total.inc()
+        log.warning("Redis event publish failed", error=str(e))
 ```
 
 ### Event Handlers — Two-Stage Processing (Preliminary -> Confirmed)

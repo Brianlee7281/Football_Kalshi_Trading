@@ -645,53 +645,122 @@ All concrete values below come from `docs/phase4.md` validation examples.
 
 ## Sprint 7: Dashboard
 
-**Goal:** Grafana operational dashboards + React trading dashboard.
+**Goal:** Grafana operational dashboards + React trading dashboard + alerts.
 
-**Read first:** `docs/dashboard.md` (all parts).
+**Read first:** `docs/dashboard.md` (architecture) AND `docs/dashboard_decomposition.md` (type contracts, component specs, formatting, edge cases, tests).
 
-### Task 7.1: Prometheus Metrics
+### Task 7.1: Pydantic API Models
 
-**File:** `src/common/metrics.py`
-**Depends on:** `src/common/logging.py` (S0)
-- Define all counters, gauges, histograms from `docs/orchestration.md` Component 6
-- Expose via prometheus_client HTTP server in each container
+**File:** `dashboard/api/models.py`
+**Depends on:** `docs/dashboard_decomposition.md` Part 1.1 (exact field definitions)
+- All 15 Pydantic models from decomposition doc: MatchSummary, MatchDetail, TickSnapshot, PositionItem, SignalItem, EventItem, PnLReport, ModelHealthReport, GraduationChecklist, SystemStatus, etc.
+- Must match TypeScript types exactly (Part 1.2)
 
-### Task 7.2: Grafana Dashboards
+### Task 7.2: REST API Routes
 
-**Files:** `monitoring/grafana/dashboards/*.json`
-**Depends on:** `src/common/metrics.py` (Task 7.1), running system from Sprint 6 (for real data)
-- Priority: System Overview → Latency → Risk (P0 dashboards first)
-- Create from panel specs in `docs/dashboard.md` Part 1
+**Files:** `dashboard/api/routes/matches.py`, `positions.py`, `analytics.py`, `system.py`
+**Depends on:** Task 7.1, `src/common/db.py` (S6)
+- All endpoints from `docs/dashboard.md` Part 3
+- Return types must use Pydantic models from Task 7.1
 
-### Task 7.3: Dashboard API
+### Task 7.3: WebSocket Route
 
-**Files:** `dashboard/api/*.py`
-**Depends on:** `src/common/db.py` (Task 6.1), `src/common/redis_client.py` (Task 6.2), `sql/schema.sql` (S0 — query targets)
-- FastAPI server from `docs/dashboard.md` Part 3
-- REST endpoints + WebSocket live push
-- Redis pubsub subscription
+**File:** `dashboard/api/routes/websocket.py`
+**Depends on:** Task 7.1, `src/common/redis_client.py` (S6)
+- Use FIXED redis_listener from `docs/dashboard_decomposition.md` Part 2.1 (no duplicate subscribe bug)
+- Subscribe/unsubscribe delta management
 
-### Task 7.4: Dashboard UI
+### Task 7.4: TypeScript Types + Formatters
 
-**Files:** `dashboard/ui/src/**`
-**Depends on:** `dashboard/api/` (Task 7.3 — REST + WebSocket endpoints)
-- Next.js + TailwindCSS + Recharts
-- Priority: Command Center → Match Deep Dive (P1 views first)
-- WebSocket hooks for live data
+**Files:** `dashboard/ui/src/lib/types.ts`, `format.ts`, `format.test.ts`
+**Depends on:** `docs/dashboard_decomposition.md` Part 1.2 (TypeScript interfaces) + Part 5 (formatting rules)
+- All WSMessage types, MarketProbs, Score
+- All 15 format functions with exact test cases from Part 6
+- Use `sigma_MC` (not `σ_MC`) in JSON keys
 
-### Task 7.5: Alert Integration
+### Task 7.5: React Hooks
+
+**Files:** `dashboard/ui/src/hooks/useWebSocket.ts`, `useApi.ts`, `useLiveTick.ts`
+**Depends on:** Task 7.4
+- Reconnection with exponential backoff from Part 2.2 (1s→30s, max 10 retries)
+- Expose: status, lastMessageAge
+- useLiveTick: subscribe to match_id, return latest TickMessage
+
+### Task 7.6: StatusBar + AlertBanner
+
+**Files:** `dashboard/ui/src/components/StatusBar.tsx`, `AlertBanner.tsx`
+**Depends on:** Task 7.5
+- StatusBar: bankroll, exposure%, drawdown%, mode badge, WS status indicator
+- AlertBanner: critical=sticky, warning=30s dismiss, info=10s dismiss
+- Edge cases: WS disconnected → 🔴, bankroll null → "Loading..."
+
+### Task 7.7: Command Center Page
+
+**Files:** `dashboard/ui/src/app/page.tsx`, `components/MatchCard.tsx`
+**Depends on:** Tasks 7.5 + 7.6
+- MatchCard: teams, score, time, per-market edge, position count, click → deep dive
+- UpcomingList: SCHEDULED matches with countdown
+- Edge cases: 0 matches → "No active matches" message
+
+### Task 7.8: Match Deep Dive Page
+
+**Files:** `dashboard/ui/src/app/match/[id]/page.tsx` + `PriceChart.tsx`, `OrderBookViz.tsx`, `SignalLog.tsx`, `PositionTable.tsx`, `EventTimeline.tsx`
+**Depends on:** Tasks 7.5 + 7.6
+- PriceChart: Recharts, P_true/P_kalshi/P_bet365 lines, σ_MC band, event annotations
+- OrderBookViz: bid/ask bars, spread, stale indicator
+- SignalLog: newest first, BUY_YES green / BUY_NO red / HOLD gray
+- PositionTable: unrealized P&L computed client-side (directional)
+- EventTimeline: icons (⚽🟥🔄⏸), chronological
+- Edge cases: 0 ticks → "Waiting for match to start", stale order book → "STALE" badge
+
+### Task 7.9: P&L Analytics Page
+
+**Files:** `dashboard/ui/src/app/analytics/page.tsx`, `components/GraduationChecklist.tsx`
+**Depends on:** Task 7.5
+- Filters: date range, league, market, direction, paper/live
+- Breakdowns: by_league, by_market, by_direction, by_alignment
+- GraduationChecklist: 8 criteria with pass/fail badges
+- Edge cases: 0 trades → "No completed trades yet"
+
+### Task 7.10: System Operations Page
+
+**File:** `dashboard/ui/src/app/system/page.tsx`
+**Depends on:** Task 7.5
+- ContainerTable, ConnectionPanel, AlertHistory, ParamVersionInfo
+- Edge cases: heartbeat > 60s → red "UNRESPONSIVE"
+
+### Task 7.11: Prometheus Metrics + Grafana
+
+**Files:** `src/common/metrics.py`, `monitoring/grafana/dashboards/*.json`
+**Depends on:** `docs/orchestration.md` Component 6, running system from Sprint 6
+- All Prometheus counters/gauges/histograms
+- 6 Grafana dashboard JSONs from `docs/dashboard.md` Part 1
+
+### Task 7.12: Alert Integration
 
 **File:** `src/common/alerts.py`
-**Depends on:** `src/common/redis_client.py` (Task 6.2), `src/common/config_loader.py` (S0 — SLACK_WEBHOOK)
-- Slack webhook + SMS (Twilio) for critical alerts
+**Depends on:** `src/common/redis_client.py` (S6), `src/common/config_loader.py` (S0 — SLACK_WEBHOOK)
+- Slack webhook + SMS for critical
 - Alert definitions from `docs/dashboard.md` Part 4
+
+### Task 7.13: Dashboard Tests
+
+**Files:** API tests, format tests, component tests
+**Depends on:** Tasks 7.1-7.12
+- All test assertions from `docs/dashboard_decomposition.md` Part 6
+- API: field presence, sort order, edge cases (0 trades, 0 ticks)
+- Format: 15 functions × exact expected values
+- Components: empty states, color rules, WS disconnect handling
 
 ### Done Criteria
 
 - [ ] Grafana shows System Overview with real data from a paper match
-- [ ] Command Center displays running match with live P_true updates
+- [ ] Command Center displays running match with live P_true updates via WebSocket
+- [ ] Match Deep Dive chart renders P_true/P_kalshi with event annotations
 - [ ] Critical alert fires on simulated container crash (test via `docker stop`)
 - [ ] All 6 Grafana dashboards provisioned and functional
+- [ ] All formatting tests pass
+- [ ] All empty state edge cases handled (no blank screens)
 
 ---
 

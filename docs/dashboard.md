@@ -23,7 +23,7 @@ Match Container (Phase 3+4)
     │     (counters, gauges, histograms)
     │
     ├── PostgreSQL writes ──► Trading Dashboard (custom React)
-    │     (tick_snapshots, positions, event_log, trade_log)
+    │     (tick_snapshots, positions, event_log, bankroll_snapshot)
     │
     └── Redis pubsub ──► Trading Dashboard (live updates)
           (heartbeats, events, signals)

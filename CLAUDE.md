@@ -47,7 +47,7 @@ Read the relevant doc BEFORE coding its module:
 | `src/engine/` | `docs/phase3.md` |
 | `src/execution/` | `docs/phase4.md` |
 | `src/orchestrator/`, `docker/` | `docs/orchestration.md` |
-| `dashboard/` | `docs/dashboard.md` |
+| `dashboard/` | `docs/dashboard.md` + `docs/dashboard_decomposition.md` |
 | Any config work | `docs/config_reference.md` |
 | Any DB work | `docs/schema.sql` |
 | Starting a sprint | `docs/implementation_roadmap.md` |
