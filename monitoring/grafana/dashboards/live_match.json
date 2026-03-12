@@ -1,0 +1,145 @@
+{
+  "uid": "mmpp-live-match",
+  "title": "Live Match Detail",
+  "tags": ["mmpp"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": { "from": "now-2h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "match_id",
+        "type": "query",
+        "datasource": "PostgreSQL",
+        "query": "SELECT match_id FROM match_schedule WHERE status = 'PHASE3_RUNNING' ORDER BY kickoff_utc",
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Match Header",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT match_id, league_id, status, trading_mode, kickoff_utc FROM match_schedule WHERE match_id = '$match_id'",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "P_true vs P_kalshi (Home Win)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 3 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT t AS time, (P_true->>'home_win')::float AS p_model, (P_kalshi->>'home_win')::float AS p_market, (P_bet365->>'home_win')::float AS p_bet365 FROM tick_snapshots WHERE match_id = '$match_id' ORDER BY t",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "min": 0, "max": 1 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "p_model" }, "properties": [{ "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "p_market" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "p_bet365" }, "properties": [{ "id": "color", "value": { "fixedColor": "gray", "mode": "fixed" } }, { "id": "custom.lineStyle", "value": { "dash": [5, 3], "fill": "dash" } }] }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "P_true vs P_kalshi (Over 2.5)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 3 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT t AS time, (P_true->>'over_25')::float AS p_model, (P_kalshi->>'over_25')::float AS p_market, (P_bet365->>'over_25')::float AS p_bet365 FROM tick_snapshots WHERE match_id = '$match_id' ORDER BY t",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "min": 0, "max": 1 }
+      }
+    },
+    {
+      "id": 4,
+      "title": "sigma_MC",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 11 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT t AS time, (sigma_MC->>'home_win')::float AS hw_sigma, (sigma_MC->>'over_25')::float AS o25_sigma FROM tick_snapshots WHERE match_id = '$match_id' ORDER BY t",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "mu_H / mu_A (Expected Goals)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 11 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT t AS time, mu_H, mu_A FROM tick_snapshots WHERE match_id = '$match_id' ORDER BY t",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Event Timeline",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 17 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT created_at, event_type, source, payload::text FROM event_log WHERE match_id = '$match_id' ORDER BY created_at DESC LIMIT 50",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Positions",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 17 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT market_ticker, direction, entry_price, quantity, status, is_paper, entry_time, realized_pnl FROM positions WHERE match_id = '$match_id' ORDER BY entry_time DESC",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Engine State",
+      "type": "stat",
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 23 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT engine_phase, event_state, cooldown, ob_freeze, order_allowed FROM tick_snapshots WHERE match_id = '$match_id' ORDER BY t DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

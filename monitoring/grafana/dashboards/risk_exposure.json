@@ -1,0 +1,169 @@
+{
+  "uid": "mmpp-risk-exposure",
+  "title": "Risk & Exposure",
+  "tags": ["mmpp"],
+  "timezone": "browser",
+  "refresh": "10s",
+  "time": { "from": "now-30d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total Exposure (Live)",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "total_exposure_ratio * 100", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 30,
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 15 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Max Drawdown %",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        { "expr": "max_drawdown_pct", "refId": "A" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 25,
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 15 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Bankroll (Live)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "bankroll_balance{mode=\"live\"}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "id": 4,
+      "title": "Bankroll (Paper)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        { "expr": "bankroll_balance{mode=\"paper\"}", "refId": "A" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "id": 5,
+      "title": "Exposure by Match",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT match_id, SUM(quantity * entry_price) AS exposure FROM positions WHERE status IN ('OPEN', 'AWAITING_SETTLEMENT') GROUP BY match_id ORDER BY exposure DESC",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Exposure by League",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT ms.league_id::text AS league, SUM(p.quantity * p.entry_price) AS exposure FROM positions p JOIN match_schedule ms ON p.match_id = ms.match_id WHERE p.status IN ('OPEN', 'AWAITING_SETTLEMENT') GROUP BY ms.league_id",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Bankroll History (30d)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT snapshot_time AS time, balance_live, balance_paper FROM bankroll_snapshot WHERE snapshot_time > NOW() - INTERVAL '30 days' ORDER BY snapshot_time",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "currencyUSD" } }
+    },
+    {
+      "id": 8,
+      "title": "Active Reservations",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 22 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT match_id, market_ticker, amount, status, created_at FROM exposure_reservation WHERE status = 'RESERVED' ORDER BY created_at DESC",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Stale Reservations",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 22 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) AS stale_count FROM exposure_reservation WHERE status = 'RESERVED' AND created_at < NOW() - INTERVAL '60 seconds'",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Position Heat Map",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 22 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT match_id, market_ticker, direction, entry_price, quantity, status FROM positions WHERE status IN ('OPEN', 'AWAITING_SETTLEMENT') ORDER BY entry_time DESC",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "uid": "mmpp-model-health",
+  "title": "Phase 1 Model Health",
+  "tags": ["mmpp"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-30d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Brier Score (Rolling 20 Matches)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "WITH settled AS (SELECT match_id, AVG((P_true->>'home_win')::float - CASE WHEN (payload->>'winner') = 'home' THEN 1.0 ELSE 0.0 END) AS brier FROM tick_snapshots ts JOIN event_log el ON ts.match_id = el.match_id AND el.event_type = 'match_result' GROUP BY ts.match_id ORDER BY MAX(ts.t) DESC LIMIT 20) SELECT ROW_NUMBER() OVER () AS time, brier FROM settled",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.25 },
+              { "color": "red", "value": 0.3 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Edge Realization (Rolling 20)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT created_at AS time, realized_pnl / NULLIF(entry_price * quantity, 0) AS edge_real FROM positions WHERE status = 'SETTLED' ORDER BY created_at DESC LIMIT 20",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.5 },
+              { "color": "yellow", "value": 1.5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Direction Realization (Yes vs No)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT created_at AS time, direction, realized_pnl / NULLIF(entry_price * quantity, 0) AS edge_real FROM positions WHERE status = 'SETTLED' AND direction IN ('BUY_YES', 'BUY_NO') ORDER BY created_at DESC LIMIT 40",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Parameter Version History",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT version, created_at, is_active, validation_metrics::text FROM production_params ORDER BY version DESC LIMIT 10",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Brier by League",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT ms.league_id::text AS league, AVG(POWER((ts.P_true->>'home_win')::float - CASE WHEN p.direction = 'BUY_YES' AND p.realized_pnl > 0 THEN 1.0 ELSE 0.0 END, 2)) AS brier FROM tick_snapshots ts JOIN positions p ON ts.match_id = p.match_id JOIN match_schedule ms ON ts.match_id = ms.match_id WHERE p.status = 'SETTLED' GROUP BY ms.league_id",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Alignment Value (ALIGNED - DIVERGENT Return)",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": "PostgreSQL",
+      "targets": [
+        {
+          "rawSql": "SELECT (SELECT AVG(realized_pnl) FROM positions WHERE status = 'SETTLED') - 0 AS alignment_value",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD",
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

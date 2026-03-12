@@ -74,3 +74,109 @@ kelly_fraction: Gauge = Gauge(
     "Most recent incremental Kelly fraction for a market",
     ["match_id", "market"],
 )
+
+phase4_queue_depth: Gauge = Gauge(
+    "phase4_queue_depth",
+    "Phase 3→4 asyncio.Queue depth (should be 0 or 1)",
+)
+
+# ---------------------------------------------------------------------------
+# Match lifecycle
+# ---------------------------------------------------------------------------
+
+matches_started_total: Counter = Counter(
+    "matches_started_total",
+    "Total matches started",
+    ["league"],
+)
+
+matches_completed_total: Counter = Counter(
+    "matches_completed_total",
+    "Total matches completed",
+    ["status"],  # FINISHED | FAILED | SKIPPED
+)
+
+active_match_containers: Gauge = Gauge(
+    "active_match_containers",
+    "Number of currently running match containers",
+)
+
+# ---------------------------------------------------------------------------
+# Trading
+# ---------------------------------------------------------------------------
+
+orders_submitted_total: Counter = Counter(
+    "orders_submitted_total",
+    "Total orders submitted to Kalshi",
+    ["direction", "match_id"],
+)
+
+orders_filled_total: Counter = Counter(
+    "orders_filled_total",
+    "Total orders that received fills",
+    ["direction"],
+)
+
+position_pnl: Histogram = Histogram(
+    "position_pnl",
+    "Realised P&L per settled position (dollars)",
+    buckets=[-0.5, -0.2, -0.1, 0, 0.1, 0.2, 0.5],
+)
+
+# ---------------------------------------------------------------------------
+# Risk
+# ---------------------------------------------------------------------------
+
+total_exposure_ratio: Gauge = Gauge(
+    "total_exposure_ratio",
+    "Total portfolio exposure as fraction of bankroll",
+)
+
+bankroll_balance: Gauge = Gauge(
+    "bankroll_balance",
+    "Current bankroll balance in dollars",
+    ["mode"],  # live | paper
+)
+
+max_drawdown_pct: Gauge = Gauge(
+    "max_drawdown_pct",
+    "Current maximum drawdown percentage",
+)
+
+# ---------------------------------------------------------------------------
+# Latency: external data sources
+# ---------------------------------------------------------------------------
+
+odds_api_ws_latency: Histogram = Histogram(
+    "odds_api_ws_latency_seconds",
+    "Odds-API WebSocket message processing latency",
+    buckets=[0.01, 0.05, 0.1, 0.5, 1.0, 5.0],
+)
+
+live_score_poll_latency: Histogram = Histogram(
+    "live_score_poll_latency_seconds",
+    "Goalserve REST live-score poll latency",
+    buckets=[0.1, 0.5, 1.0, 5.0, 10.0],
+)
+
+mc_compute_latency: Histogram = Histogram(
+    "mc_compute_latency_seconds",
+    "Monte Carlo pricing computation latency",
+    buckets=[0.001, 0.005, 0.01, 0.05, 0.1],
+)
+
+order_fill_latency: Histogram = Histogram(
+    "order_fill_latency_seconds",
+    "Kalshi order fill latency (submit to fill confirmation)",
+    buckets=[0.5, 1.0, 2.0, 5.0, 10.0],
+)
+
+# ---------------------------------------------------------------------------
+# Heartbeat
+# ---------------------------------------------------------------------------
+
+heartbeat_age_seconds: Gauge = Gauge(
+    "heartbeat_age_seconds",
+    "Seconds since last heartbeat from a match container",
+    ["match_id"],
+)
