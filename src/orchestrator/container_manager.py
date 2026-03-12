@@ -35,6 +35,10 @@ _IMAGE_NAME: str = "soccer-live-engine:latest"
 _MEM_LIMIT: str = "512m"
 _CPU_QUOTA: int = 50_000  # 0.5 CPU (100_000 = 1 full CPU in Docker)
 _LOG_ROOT: Path = Path("logs") / "containers"
+# Default compose network name — overridden by COMPOSE_NETWORK env var.
+# Must match the `name:` field of the mmpp-net network in docker-compose.yml
+# so spawned match-engine containers can resolve "postgres" and "redis".
+_DEFAULT_NETWORK: str = "mmpp-net"
 
 
 # ---------------------------------------------------------------------------
@@ -68,6 +72,7 @@ class ContainerManager:
         goalserve_api_key: str = "",
         kalshi_api_key: str = "",
         log_root: Path = _LOG_ROOT,
+        compose_network: str = _DEFAULT_NETWORK,
     ) -> None:
         self._image = image
         self._db_url = db_url
@@ -76,6 +81,7 @@ class ContainerManager:
         self._goalserve_api_key = goalserve_api_key
         self._kalshi_api_key = kalshi_api_key
         self._log_root = log_root
+        self._compose_network = compose_network
 
     # ------------------------------------------------------------------
     # Public interface (matches lifecycle.py expectations)
@@ -119,6 +125,9 @@ class ContainerManager:
                 "Memory": _parse_mem_limit(_MEM_LIMIT),
                 "CpuQuota": _CPU_QUOTA,
                 "RestartPolicy": {"Name": "no"},
+                # Join the docker-compose network so the container can
+                # resolve "postgres" and "redis" by hostname.
+                "NetworkMode": self._compose_network,
             },
             "Labels": {
                 "service": "match-engine",
@@ -330,6 +339,10 @@ def create_container_manager(config: dict[str, Any]) -> ContainerManager:
         odds_api_key=os.environ.get("ODDS_API_KEY", ""),
         goalserve_api_key=os.environ.get("GOALSERVE_API_KEY", ""),
         kalshi_api_key=os.environ.get("KALSHI_API_KEY", ""),
+        # COMPOSE_NETWORK must match the `name:` field of the mmpp-net
+        # network defined in docker-compose.yml so spawned containers
+        # can resolve postgres/redis by hostname.
+        compose_network=os.environ.get("COMPOSE_NETWORK", _DEFAULT_NETWORK),
     )
 
 

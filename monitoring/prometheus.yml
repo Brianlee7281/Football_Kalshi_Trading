@@ -1,0 +1,54 @@
+# monitoring/prometheus.yml
+#
+# Prometheus scrape configuration for the MMPP trading stack.
+# Mounted into the prometheus container at /etc/prometheus/prometheus.yml.
+#
+# Sprint 7 will add full alerting rules via monitoring/alerts.yml.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: "mmpp-trading"
+
+# Alerting rules (Sprint 7)
+# rule_files:
+#   - /etc/prometheus/alerts.yml
+
+scrape_configs:
+
+  # Prometheus self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Match engine containers — each exposes :8001/metrics via prometheus-client.
+  # The orchestrator labels every container with service=match-engine so
+  # Prometheus can discover them via Docker service discovery.
+  - job_name: match-engine
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 15s
+        filters:
+          - name: label
+            values: ["service=match-engine"]
+    relabel_configs:
+      - source_labels: [__meta_docker_container_label_match_id]
+        target_label: match_id
+      - source_labels: [__meta_docker_container_label_league]
+        target_label: league
+      - source_labels: [__address__]
+        regex: "([^:]+):.*"
+        replacement: "${1}:8001"
+        target_label: __address__
+
+  # Orchestrator metrics
+  - job_name: orchestrator
+    static_configs:
+      - targets: ["orchestrator:8001"]
+
+  # PostgreSQL exporter (optional — add postgres-exporter service to compose
+  # and uncomment this block in Sprint 7)
+  # - job_name: postgres
+  #   static_configs:
+  #     - targets: ["postgres-exporter:9187"]

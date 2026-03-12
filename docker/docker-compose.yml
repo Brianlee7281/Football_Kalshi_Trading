@@ -1,32 +1,189 @@
+# docker/docker-compose.yml
+#
+# Full MMPP soccer live-trading stack.
+# TRADING_MODE defaults to "paper" — set to "live" with caution.
+#
+# Usage:
+#   cp .env.example .env          # fill in secrets
+#   docker compose -f docker/docker-compose.yml up -d
+#
+# Docker-in-Docker networking
+# ───────────────────────────
+# The orchestrator spawns match-engine containers via the Docker socket.
+# Those containers must join "mmpp-net" (set via COMPOSE_NETWORK env var)
+# so they can resolve "postgres" and "redis" by hostname — identical to
+# every other service defined here.  ContainerManager.launch() passes
+#   "HostConfig": {"NetworkMode": "mmpp-net"}
+# so every spawned container is on the same L2 segment.
+
 services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────
+
   postgres:
     image: postgres:16-alpine
     container_name: mmpp-postgres
     environment:
       POSTGRES_DB: soccer_trading
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ../sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - mmpp-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d soccer_trading"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     container_name: mmpp-redis
     ports:
       - "6379:6379"
+    networks:
+      - mmpp-net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+    restart: unless-stopped
+
+  # ── Orchestrator ─────────────────────────────────────────────────────────
+
+  orchestrator:
+    build:
+      context: ..
+      dockerfile: docker/orchestrator/Dockerfile
+    container_name: mmpp-orchestrator
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_URL: postgresql://postgres:${DB_PASSWORD:-postgres}@postgres:5432/soccer_trading
+      REDIS_URL: redis://redis:6379
+      TRADING_MODE: ${TRADING_MODE:-paper}
+      ODDS_API_KEY: ${ODDS_API_KEY:-}
+      GOALSERVE_API_KEY: ${GOALSERVE_API_KEY:-}
+      KALSHI_API_KEY: ${KALSHI_API_KEY:-}
+      # Tells ContainerManager which Docker network to join spawned containers to.
+      # Must match the `name:` field of the mmpp-net network below.
+      COMPOSE_NETWORK: mmpp-net
+    volumes:
+      # Docker socket — required for ContainerManager to spawn match containers.
+      # The socket grants full Docker daemon access; restrict to a dedicated
+      # Docker daemon socket proxy in production.
+      - /var/run/docker.sock:/var/run/docker.sock
+      - orchestrator-logs:/app/logs
+    networks:
+      - mmpp-net
+    restart: always
+
+  # ── Monitoring ────────────────────────────────────────────────────────────
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: mmpp-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - mmpp-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.3.3
+    container_name: mmpp-grafana
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    volumes:
+      - ../dashboard/grafana:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - mmpp-net
+    restart: unless-stopped
+
+  # ── Dashboard (Sprint 7) ──────────────────────────────────────────────────
+  # Disabled by default via `profiles: [dashboard]`.
+  # Enable with: docker compose --profile dashboard up
+
+  dashboard-api:
+    build:
+      context: ..
+      dockerfile: docker/dashboard-api/Dockerfile
+    container_name: mmpp-dashboard-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_URL: postgresql://postgres:${DB_PASSWORD:-postgres}@postgres:5432/soccer_trading
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8000:8000"
+    networks:
+      - mmpp-net
+    restart: unless-stopped
+    profiles:
+      - dashboard
+
+  dashboard-ui:
+    build:
+      context: ..
+      dockerfile: docker/dashboard-ui/Dockerfile
+    container_name: mmpp-dashboard-ui
+    depends_on:
+      - dashboard-api
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3001:3001"
+    networks:
+      - mmpp-net
+    restart: unless-stopped
+    profiles:
+      - dashboard
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
 
 volumes:
   pgdata:
+  prometheus-data:
+  grafana-data:
+  orchestrator-logs:
+
+# ── Networks ─────────────────────────────────────────────────────────────────
+#
+# CRITICAL — fixed name so Docker-in-Docker works:
+# The `name: mmpp-net` field ensures the network has a predictable name
+# regardless of the compose project directory or COMPOSE_PROJECT_NAME.
+# ContainerManager reads COMPOSE_NETWORK=mmpp-net and passes it as
+# HostConfig.NetworkMode when spawning match-engine containers, giving them
+# access to "postgres" and "redis" by hostname on the same L2 segment.
+
+networks:
+  mmpp-net:
+    name: mmpp-net
+    driver: bridge

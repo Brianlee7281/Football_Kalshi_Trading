@@ -242,6 +242,24 @@ async def test_launch_container_name(tmp_path: Path) -> None:
     assert name_arg == "match-gs-007"
 
 
+@pytest.mark.asyncio
+async def test_launch_network_mode(tmp_path: Path) -> None:
+    """Container must join the compose network via HostConfig.NetworkMode."""
+    manager = ContainerManager(
+        image="soccer-live-engine:test",
+        compose_network="mmpp-net",
+        log_root=tmp_path / "logs",
+    )
+    match = _make_match()
+    docker_instance, _ = _make_aiodocker_mock()
+
+    with patch("src.orchestrator.container_manager.aiodocker.Docker", return_value=docker_instance):
+        await manager.launch(match_id="gs-001", match=match, phase2_result=_make_phase2())
+
+    config_arg = docker_instance.containers.create.call_args.kwargs["config"]
+    assert config_arg["HostConfig"]["NetworkMode"] == "mmpp-net"
+
+
 # ---------------------------------------------------------------------------
 # ContainerManager.inspect
 # ---------------------------------------------------------------------------
@@ -340,6 +358,7 @@ def test_create_container_manager_reads_env(tmp_path: Path) -> None:
         "ODDS_API_KEY": "odds-prod",
         "GOALSERVE_API_KEY": "gs-prod",
         "KALSHI_API_KEY": "kalshi-prod",
+        "COMPOSE_NETWORK": "custom-net",
     }
     with patch.dict(os.environ, env_overrides):
         manager = create_container_manager(config)
@@ -347,6 +366,15 @@ def test_create_container_manager_reads_env(tmp_path: Path) -> None:
     assert manager._image == "custom-engine:v2"
     assert manager._db_url == "postgresql://prod"
     assert manager._kalshi_api_key == "kalshi-prod"
+    assert manager._compose_network == "custom-net"
+
+
+def test_create_container_manager_default_network(tmp_path: Path) -> None:
+    """COMPOSE_NETWORK defaults to mmpp-net when env var not set."""
+    env = {k: v for k, v in os.environ.items() if k != "COMPOSE_NETWORK"}
+    with patch.dict(os.environ, env, clear=True):
+        manager = create_container_manager({})
+    assert manager._compose_network == "mmpp-net"
 
 
 def test_create_container_manager_defaults_image(tmp_path: Path) -> None:
