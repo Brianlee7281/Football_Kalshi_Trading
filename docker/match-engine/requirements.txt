@@ -1,0 +1,24 @@
+# docker/match-engine/requirements.txt
+# Runtime deps for Phase 3+4 match engine container.
+# Pinned to match the root requirements.txt; torch excluded (not needed at runtime).
+
+# Numerical core (Numba requires numpy at install time for AOT warm-up)
+numpy==1.26.4
+numba==0.59.1
+scipy==1.12.0
+xgboost==2.0.3
+
+# HTTP / WebSocket
+httpx==0.27.0
+websockets==12.0
+
+# Database
+asyncpg==0.29.0
+redis==5.0.3
+
+# Observability
+structlog==24.1.0
+prometheus-client==0.20.0
+
+# Config
+pyyaml==6.0.1
