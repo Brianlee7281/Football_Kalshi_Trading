@@ -472,35 +472,45 @@ class KalshiClient:
     # Market Discovery (Scheduler — match discovery)
     # ------------------------------------------------------------------
 
+    #: Known Kalshi soccer series prefixes (see docs/kalshi_api_exploration.md §2).
+    SOCCER_SERIES_PREFIXES: tuple[str, ...] = (
+        "KXUCL", "KXEPL", "KXMLS", "KXLALIGA", "KXBUND", "KXSERIA",
+        "KXLIGUE", "KXUECL", "KXUEEL", "KXWC", "KXEURO", "KXCOPA",
+        "KXCL", "KXEL", "KXSOC", "KXFOOT",
+    )
+
     async def get_active_soccer_events(self) -> list[dict[str, Any]]:
-        """Fetch active soccer events from Kalshi for match discovery.
+        """Fetch active soccer markets and group them into events.
 
-        Calls ``GET /trade-api/v2/events`` with ``series_ticker=SOCCER`` and
-        ``status=open``, paginating until all results are collected.
+        Kalshi has no ``series_ticker=SOCCER`` filter.  Instead, scans
+        ``GET /trade-api/v2/markets?status=open`` (paginated, 1000/page)
+        and keeps markets whose ``event_ticker`` or ``series_ticker``
+        starts with a known soccer prefix (KXUCL, KXEPL, etc.).
 
-        Each event dict from Kalshi contains:
-          ``event_ticker``, ``title``, ``series_ticker``, ``markets``
-          (list of market tickers for this event), ``end_date``.
+        Markets are grouped by ``event_ticker`` into pseudo-event dicts
+        matching the shape expected by ``_match_fixtures_to_markets``:
+        ``event_ticker``, ``title``, ``close_time``, ``markets`` (list of
+        ticker strings).
 
         Returns:
             List of event dicts for active soccer markets.  Empty list if
             no soccer events are found or the API returns an error.
         """
-        events: list[dict[str, Any]] = []
+        # ── Step 1: Paginate all open markets, keep soccer ones ───────────
+        soccer_markets: list[dict[str, Any]] = []
         cursor: str | None = None
 
         while True:
             params: dict[str, Any] = {
-                "series_ticker": "SOCCER",
                 "status": "open",
-                "limit": 100,
+                "limit": 1000,
             }
             if cursor:
                 params["cursor"] = cursor
 
             try:
                 resp = await self._http.get(
-                    f"{_API_PREFIX}/events",
+                    f"{_API_PREFIX}/markets",
                     params=params,
                 )
                 _raise_for_kalshi_error(resp)
@@ -509,14 +519,41 @@ class KalshiClient:
                 logger.warning("get_active_soccer_events_failed", error=str(exc))
                 break
 
-            page: list[dict[str, Any]] = data.get("events", [])
-            events.extend(page)
+            page: list[dict[str, Any]] = data.get("markets", [])
+            for m in page:
+                series = (m.get("series_ticker") or "").upper()
+                event = (m.get("event_ticker") or "").upper()
+                if any(
+                    series.startswith(p) or event.startswith(p)
+                    for p in self.SOCCER_SERIES_PREFIXES
+                ):
+                    soccer_markets.append(m)
 
             cursor = data.get("cursor") or ""
             if not cursor or not page:
                 break
 
-        logger.info("kalshi_soccer_events_fetched", count=len(events))
+        logger.info("kalshi_soccer_markets_fetched", count=len(soccer_markets))
+
+        # ── Step 2: Group by event_ticker into pseudo-events ──────────────
+        event_map: dict[str, dict[str, Any]] = {}
+        for m in soccer_markets:
+            et = m.get("event_ticker", "")
+            if not et:
+                continue
+            if et not in event_map:
+                event_map[et] = {
+                    "event_ticker": et,
+                    "title": m.get("title", ""),
+                    "series_ticker": m.get("series_ticker", ""),
+                    "close_time": m.get("close_time", ""),
+                    "end_date": m.get("close_time", ""),
+                    "markets": [],
+                }
+            event_map[et]["markets"].append(m.get("ticker", ""))
+
+        events = list(event_map.values())
+        logger.info("kalshi_soccer_events_grouped", count=len(events))
         return events
 
     # ------------------------------------------------------------------
