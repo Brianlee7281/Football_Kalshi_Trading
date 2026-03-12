@@ -469,6 +469,57 @@ class KalshiClient:
         logger.info("order_cancelled", order_id=order_id)
 
     # ------------------------------------------------------------------
+    # Market Discovery (Scheduler — match discovery)
+    # ------------------------------------------------------------------
+
+    async def get_active_soccer_events(self) -> list[dict[str, Any]]:
+        """Fetch active soccer events from Kalshi for match discovery.
+
+        Calls ``GET /trade-api/v2/events`` with ``series_ticker=SOCCER`` and
+        ``status=open``, paginating until all results are collected.
+
+        Each event dict from Kalshi contains:
+          ``event_ticker``, ``title``, ``series_ticker``, ``markets``
+          (list of market tickers for this event), ``end_date``.
+
+        Returns:
+            List of event dicts for active soccer markets.  Empty list if
+            no soccer events are found or the API returns an error.
+        """
+        events: list[dict[str, Any]] = []
+        cursor: str | None = None
+
+        while True:
+            params: dict[str, Any] = {
+                "series_ticker": "SOCCER",
+                "status": "open",
+                "limit": 100,
+            }
+            if cursor:
+                params["cursor"] = cursor
+
+            try:
+                resp = await self._http.get(
+                    f"{_API_PREFIX}/events",
+                    params=params,
+                )
+                _raise_for_kalshi_error(resp)
+                data: dict[str, Any] = resp.json()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("get_active_soccer_events_failed", error=str(exc))
+                break
+
+            page: list[dict[str, Any]] = data.get("events", [])
+            events.extend(page)
+
+            cursor = data.get("cursor") or ""
+            if not cursor or not page:
+                break
+
+        logger.info("kalshi_soccer_events_fetched", count=len(events))
+        return events
+
+    # ------------------------------------------------------------------
     # WebSocket — order book stream
     # ------------------------------------------------------------------
 

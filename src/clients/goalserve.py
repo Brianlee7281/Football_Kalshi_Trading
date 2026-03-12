@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from src.clients.base_client import BaseClient
@@ -223,6 +224,61 @@ class GoalserveClient:
         data = response.json()
 
         return _extract_live_matches(data)
+
+    # ------------------------------------------------------------------
+    # Upcoming Fixtures (Scheduler — Phase 2/3 trigger computation)
+    # ------------------------------------------------------------------
+
+    async def get_upcoming_fixtures(
+        self,
+        league_ids: list[int],
+        *,
+        hours_ahead: float = 48.0,
+    ) -> list[dict[str, Any]]:
+        """Fetch upcoming fixtures across multiple leagues within a time window.
+
+        Calls ``get_fixtures`` for each league, parses kickoff timestamps,
+        and returns only matches starting within ``hours_ahead`` hours from now.
+
+        Each returned dict is the raw Goalserve match dict enriched with:
+          ``_league_id``  — the integer league ID
+          ``_kickoff_utc`` — a timezone-aware ``datetime`` in UTC
+
+        Errors fetching a single league are logged and skipped so that a
+        partial failure does not block discovery for other leagues.
+
+        Args:
+            league_ids: List of Goalserve league IDs to scan.
+            hours_ahead: Forward window in hours (default 48).
+
+        Returns:
+            List of upcoming fixture dicts, sorted by ``_kickoff_utc``.
+        """
+        now = datetime.now(UTC)
+        cutoff = now + timedelta(hours=hours_ahead)
+
+        upcoming: list[dict[str, Any]] = []
+        for league_id in league_ids:
+            try:
+                fixtures = await self.get_fixtures(league_id)
+            except Exception as exc:  # noqa: BLE001
+                self._logger.warning(
+                    "get_fixtures_failed",
+                    league_id=league_id,
+                    error=str(exc),
+                )
+                continue
+
+            for fix in fixtures:
+                kickoff = _parse_fixture_kickoff(fix)
+                if kickoff and now < kickoff <= cutoff:
+                    enriched = dict(fix)
+                    enriched["_league_id"] = league_id
+                    enriched["_kickoff_utc"] = kickoff
+                    upcoming.append(enriched)
+
+        upcoming.sort(key=lambda f: f["_kickoff_utc"])
+        return upcoming
 
 
 # ---------------------------------------------------------------------------
@@ -573,3 +629,38 @@ def extract_stoppage_time(match_data: dict[str, Any]) -> tuple[float, float]:
         _get_field(time_info, "addedTime_period2", 0) or 0
     )
     return alpha_1, alpha_2
+
+
+def _parse_fixture_kickoff(fix: dict[str, Any]) -> datetime | None:
+    """Parse kickoff datetime from a Goalserve fixture dict.
+
+    Goalserve encodes dates in ``@date`` (DD.MM.YYYY or MM/DD/YYYY) and
+    ``@time`` (HH:MM) fields, both in UTC.  Returns ``None`` if the date
+    field is absent or unparseable.
+
+    Args:
+        fix: Raw Goalserve fixture dict (``@``-prefixed keys).
+
+    Returns:
+        Timezone-aware UTC datetime, or ``None`` on parse failure.
+    """
+    date_str: str = fix.get("@date", "") or ""
+    time_str: str = fix.get("@time", "00:00") or "00:00"
+
+    if not date_str:
+        return None
+
+    for fmt in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
+        try:
+            date_part = datetime.strptime(date_str.strip(), fmt)
+            parts = time_str.strip().split(":")
+            hour = int(parts[0]) if parts else 0
+            minute = int(parts[1]) if len(parts) > 1 else 0
+            return datetime(
+                date_part.year, date_part.month, date_part.day,
+                hour, minute, tzinfo=UTC,
+            )
+        except (ValueError, AttributeError):
+            continue
+
+    return None
