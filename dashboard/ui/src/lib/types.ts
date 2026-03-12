@@ -249,4 +249,8 @@ export interface SystemStatus {
   param_version: number | null;
   param_trained_at: string | null;
   matches_since_retrain: number | null;
+  bankroll: number | null;
+  exposure_pct: number | null;
+  drawdown_pct: number | null;
+  trading_mode: string | null;
 }
