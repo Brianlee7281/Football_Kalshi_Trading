@@ -140,7 +140,7 @@ async def backfill_league(
 async def main() -> None:
     parser = argparse.ArgumentParser(description="Backfill Odds-API data")
     parser.add_argument("--leagues", nargs="*", default=["epl"],
-                        help="League keys to backfill (default: epl)")
+                        help="League keys to backfill (default: epl). Use 'all' for all leagues.")
     args = parser.parse_args()
 
     load_env()
@@ -153,8 +153,9 @@ async def main() -> None:
     print("-" * 50)
 
     total_new = 0
+    league_keys = list(LEAGUES.keys()) if "all" in args.leagues else args.leagues
     async with OddsApiClient(api_key) as client:
-        for key in args.leagues:
+        for key in league_keys:
             slug = LEAGUES.get(key)
             if not slug:
                 print(f"  Unknown league: {key}")
