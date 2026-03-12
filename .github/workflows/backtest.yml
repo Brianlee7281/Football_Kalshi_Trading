@@ -1,0 +1,84 @@
+name: Backtest (Nightly)
+
+on:
+  schedule:
+    # Run nightly at 03:00 UTC
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Advisory only — does not block merges
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fkt
+          POSTGRES_PASSWORD: fkt_test
+          POSTGRES_DB: fkt_backtest
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://fkt:fkt_test@localhost:5432/fkt_backtest
+      REDIS_URL: redis://localhost:6379/0
+      TRADING_MODE: paper
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-backtest-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-backtest-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Apply DB schema
+        run: psql "$DATABASE_URL" -f sql/schema.sql
+        env:
+          PGPASSWORD: fkt_test
+
+      - name: Run Step 3.6 backtest validation
+        run: |
+          python -m src.calibration.step_1_5_validation \
+            --backtest \
+            --output results/backtest_report.json
+
+      - name: Upload backtest results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backtest-report
+          path: results/backtest_report.json
+          retention-days: 30
