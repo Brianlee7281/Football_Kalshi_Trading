@@ -74,6 +74,7 @@ services:
       ODDS_API_KEY: ${ODDS_API_KEY:-}
       GOALSERVE_API_KEY: ${GOALSERVE_API_KEY:-}
       KALSHI_API_KEY: ${KALSHI_API_KEY:-}
+      KALSHI_PRIVATE_KEY_PATH: ${KALSHI_PRIVATE_KEY_PATH:-}
       # Tells ContainerManager which Docker network to join spawned containers to.
       # Must match the `name:` field of the mmpp-net network below.
       COMPOSE_NETWORK: mmpp-net
@@ -83,6 +84,7 @@ services:
       # Docker daemon socket proxy in production.
       - /var/run/docker.sock:/var/run/docker.sock
       - orchestrator-logs:/app/logs
+      - ../keys:/app/keys:ro
     networks:
       - mmpp-net
     restart: always
@@ -142,7 +144,7 @@ services:
       DB_URL: postgresql://postgres:${DB_PASSWORD:-postgres}@postgres:5432/soccer_trading
       REDIS_URL: redis://redis:6379
     ports:
-      - "8000:8000"
+      - "8001:8000"
     networks:
       - mmpp-net
     restart: unless-stopped
@@ -153,11 +155,12 @@ services:
     build:
       context: ..
       dockerfile: docker/dashboard-ui/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8001
+        NEXT_PUBLIC_WS_URL: ws://localhost:8001/ws/live
     container_name: mmpp-dashboard-ui
     depends_on:
       - dashboard-api
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
     ports:
       - "3001:3001"
     networks:
