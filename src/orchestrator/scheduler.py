@@ -138,6 +138,8 @@ class MatchDiscovery:
                 phase3_trigger=kickoff - timedelta(minutes=PHASE3_OFFSET_MINUTES),
                 kalshi_tickers=m["kalshi_tickers"],
                 odds_api_event_id=m.get("odds_api_event_id"),
+                home_team=m.get("home_team"),
+                away_team=m.get("away_team"),
                 trading_mode=self.trading_mode,
                 param_version=self.param_version,
             )
@@ -279,6 +281,9 @@ def _match_fixtures_to_markets(
             title: str = str(event.get("title", "")).lower()
             if _name_in_title(home, title) and _name_in_title(away, title):
                 tickers: list[str] = _extract_tickers(event)
+                # Capitalise team names for display (stored lowercase internally)
+                home_display = fix.get("localteam", {}).get("@name", "") if isinstance(fix.get("localteam"), dict) else ""
+                away_display = fix.get("visitorteam", {}).get("@name", "") if isinstance(fix.get("visitorteam"), dict) else ""
                 matched.append(
                     {
                         "match_id": match_id,
@@ -286,6 +291,8 @@ def _match_fixtures_to_markets(
                         "kickoff_utc": kickoff,
                         "kalshi_tickers": tickers,
                         "odds_api_event_id": event.get("event_ticker"),
+                        "home_team": home_display,
+                        "away_team": away_display,
                     }
                 )
                 break  # one Kalshi event per fixture
@@ -395,10 +402,10 @@ async def _upsert_match_schedules(
     pool: asyncpg.Pool,
     schedules: list[MatchSchedule],
 ) -> int:
-    """Insert new SCHEDULED rows; skip matches already in the table.
+    """Insert new SCHEDULED rows or update team names for existing rows.
 
-    Uses ``ON CONFLICT (match_id) DO NOTHING`` so re-running discovery is
-    idempotent — existing rows (in any status) are never overwritten.
+    Uses ``ON CONFLICT (match_id) DO UPDATE`` to backfill home_team/away_team
+    on re-discovery while preserving status and other fields.
 
     Returns:
         Number of newly inserted rows.
@@ -415,9 +422,12 @@ async def _upsert_match_schedules(
                     (match_id, league_id, kickoff_utc,
                      phase2_trigger, phase3_trigger,
                      kalshi_tickers, odds_api_event_id,
+                     home_team, away_team,
                      trading_mode, status)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'SCHEDULED')
-                ON CONFLICT (match_id) DO NOTHING
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'SCHEDULED')
+                ON CONFLICT (match_id) DO UPDATE
+                    SET home_team = COALESCE(EXCLUDED.home_team, match_schedule.home_team),
+                        away_team = COALESCE(EXCLUDED.away_team, match_schedule.away_team)
                 """,
                 s.match_id,
                 s.league_id,
@@ -426,6 +436,8 @@ async def _upsert_match_schedules(
                 s.phase3_trigger,
                 json.dumps(s.kalshi_tickers),
                 s.odds_api_event_id,
+                s.home_team,
+                s.away_team,
                 s.trading_mode,
             )
             # asyncpg execute() returns "INSERT 0 N" or "INSERT 0 0"

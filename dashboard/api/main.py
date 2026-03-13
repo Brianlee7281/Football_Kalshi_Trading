@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os
 
+import redis.asyncio as aioredis
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -44,12 +45,18 @@ async def startup() -> None:
     )
     app.state.pool = await create_pool(db_url)
 
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    app.state.redis = aioredis.from_url(redis_url, decode_responses=True)
+
 
 @app.on_event("shutdown")
 async def shutdown() -> None:
     pool = getattr(app.state, "pool", None)
     if pool:
         await pool.close()
+    redis_client = getattr(app.state, "redis", None)
+    if redis_client:
+        await redis_client.aclose()  # type: ignore[no-untyped-call]
 
 
 @app.get("/health")

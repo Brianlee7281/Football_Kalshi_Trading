@@ -106,6 +106,7 @@ async def run_phase2(
     # ---------------------------------------------------------------
     # Step 2.1: Data collection
     # ---------------------------------------------------------------
+    logger.info("step_2_1_start", match_id=match_id)
     pre_match = await collect_pre_match_data(
         gs_client,
         odds_client,
@@ -119,10 +120,12 @@ async def run_phase2(
         away_fixtures=away_fixtures,
         h2h_matches=h2h_matches,
     )
+    logger.info("step_2_1_complete", match_id=match_id)
 
     # ---------------------------------------------------------------
     # Step 2.2: Feature selection
     # ---------------------------------------------------------------
+    logger.info("step_2_2_start", match_id=match_id)
     b = np.array(params["b"], dtype=np.float64)
 
     # ---------------------------------------------------------------
@@ -130,7 +133,12 @@ async def run_phase2(
     # ---------------------------------------------------------------
     backsolve: BacksolveResult
 
-    if xgb_model_path and feature_mask:
+    has_xgb_model = (
+        xgb_model_path
+        and feature_mask
+        and xgb_model_path != "mle_fallback"
+    )
+    if has_xgb_model:
         # XGBoost path
         X_home = apply_feature_mask(pre_match, feature_mask, median_values)
         X_away = build_away_feature_vector(

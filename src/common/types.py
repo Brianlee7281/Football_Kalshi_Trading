@@ -230,6 +230,8 @@ class MatchSchedule:
     phase3_trigger: datetime
     kalshi_tickers: list[str] = field(default_factory=list)
     odds_api_event_id: str | None = None
+    home_team: str | None = None
+    away_team: str | None = None
     status: str = "SCHEDULED"
     container_id: str | None = None
     trading_mode: str = "paper"

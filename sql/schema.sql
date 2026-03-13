@@ -37,6 +37,9 @@ CREATE TABLE match_schedule (
     container_id        TEXT,                        -- Docker container ID (set at Phase 3 launch)
     trading_mode        TEXT DEFAULT 'paper',        -- 'paper' or 'live'
     param_version       INTEGER,                     -- pinned at container launch (Step 1 version)
+    home_team           TEXT,                        -- e.g. 'Arsenal'
+    away_team           TEXT,                        -- e.g. 'Chelsea'
+    phase2_params       JSONB,                       -- Phase 2 result (a_H, a_A, C_time, verdict)
     created_at          TIMESTAMPTZ DEFAULT NOW(),
     updated_at          TIMESTAMPTZ DEFAULT NOW()
 );

@@ -506,7 +506,25 @@ async def collect_pre_match_data(
     data = PreMatchData(match_id=match_id, kickoff_time=kickoff_date)
 
     # 2.1.1: Lineups
-    match_stats = await gs_client.get_match_stats(match_id, league_id)
+    try:
+        match_stats = await gs_client.get_match_stats(match_id, league_id)
+    except Exception as exc:
+        logger.warning(
+            "match_stats_fetch_failed",
+            match_id=match_id,
+            league_id=league_id,
+            error=str(exc),
+        )
+        match_stats = {}
+
+    if not match_stats:
+        logger.warning(
+            "no_match_stats_available",
+            match_id=match_id,
+            league_id=league_id,
+            detail="Commentaries endpoint returned empty — match may not have started yet",
+        )
+
     home_ids, away_ids, home_form, away_form = extract_lineups(match_stats)
     data.home_starting_11 = home_ids
     data.away_starting_11 = away_ids

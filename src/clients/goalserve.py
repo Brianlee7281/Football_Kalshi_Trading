@@ -39,6 +39,35 @@ class GoalserveClient:
         )
         self._logger = get_logger("goalserve")
 
+    def _safe_json(
+        self,
+        response: Any,
+        caller: str,
+        **ctx: Any,
+    ) -> dict[str, Any]:
+        """Decode JSON from an httpx response, returning {} on empty/invalid body."""
+        body = response.text.strip()
+        if not body:
+            self._logger.warning(
+                "empty_response_body",
+                caller=caller,
+                status_code=response.status_code,
+                **ctx,
+            )
+            return {}
+        try:
+            return response.json()  # type: ignore[no-any-return]
+        except Exception as exc:
+            self._logger.error(
+                "json_decode_failed",
+                caller=caller,
+                status_code=response.status_code,
+                body_preview=body[:200],
+                error=str(exc),
+                **ctx,
+            )
+            return {}
+
     async def close(self) -> None:
         await self._http.close()
 
@@ -75,7 +104,7 @@ class GoalserveClient:
             params["season"] = season
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+        data = self._safe_json(response, "get_fixtures", league_id=league_id)
 
         return _extract_matches(data)
 
@@ -103,7 +132,10 @@ class GoalserveClient:
         params: dict[str, Any] = {"json": "1"}
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+        data = self._safe_json(
+            response, "get_historical_fixtures",
+            league_id=league_id, season=season,
+        )
 
         return _extract_matches(data)
 
@@ -127,12 +159,37 @@ class GoalserveClient:
         Returns:
             Raw match stats dict with keys like 'stats', 'player_stats',
             'summary', 'matchinfo', 'teams', 'substitutions', etc.
+            Returns empty dict if the endpoint returns no data (e.g. match
+            hasn't started yet).
         """
         path = f"/{self._api_key}/commentaries/match"
         params: dict[str, Any] = {"id": match_id, "league": str(league_id), "json": "1"}
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+
+        # Goalserve returns empty body for matches with no commentaries yet
+        body = response.text.strip()
+        if not body:
+            self._logger.warning(
+                "empty_commentaries_response",
+                match_id=match_id,
+                league_id=league_id,
+                status_code=response.status_code,
+            )
+            return {}
+
+        try:
+            data = response.json()
+        except Exception as exc:
+            self._logger.error(
+                "commentaries_json_decode_failed",
+                match_id=match_id,
+                league_id=league_id,
+                status_code=response.status_code,
+                body_preview=body[:200],
+                error=str(exc),
+            )
+            return {}
 
         return _extract_match_stats(data)
 
@@ -152,7 +209,7 @@ class GoalserveClient:
         params: dict[str, Any] = {"json": "1"}
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+        data = self._safe_json(response, "get_live_scores")
 
         return _extract_live_matches(data)
 
@@ -198,7 +255,10 @@ class GoalserveClient:
         params: dict[str, Any] = {"date": date, "json": "1"}
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+        data = self._safe_json(
+            response, "get_commentaries_by_league",
+            league_id=league_id, date=date,
+        )
 
         return _extract_commentaries_matches(data)
 
@@ -221,7 +281,7 @@ class GoalserveClient:
         params: dict[str, Any] = {"json": "1"}
 
         response = await self._http.get(path, params=params)
-        data = response.json()
+        data = self._safe_json(response, "get_past_scores", days_ago=days_ago)
 
         return _extract_live_matches(data)
 

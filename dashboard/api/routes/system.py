@@ -47,7 +47,7 @@ async def system_status(pool: Pool) -> SystemStatus:
         # ── active/upcoming containers ────────────────────────────────────────
         match_rows = await conn.fetch(
             """
-            SELECT match_id, status, container_id, updated_at
+            SELECT match_id, status, container_id, updated_at, trading_mode
             FROM match_schedule
             WHERE status = ANY($1::text[])
             ORDER BY kickoff_utc
@@ -79,6 +79,23 @@ async def system_status(pool: Pool) -> SystemStatus:
                 param_row["created_at"],
             )
             matches_since = int(cnt_row["cnt"]) if cnt_row else 0
+
+        # ── bankroll ────────────────────────────────────────────────────────
+        bankroll_row = await conn.fetchrow(
+            "SELECT balance FROM bankroll WHERE mode = 'paper' LIMIT 1",
+        )
+        live_bankroll_row = await conn.fetchrow(
+            "SELECT balance FROM bankroll WHERE mode = 'live' LIMIT 1",
+        )
+
+        # ── exposure (sum of open position value) ──────────────────────────
+        exposure_row = await conn.fetchrow(
+            """
+            SELECT COALESCE(SUM(entry_price * quantity), 0) AS total_exposure
+            FROM positions
+            WHERE status IN ('OPEN', 'AWAITING_SETTLEMENT')
+            """,
+        )
 
         # ── DB connectivity (if we reached here, it's connected) ──────────────
         db_msg_age = (
@@ -122,6 +139,22 @@ async def system_status(pool: Pool) -> SystemStatus:
         ),
     ]
 
+    # Compute bankroll + exposure
+    bankroll_val = (
+        float(live_bankroll_row["balance"])
+        if live_bankroll_row is not None
+        else (float(bankroll_row["balance"]) if bankroll_row is not None else None)
+    )
+    exposure_val = float(exposure_row["total_exposure"]) if exposure_row else 0.0
+    exposure_pct = (
+        (exposure_val / bankroll_val * 100) if bankroll_val and bankroll_val > 0 else 0.0
+    )
+
+    # Determine trading mode from most recent active match
+    trading_mode: str | None = None
+    if match_rows:
+        trading_mode = match_rows[0].get("trading_mode")
+
     return SystemStatus(
         containers=containers,
         connections=connections,
@@ -132,4 +165,8 @@ async def system_status(pool: Pool) -> SystemStatus:
             param_row["created_at"] if param_row is not None else None
         ),
         matches_since_retrain=matches_since,
+        bankroll=bankroll_val,
+        exposure_pct=exposure_pct,
+        drawdown_pct=0.0,  # TODO: track peak balance for drawdown calculation
+        trading_mode=trading_mode,
     )

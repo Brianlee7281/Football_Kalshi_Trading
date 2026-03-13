@@ -88,7 +88,8 @@ async def recover_orchestrator_state(
         rows: list[Any] = await conn.fetch(
             """
             SELECT match_id, status, container_id,
-                   phase2_trigger, phase3_trigger, kickoff_utc
+                   phase2_trigger, phase3_trigger, kickoff_utc,
+                   league_id, kalshi_tickers, odds_api_event_id, trading_mode
             FROM match_schedule
             WHERE status IN ('PHASE2_RUNNING', 'PHASE2_DONE', 'PHASE3_RUNNING', 'SCHEDULED')
             ORDER BY kickoff_utc ASC

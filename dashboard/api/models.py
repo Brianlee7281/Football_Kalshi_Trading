@@ -184,3 +184,7 @@ class SystemStatus(BaseModel):
     param_version: int | None = None
     param_trained_at: datetime | None = None
     matches_since_retrain: int | None = None
+    bankroll: float | None = None
+    exposure_pct: float | None = None
+    drawdown_pct: float | None = None
+    trading_mode: str | None = None

@@ -59,7 +59,11 @@ def _parse_teams(kalshi_tickers: Any) -> tuple[str | None, str | None]:
 
 
 def _row_to_match_summary(row: Any) -> MatchSummary:
-    home, away = _parse_teams(row["kalshi_tickers"])
+    # Prefer stored team names; fall back to parsing Kalshi tickers
+    home = row.get("home_team") or None
+    away = row.get("away_team") or None
+    if not home or not away:
+        home, away = _parse_teams(row["kalshi_tickers"])
     return MatchSummary(
         match_id=row["match_id"],
         league_id=int(row["league_id"]),
@@ -174,7 +178,7 @@ async def list_matches(
         rows = await conn.fetch(
             """
             SELECT match_id, league_id, kickoff_utc, status, trading_mode,
-                   param_version, kalshi_tickers
+                   param_version, kalshi_tickers, home_team, away_team
             FROM match_schedule
             WHERE kickoff_utc > NOW() - INTERVAL '24 hours'
               AND ($1::text IS NULL OR status = $1)
@@ -195,7 +199,7 @@ async def match_detail(match_id: str, pool: Pool) -> MatchDetail:
         match_row = await conn.fetchrow(
             """
             SELECT match_id, league_id, kickoff_utc, status, trading_mode,
-                   param_version, kalshi_tickers
+                   param_version, kalshi_tickers, home_team, away_team
             FROM match_schedule
             WHERE match_id = $1
             """,
@@ -253,7 +257,10 @@ async def match_detail(match_id: str, pool: Pool) -> MatchDetail:
             match_id,
         )
 
-    home, away = _parse_teams(match_row["kalshi_tickers"])
+    home = match_row.get("home_team") or None
+    away = match_row.get("away_team") or None
+    if not home or not away:
+        home, away = _parse_teams(match_row["kalshi_tickers"])
     score = _compute_score(list(goal_rows))
 
     return MatchDetail(
