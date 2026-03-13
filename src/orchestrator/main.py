@@ -18,14 +18,12 @@ from __future__ import annotations
 import asyncio
 import os
 import signal
-import sys
-from pathlib import Path
 
+from src.clients.goalserve import GoalserveClient
+from src.clients.kalshi import KalshiClient
 from src.common.db import create_pool
 from src.common.logging import get_logger
 from src.common.redis_client import create_client as create_redis
-from src.clients.goalserve import GoalserveClient
-from src.clients.kalshi import KalshiClient
 from src.orchestrator.container_manager import ContainerManager
 from src.orchestrator.lifecycle import MatchLifecycleManager
 from src.orchestrator.recovery import recover_orchestrator_state
@@ -165,7 +163,7 @@ async def main() -> None:
 
     # Cleanup
     await pool.close()
-    await redis.aclose()  # type: ignore[union-attr]
+    await redis.aclose()
     logger.info("orchestrator_stopped")
 
 
