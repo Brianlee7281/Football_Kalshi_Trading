@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import unicodedata
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -229,15 +230,32 @@ class TriggerExecutor:
 # ---------------------------------------------------------------------------
 
 
+def _extract_team_name(fix: dict[str, Any], side: str) -> str:
+    """Extract team name from a Goalserve fixture dict.
+
+    Goalserve nests names under ``localteam.@name`` / ``visitorteam.@name``.
+    Falls back to the flat ``@localteam_name`` key for older API versions.
+    """
+    team_obj = fix.get(side)
+    if isinstance(team_obj, dict):
+        name = team_obj.get("@name", "")
+        if name:
+            return str(name).lower().strip()
+    # Fallback to flat key (legacy format)
+    return str(fix.get(f"@{side}_name", "")).lower().strip()
+
+
 def _match_fixtures_to_markets(
     fixtures: list[dict[str, Any]],
     kalshi_events: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Match Goalserve fixtures to Kalshi events by date + team name.
+    """Match Goalserve fixtures to Kalshi events by team name.
 
-    For each fixture, scans all Kalshi events that close within 24 hours
-    of the kickoff and checks whether the home and away team names appear
-    in the event title (first-word heuristic for compound names).
+    For each fixture, scans all Kalshi GAME events and checks whether
+    the home and away team names appear in the event title.  Kalshi
+    close_time is often weeks after the actual match (market expiry !=
+    kickoff), so time filtering is relaxed: close_time must be AFTER
+    the kickoff (market hasn't expired yet).
 
     Returns:
         List of dicts with keys:
@@ -248,15 +266,15 @@ def _match_fixtures_to_markets(
 
     for fix in fixtures:
         kickoff: datetime = fix["_kickoff_utc"]
-        home: str = str(fix.get("@localteam_name", "")).lower().strip()
-        away: str = str(fix.get("@visitorteam_name", "")).lower().strip()
+        home = _extract_team_name(fix, "localteam")
+        away = _extract_team_name(fix, "visitorteam")
         match_id: str = str(fix.get("@id", ""))
 
         if not match_id or not home or not away:
             continue
 
         for event in kalshi_events:
-            if not _event_within_window(kickoff, event):
+            if not _event_still_open(kickoff, event):
                 continue
             title: str = str(event.get("title", "")).lower()
             if _name_in_title(home, title) and _name_in_title(away, title):
@@ -275,30 +293,88 @@ def _match_fixtures_to_markets(
     return matched
 
 
-def _event_within_window(kickoff: datetime, event: dict[str, Any]) -> bool:
-    """Return True if the Kalshi event closes within 24h of the kickoff."""
+def _event_still_open(kickoff: datetime, event: dict[str, Any]) -> bool:
+    """Return True if the Kalshi event hasn't expired yet.
+
+    Kalshi sets close_time days or weeks after the actual match (market
+    expiry window), so we only check that close_time is AFTER kickoff.
+    """
     close_str: str = (
         event.get("close_time", "")
         or event.get("end_date", "")
         or ""
     )
     if not close_str:
-        return False
+        return True  # no close_time → assume still open
     try:
         close_dt = datetime.fromisoformat(close_str.replace("Z", "+00:00"))
-        return abs((close_dt - kickoff).total_seconds()) < 86_400
+        return close_dt >= kickoff
     except (ValueError, AttributeError):
-        return False
+        return True
+
+
+#: Common Goalserve → Kalshi name aliases.
+#: Maps Goalserve name fragments to the form Kalshi uses in event titles.
+_NAME_ALIASES: dict[str, list[str]] = {
+    "atl. madrid": ["atletico"],
+    "atl madrid": ["atletico"],
+    "atletico madrid": ["atletico"],
+    "ath bilbao": ["athletic"],
+    "b. monchengladbach": ["monchengladbach", "gladbach"],
+    "hamburger sv": ["hamburg"],
+    "fc koln": ["koln", "köln", "cologne"],
+    "inter": ["inter milan"],
+    "botafogo rj": ["botafogo"],
+    "flamengo rj": ["flamengo"],
+    "st. pauli": ["st pauli", "st. pauli", "pauli"],
+}
+
+
+def _strip_accents(text: str) -> str:
+    """Remove unicode accents: ö → o, é → e, etc."""
+    nfkd = unicodedata.normalize("NFKD", text)
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
 
 
 def _name_in_title(team_name: str, title: str) -> bool:
-    """Return True if the team name (or its first word) appears in title."""
+    """Return True if the team name (or any word >=4 chars) appears in title.
+
+    Handles format mismatches like:
+      Goalserve: "Bayer Leverkusen"  →  Kalshi: "Leverkusen vs Bayern Munich"
+      Goalserve: "Eintracht Frankfurt"  →  Kalshi: "Frankfurt vs ..."
+      Goalserve: "Atl. Madrid"  →  Kalshi: "Atletico vs ..."
+      Goalserve: "FC Koln"  →  Kalshi: "FC Köln"
+
+    Checks: alias table → full name → each word (>=4 chars).
+    Also strips accents for comparison (Köln ↔ Koln).
+    """
     if not team_name:
         return False
-    if team_name in title:
+
+    title_ascii = _strip_accents(title)
+
+    # 1. Check alias table
+    if team_name in _NAME_ALIASES:
+        for alias in _NAME_ALIASES[team_name]:
+            if alias in title or alias in title_ascii:
+                return True
+
+    # 2. Full name match (with and without accents)
+    if team_name in title or team_name in title_ascii:
         return True
-    first_word = team_name.split()[0] if team_name.split() else ""
-    return bool(first_word) and len(first_word) >= 4 and first_word in title
+
+    name_ascii = _strip_accents(team_name)
+    if name_ascii in title or name_ascii in title_ascii:
+        return True
+
+    # 3. Each word (>=4 chars) — handles compound names
+    for word in team_name.split():
+        clean = word.strip(".,;:()")
+        if len(clean) >= 4:
+            clean_ascii = _strip_accents(clean)
+            if clean in title or clean_ascii in title_ascii:
+                return True
+    return False
 
 
 def _extract_tickers(event: dict[str, Any]) -> list[str]:
