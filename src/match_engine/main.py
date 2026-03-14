@@ -323,6 +323,13 @@ async def main() -> None:
         sys.exit(1)
 
     # ── Post-match settlement ───────────────────────────────────────────────
+    logger.info(
+        "settlement_phase_start",
+        match_id=config.match_id,
+        trading_mode=config.trading_mode,
+        has_kalshi_client=kalshi_client is not None,
+    )
+
     if kalshi_client is not None:
         try:
             await settle_all_positions(model, kalshi_client)
@@ -332,6 +339,12 @@ async def main() -> None:
                 match_id=config.match_id,
                 error=str(exc),
             )
+    else:
+        logger.info(
+            "settlement_skipped_no_client",
+            match_id=config.match_id,
+            reason="No Kalshi client — paper positions stay OPEN until manual settlement",
+        )
 
     await _emit_final_heartbeat(model)
 
