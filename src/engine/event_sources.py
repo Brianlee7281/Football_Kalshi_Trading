@@ -483,18 +483,111 @@ async def _sleep_poll(interval: float) -> None:
 async def live_odds_listener(model: Any) -> None:
     """Phase 3 Odds-API WebSocket listener coroutine.
 
-    Connects to the Odds-API WebSocket stream, normalises incoming odds
-    updates into NormalizedEvent objects, and dispatches them via
-    dispatch_event(model, event).
+    Connects to the Odds-API live odds WebSocket and:
+      1. Dispatches odds_spike events via dispatch_event (→ ob_freeze)
+      2. Feeds bet365 odds into ob_sync.update_bet365 (→ market alignment)
 
-    Stub for Sprint 5 — full implementation in Sprint 6.
+    Gracefully degrades if ODDS_API_KEY or ODDS_API_EVENT_ID is missing.
     """
     import asyncio
+    import os
 
+    from src.engine.event_handlers import dispatch_event
     from src.engine.model import FINISHED
 
-    while getattr(model, "engine_phase", None) != FINISHED:
-        await asyncio.sleep(1.0)
+    match_id = str(getattr(model, "match_id", "?"))
+    api_key = os.environ.get("ODDS_API_KEY", "")
+    event_id = os.environ.get("ODDS_API_EVENT_ID", "")
+
+    if not api_key:
+        logger.warning(
+            "live_odds_no_api_key",
+            match_id=match_id,
+            reason="ODDS_API_KEY not set — bet365 alignment unavailable",
+        )
+        while getattr(model, "engine_phase", None) != FINISHED:
+            await asyncio.sleep(1.0)
+        return
+
+    if not event_id:
+        logger.warning(
+            "live_odds_no_event_id",
+            match_id=match_id,
+            reason="ODDS_API_EVENT_ID not set — no event to track",
+        )
+        while getattr(model, "engine_phase", None) != FINISHED:
+            await asyncio.sleep(1.0)
+        return
+
+    client = OddsApiClient(api_key=api_key)
+    source = OddsApiLiveOddsSource(client, event_id)
+    await source.connect(match_id)
+
+    logger.info(
+        "live_odds_listener_started",
+        match_id=match_id,
+        event_id=event_id,
+    )
+
+    msg_count = 0
+    last_diag = time.monotonic()
+
+    try:
+        async for msg in client.connect_live_ws(
+            markets="ML,Totals",
+            event_ids={event_id},
+        ):
+            if getattr(model, "engine_phase", None) == FINISHED:
+                break
+
+            msg_type = msg.get("type", "")
+            msg_count += 1
+
+            # Feed odds into ob_syncs for bet365 alignment.
+            # Odds-API WS messages have a top-level "markets" list.
+            # We pass all updates to update_bet365 — it safely parses
+            # ML/Totals odds and ignores anything it can't parse.
+            if msg_type in ("updated", "created") and msg.get("markets"):
+                for obs in model.ob_syncs.values():
+                    obs.update_bet365(msg)
+                    model.bet365_implied.update(obs.bet365_implied)
+
+            # Dispatch odds_spike → ob_freeze
+            if msg.get("is_spike"):
+                event = NormalizedEvent(
+                    type="odds_spike",
+                    source="live_odds",
+                    confidence="preliminary",
+                    delta=float(msg.get("odds_delta", 0.0)),
+                    timestamp=time.time(),
+                )
+                dispatch_event(model, event)
+
+            # Periodic diagnostic
+            now = time.monotonic()
+            if now - last_diag >= 30.0:
+                logger.info(
+                    "live_odds_diag",
+                    match_id=match_id,
+                    event_id=event_id,
+                    msgs_since_last=msg_count,
+                    bet365_keys=list(model.bet365_implied.keys()),
+                )
+                msg_count = 0
+                last_diag = now
+
+    except asyncio.CancelledError:
+        logger.info("live_odds_cancelled", match_id=match_id)
+        raise
+    except Exception as exc:
+        logger.error(
+            "live_odds_failed",
+            match_id=match_id,
+            error=str(exc),
+            exc_info=True,
+        )
+
+    logger.info("live_odds_listener_stopped", match_id=match_id)
 
 
 async def live_score_poller(model: Any) -> None:
