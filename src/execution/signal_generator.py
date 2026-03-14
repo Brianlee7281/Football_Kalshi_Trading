@@ -38,6 +38,7 @@ logger = get_logger("signal_generator")
 # ---------------------------------------------------------------------------
 
 FINISHED = "FINISHED"
+_DIAG_LOG_INTERVAL = 30  # Log diagnostics every N ticks (1 tick ≈ 1 sec)
 
 
 # ---------------------------------------------------------------------------
@@ -337,14 +338,26 @@ async def signal_generator(model: LiveFootballQuantModel) -> None:
     """
     logger.info("signal_generator_started", match_id=model.match_id)
 
+    tick_count = 0
+
     while model.engine_phase != FINISHED:
         tick_data = await model.phase4_queue.get()
+        tick_count += 1
 
         p_true_dict: dict[str, float] = tick_data.P_true
         sigma_mc_dict: dict[str, float] = tick_data.sigma_MC
         order_allowed: bool = tick_data.order_allowed
+        should_log_diag = (tick_count % _DIAG_LOG_INTERVAL == 0)
 
         if not order_allowed:
+            if should_log_diag:
+                logger.info(
+                    "signal_diag",
+                    match_id=model.match_id,
+                    tick=tick_count,
+                    reason="ORDER_BLOCKED",
+                    order_allowed=False,
+                )
             continue
 
         for ticker in model.active_tickers:
@@ -359,6 +372,15 @@ async def signal_generator(model: LiveFootballQuantModel) -> None:
             # ── Order book gate ────────────────────────────────────────
             ob_sync = model.ob_syncs.get(ticker)
             if ob_sync is None or not ob_sync.liquidity_ok():
+                if should_log_diag:
+                    logger.info(
+                        "signal_diag",
+                        match_id=model.match_id,
+                        tick=tick_count,
+                        ticker=ticker,
+                        P_true=round(p_true_float, 4),
+                        reason="NO_OB" if ob_sync is None else "LOW_LIQUIDITY",
+                    )
                 continue
 
             p_bet365 = model.bet365_implied.get(market_key)
@@ -377,7 +399,41 @@ async def signal_generator(model: LiveFootballQuantModel) -> None:
             )
 
             if signal.direction == "HOLD":
+                if should_log_diag:
+                    # Extract best bid/ask for diagnostics
+                    best_ask = ob_sync.kalshi_best_ask
+                    best_bid = ob_sync.kalshi_best_bid
+                    logger.info(
+                        "signal_diag",
+                        match_id=model.match_id,
+                        tick=tick_count,
+                        ticker=ticker,
+                        P_true=round(p_true_float, 4),
+                        sigma_MC=round(sigma_mc_float, 5),
+                        P_kalshi_ask=best_ask,
+                        P_kalshi_bid=best_bid,
+                        direction="HOLD",
+                        EV=0.0,
+                        reason="NO_EDGE",
+                    )
                 continue
+
+            # ── BUY signal: always log full details ────────────────────
+            logger.info(
+                "signal_buy",
+                match_id=model.match_id,
+                tick=tick_count,
+                ticker=ticker,
+                direction=signal.direction,
+                P_true=round(p_true_float, 4),
+                sigma_MC=round(sigma_mc_float, 5),
+                P_cons=round(signal.P_cons, 4),
+                P_kalshi=round(signal.P_kalshi, 4),
+                EV=round(signal.EV, 5),
+                rough_qty=signal.rough_qty,
+                alignment=signal.alignment_status,
+                kelly_multiplier=signal.kelly_multiplier,
+            )
 
             # ── Step 4.3: Incremental Kelly ────────────────────────────
             existing = 0.0
@@ -399,6 +455,14 @@ async def signal_generator(model: LiveFootballQuantModel) -> None:
             )
 
             if f_incremental <= 0.0:
+                logger.info(
+                    "signal_kelly_zero",
+                    match_id=model.match_id,
+                    ticker=ticker,
+                    direction=signal.direction,
+                    existing_exposure=round(existing, 2),
+                    bankroll=round(model.bankroll, 2),
+                )
                 continue  # already at or above optimal allocation
 
             amount = f_incremental * model.bankroll
