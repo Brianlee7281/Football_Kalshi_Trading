@@ -36,6 +36,16 @@ from src.common.types import NormalizedEvent
 
 logger = get_logger("event_sources")
 
+
+def _gs(d: dict[str, Any], key: str, default: Any = "") -> Any:
+    """Get a value from a Goalserve dict, trying both ``@key`` and ``key``.
+
+    Goalserve XML-to-JSON conversion prefixes attribute keys with ``@``.
+    Some endpoints use ``@goals``, others use ``goals``.  This helper
+    checks both variants so the code works regardless of format.
+    """
+    return d.get(f"@{key}", d.get(key, default))
+
 # ---------------------------------------------------------------------------
 # Abstract base
 # ---------------------------------------------------------------------------
@@ -184,7 +194,13 @@ class GoalserveLiveScoreSource(EventSource):
                 try:
                     data = await self._client.get_live_score(self._match_id)
                     if data:
-                        status = str(data.get("status", "") or "")
+                        status = str(_gs(data, "status", "") or "")
+                        localteam = data.get("localteam", {})
+                        visitorteam = data.get("visitorteam", {})
+                        if isinstance(localteam, str):
+                            localteam = {}
+                        if isinstance(visitorteam, str):
+                            visitorteam = {}
                         # Log every 10th poll or on status change
                         if _poll_count % 10 == 1 or status != self._last_period:
                             logger.info(
@@ -192,8 +208,9 @@ class GoalserveLiveScoreSource(EventSource):
                                 match_id=self._match_id,
                                 poll_count=_poll_count,
                                 status=status,
-                                score_home=data.get("localteam", {}).get("goals", "?"),
-                                score_away=data.get("visitorteam", {}).get("goals", "?"),
+                                score_home=_gs(localteam, "goals", "?"),
+                                score_away=_gs(visitorteam, "goals", "?"),
+                                raw_keys=list(data.keys())[:15] if _poll_count <= 3 else None,
                             )
                         async for event in self._diff(data):
                             yield event
@@ -238,8 +255,14 @@ class GoalserveLiveScoreSource(EventSource):
     async def _diff(self, match: dict[str, Any]) -> AsyncIterator[NormalizedEvent]:
         """Compute diff between current and last poll, yield changed events."""
         # ── Score change (multi-goal same-poll fix) ───────────────────────
-        home_goals = _safe_int(match.get("localteam", {}).get("goals", 0))
-        away_goals = _safe_int(match.get("visitorteam", {}).get("goals", 0))
+        localteam = match.get("localteam", {})
+        visitorteam = match.get("visitorteam", {})
+        if isinstance(localteam, str):
+            localteam = {}
+        if isinstance(visitorteam, str):
+            visitorteam = {}
+        home_goals = _safe_int(_gs(localteam, "goals", 0))
+        away_goals = _safe_int(_gs(visitorteam, "goals", 0))
 
         running_home = self._last_score["home"]
         running_away = self._last_score["away"]
@@ -286,7 +309,9 @@ class GoalserveLiveScoreSource(EventSource):
         self._last_score = {"home": home_goals, "away": away_goals}
 
         # ── Red card detection ────────────────────────────────────────────
-        live_stats = match.get("live_stats", {})
+        live_stats = _gs(match, "live_stats", {})
+        if not isinstance(live_stats, dict):
+            live_stats = {}
         home_reds = _extract_red_cards(live_stats, "home")
         away_reds = _extract_red_cards(live_stats, "away")
 
@@ -313,9 +338,10 @@ class GoalserveLiveScoreSource(EventSource):
         self._last_red_cards = {"home": home_reds, "away": away_reds}
 
         # ── Period change ─────────────────────────────────────────────────
-        status = str(match.get("status", "") or "")
+        status = str(_gs(match, "status", "") or "")
         if status and status != self._last_period:
-            if status in ("1st Half", "1H", "First Half"):
+            period_event = _classify_status(status)
+            if period_event == "1st Half":
                 yield NormalizedEvent(
                     type="period_change",
                     source="live_score",
@@ -323,7 +349,7 @@ class GoalserveLiveScoreSource(EventSource):
                     period="1st Half",
                     timestamp=time.time(),
                 )
-            elif status in ("HT", "Half Time", "Paused"):
+            elif period_event == "Halftime":
                 yield NormalizedEvent(
                     type="period_change",
                     source="live_score",
@@ -331,7 +357,7 @@ class GoalserveLiveScoreSource(EventSource):
                     period="Halftime",
                     timestamp=time.time(),
                 )
-            elif status in ("2nd Half", "2H", "Second Half"):
+            elif period_event == "2nd Half":
                 yield NormalizedEvent(
                     type="period_change",
                     source="live_score",
@@ -339,7 +365,7 @@ class GoalserveLiveScoreSource(EventSource):
                     period="2nd Half",
                     timestamp=time.time(),
                 )
-            elif status in ("Finished", "FT", "Full Time"):
+            elif period_event == "Finished":
                 yield NormalizedEvent(
                     type="match_finished",
                     source="live_score",
@@ -349,9 +375,9 @@ class GoalserveLiveScoreSource(EventSource):
             self._last_period = status
 
         # ── Stoppage time entry (minute > 45 in first half, etc.) ─────────
-        timer = _safe_float(match.get("timer", ""))
+        timer = _safe_float(_gs(match, "timer", ""))
         if timer is not None:
-            period = str(match.get("period", "") or "")
+            period = str(_gs(match, "period", "") or "")
             if (period in ("1st Half", "1H") and timer > 45.0) or (
                 period in ("2nd Half", "2H") and timer > 90.0
             ):
@@ -368,6 +394,42 @@ class GoalserveLiveScoreSource(EventSource):
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _classify_status(status: str) -> str | None:
+    """Map a Goalserve status string to a canonical period name.
+
+    Goalserve uses several formats:
+      - Text: ``"1st Half"``, ``"HT"``, ``"2nd Half"``, ``"Finished"``
+      - Numeric minute: ``"33"`` (minute 33 of 1st half), ``"67"`` (2nd half)
+      - ``"45+2"`` (stoppage time format)
+
+    Returns:
+        One of ``"1st Half"``, ``"Halftime"``, ``"2nd Half"``, ``"Finished"``
+        or None if the status is unrecognised.
+    """
+    if status in ("1st Half", "1H", "First Half"):
+        return "1st Half"
+    if status in ("HT", "Half Time", "Paused"):
+        return "Halftime"
+    if status in ("2nd Half", "2H", "Second Half"):
+        return "2nd Half"
+    if status in ("Finished", "FT", "Full Time", "AET", "Pen."):
+        return "Finished"
+
+    # Numeric status = match minute (e.g. "33", "67", "45+2")
+    # Strip stoppage suffix for parsing
+    numeric_part = status.split("+")[0].strip()
+    try:
+        minute = int(numeric_part)
+        if 0 < minute <= 45:
+            return "1st Half"
+        if minute > 45:
+            return "2nd Half"
+    except (ValueError, TypeError):
+        pass
+
+    return None
 
 
 def _safe_int(val: object) -> int:
