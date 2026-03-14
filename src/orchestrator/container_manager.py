@@ -71,6 +71,7 @@ class ContainerManager:
         odds_api_key: str = "",
         goalserve_api_key: str = "",
         kalshi_api_key: str = "",
+        kalshi_private_key_path: str = "",
         log_root: Path = _LOG_ROOT,
         compose_network: str = _DEFAULT_NETWORK,
     ) -> None:
@@ -80,6 +81,7 @@ class ContainerManager:
         self._odds_api_key = odds_api_key
         self._goalserve_api_key = goalserve_api_key
         self._kalshi_api_key = kalshi_api_key
+        self._kalshi_private_key_path = kalshi_private_key_path
         self._log_root = log_root
         self._compose_network = compose_network
 
@@ -131,6 +133,9 @@ class ContainerManager:
                 # Join the docker-compose network so the container can
                 # resolve "postgres" and "redis" by hostname.
                 "NetworkMode": self._compose_network,
+                # Mount host keys directory so the container can read
+                # the Kalshi private key file (read-only).
+                "Binds": self._build_binds(),
             },
             "Labels": {
                 "service": "match-engine",
@@ -256,6 +261,23 @@ class ContainerManager:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    def _build_binds(self) -> list[str]:
+        """Build Docker volume bind mounts for the container.
+
+        If a Kalshi private key path is configured, mount its parent
+        directory into the container at ``/keys`` (read-only).
+
+        Returns:
+            List of Docker bind-mount strings (``host:container:ro``).
+        """
+        binds: list[str] = []
+        if self._kalshi_private_key_path:
+            key_path = Path(self._kalshi_private_key_path)
+            if key_path.exists():
+                host_dir = str(key_path.parent.resolve())
+                binds.append(f"{host_dir}:/keys:ro")
+        return binds
+
     def _build_env(
         self,
         match_id: str,
@@ -320,6 +342,11 @@ class ContainerManager:
             "ODDS_API_KEY": self._odds_api_key,
             "GOALSERVE_API_KEY": self._goalserve_api_key,
             "KALSHI_API_KEY": self._kalshi_api_key,
+            "KALSHI_PRIVATE_KEY_PATH": (
+                f"/keys/{Path(self._kalshi_private_key_path).name}"
+                if self._kalshi_private_key_path
+                else ""
+            ),
         }
 
 
@@ -346,6 +373,7 @@ def create_container_manager(config: dict[str, Any]) -> ContainerManager:
         odds_api_key=os.environ.get("ODDS_API_KEY", ""),
         goalserve_api_key=os.environ.get("GOALSERVE_API_KEY", ""),
         kalshi_api_key=os.environ.get("KALSHI_API_KEY", ""),
+        kalshi_private_key_path=os.environ.get("KALSHI_PRIVATE_KEY_PATH", ""),
         # COMPOSE_NETWORK must match the `name:` field of the mmpp-net
         # network defined in docker-compose.yml so spawned containers
         # can resolve postgres/redis by hostname.
