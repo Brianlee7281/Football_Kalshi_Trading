@@ -59,30 +59,35 @@ export function PriceChart({ ticks, events }: PriceChartProps) {
       ticks.map((tick) => {
         const pTrue = tick.P_true?.[market] ?? null;
         const sigma = tick.sigma_MC?.[market] ?? 0;
+        const upper = pTrue != null ? Math.min(1, pTrue + 1.96 * sigma) : null;
+        const lower = pTrue != null ? Math.max(0, pTrue - 1.96 * sigma) : null;
         return {
           t: tick.t,
           P_true: pTrue,
           P_kalshi: tick.P_kalshi?.[market] ?? null,
           P_bet365: tick.P_bet365?.[market] ?? null,
-          band_upper: pTrue != null ? Math.min(1, pTrue + 1.96 * sigma) : null,
-          band_lower: pTrue != null ? Math.max(0, pTrue - 1.96 * sigma) : null,
+          // Recharts range area: [lower, upper] tuple for the confidence band
+          band: upper != null && lower != null ? [lower, upper] : null,
         };
       }),
     [ticks, market],
   );
 
-  // Event annotation lines (goal, red card)
+  // Event annotation lines (goal, red card) with score labels
   const annotations = useMemo(
     () =>
       events
         .filter((e) => ANNOTATION_EVENTS.has(e.event_type))
         .map((e) => {
           const payload = e.payload as Record<string, unknown> | null;
-          const t = (payload?.minute as number) ?? 0;
+          const minute = (payload?.minute as number) ?? 0;
+          const score = payload?.score as [number, number] | undefined;
+          const icon = e.event_type === "goal_confirmed" ? "⚽" : "🟥";
+          const scoreStr = score ? `${score[0]}-${score[1]}` : "";
           return {
-            t,
+            t: minute,
             type: e.event_type,
-            label: e.event_type === "goal_confirmed" ? "⚽" : "🟥",
+            label: `${scoreStr} ${icon} ${minute}'`,
           };
         }),
     [events],
@@ -146,20 +151,14 @@ export function PriceChart({ ticks, events }: PriceChartProps) {
             labelFormatter={(label: number) => formatTime(label)}
           />
 
-          {/* σ_MC confidence band */}
+          {/* σ_MC 95% confidence band (P_true ± 1.96σ) */}
           <Area
-            dataKey="band_upper"
+            dataKey="band"
             stroke="none"
             fill="#3b82f6"
-            fillOpacity={0.1}
+            fillOpacity={0.12}
             isAnimationActive={false}
-          />
-          <Area
-            dataKey="band_lower"
-            stroke="none"
-            fill="#ffffff"
-            fillOpacity={1}
-            isAnimationActive={false}
+            name="95% CI"
           />
 
           {/* Lines */}
@@ -192,14 +191,15 @@ export function PriceChart({ ticks, events }: PriceChartProps) {
             connectNulls
           />
 
-          {/* Event annotations */}
+          {/* Event annotations — vertical dashed lines with score labels */}
           {annotations.map((a, i) => (
             <ReferenceLine
               key={`${a.type}-${i}`}
               x={a.t}
               stroke={a.type === "goal_confirmed" ? "#f59e0b" : "#ef4444"}
               strokeDasharray="4 4"
-              label={{ value: a.label, position: "top", fontSize: 14 }}
+              strokeWidth={1.5}
+              label={{ value: a.label, position: "top", fontSize: 10 }}
             />
           ))}
         </ComposedChart>
