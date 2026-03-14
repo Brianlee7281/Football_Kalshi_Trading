@@ -175,7 +175,8 @@ class GoalserveLiveScoreSource(EventSource):
         # Diff tracking
         self._last_score: dict[str, int] = {"home": 0, "away": 0}
         self._last_red_cards: dict[str, int] = {"home": 0, "away": 0}
-        self._last_period: str | None = None
+        self._last_period: str | None = None  # classified period (e.g. "1st Half")
+        self._last_raw_status: str | None = None  # raw status for logging
         self._consecutive_failures = 0
 
     async def connect(self, match_id: str) -> None:
@@ -201,8 +202,8 @@ class GoalserveLiveScoreSource(EventSource):
                             localteam = {}
                         if isinstance(visitorteam, str):
                             visitorteam = {}
-                        # Log every 10th poll or on status change
-                        if _poll_count % 10 == 1 or status != self._last_period:
+                        # Log every 10th poll or on raw status change
+                        if _poll_count % 10 == 1 or status != self._last_raw_status:
                             logger.info(
                                 "live_score_poll",
                                 match_id=self._match_id,
@@ -214,6 +215,7 @@ class GoalserveLiveScoreSource(EventSource):
                             )
                         async for event in self._diff(data):
                             yield event
+                        self._last_raw_status = status
                         self._consecutive_failures = 0
                     else:
                         if _poll_count <= 3 or _poll_count % 20 == 0:
@@ -338,41 +340,32 @@ class GoalserveLiveScoreSource(EventSource):
         self._last_red_cards = {"home": home_reds, "away": away_reds}
 
         # ── Period change ─────────────────────────────────────────────────
+        # Only emit when the *classified* period changes, not on every
+        # minute tick (e.g. "33" → "34" are both "1st Half" — no event).
         status = str(_gs(match, "status", "") or "")
-        if status and status != self._last_period:
+        if status:
             period_event = _classify_status(status)
-            if period_event == "1st Half":
-                yield NormalizedEvent(
-                    type="period_change",
-                    source="live_score",
-                    confidence="confirmed",
-                    period="1st Half",
-                    timestamp=time.time(),
-                )
-            elif period_event == "Halftime":
-                yield NormalizedEvent(
-                    type="period_change",
-                    source="live_score",
-                    confidence="confirmed",
-                    period="Halftime",
-                    timestamp=time.time(),
-                )
-            elif period_event == "2nd Half":
-                yield NormalizedEvent(
-                    type="period_change",
-                    source="live_score",
-                    confidence="confirmed",
-                    period="2nd Half",
-                    timestamp=time.time(),
-                )
-            elif period_event == "Finished":
-                yield NormalizedEvent(
-                    type="match_finished",
-                    source="live_score",
-                    confidence="confirmed",
-                    timestamp=time.time(),
-                )
-            self._last_period = status
+            current_minute = _parse_minute(status)
+
+            if period_event and period_event != self._last_period:
+                if period_event == "Finished":
+                    yield NormalizedEvent(
+                        type="match_finished",
+                        source="live_score",
+                        confidence="confirmed",
+                        minute=current_minute,
+                        timestamp=time.time(),
+                    )
+                else:
+                    yield NormalizedEvent(
+                        type="period_change",
+                        source="live_score",
+                        confidence="confirmed",
+                        period=period_event,
+                        minute=current_minute,
+                        timestamp=time.time(),
+                    )
+                self._last_period = period_event
 
         # ── Stoppage time entry (minute > 45 in first half, etc.) ─────────
         timer = _safe_float(_gs(match, "timer", ""))
@@ -430,6 +423,20 @@ def _classify_status(status: str) -> str | None:
         pass
 
     return None
+
+
+def _parse_minute(status: str) -> float | None:
+    """Extract the match minute from a Goalserve status string.
+
+    Examples: ``"33"`` → 33.0, ``"45+2"`` → 47.0, ``"HT"`` → None.
+    """
+    parts = status.split("+")
+    try:
+        base = int(parts[0].strip())
+        added = int(parts[1].strip()) if len(parts) > 1 else 0
+        return float(base + added)
+    except (ValueError, TypeError):
+        return None
 
 
 def _safe_int(val: object) -> int:
