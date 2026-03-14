@@ -112,9 +112,12 @@ class ContainerManager:
         league_id: str = str(
             match["league_id"] if hasattr(match, "__getitem__") else match.league_id
         )
+        raw_tickers = (
+            match["kalshi_tickers"] if hasattr(match, "__getitem__")
+            else getattr(match, "kalshi_tickers", [])
+        )
         kalshi_tickers: list[str] = (
-            list(match["kalshi_tickers"]) if hasattr(match, "__getitem__")
-            else list(getattr(match, "kalshi_tickers", []))
+            json.loads(raw_tickers) if isinstance(raw_tickers, str) else list(raw_tickers)
         )
 
         container_name = f"match-{match_id}"
@@ -282,10 +285,14 @@ class ContainerManager:
             if hasattr(match, "get")
             else str(getattr(match, "param_version", "") or "")
         )
-        kalshi_tickers: str = json.dumps(
-            list(match["kalshi_tickers"]) if hasattr(match, "__getitem__")
-            else list(getattr(match, "kalshi_tickers", []))
+        raw_tickers = (
+            match["kalshi_tickers"] if hasattr(match, "__getitem__")
+            else getattr(match, "kalshi_tickers", [])
         )
+        parsed_tickers: list[str] = (
+            json.loads(raw_tickers) if isinstance(raw_tickers, str) else list(raw_tickers)
+        )
+        kalshi_tickers: str = json.dumps(parsed_tickers)
         odds_api_event_id: str = str(
             match.get("odds_api_event_id") or ""
             if hasattr(match, "get")
