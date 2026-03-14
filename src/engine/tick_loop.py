@@ -132,8 +132,10 @@ async def tick_loop(
             await _sleep_until_next_tick(model, tick_count)
             continue
 
-        # Set kickoff_wall_clock on first active tick if not yet set
-        if model.kickoff_wall_clock == 0.0:
+        # Set kickoff_wall_clock on first active tick — but only if
+        # period_handler hasn't already back-computed it from the real
+        # match minute (in which case it will be < _loop_start).
+        if model.kickoff_wall_clock >= _loop_start:
             model.kickoff_wall_clock = time.monotonic()
 
         if model.engine_phase in (FIRST_HALF, SECOND_HALF):

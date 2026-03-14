@@ -61,13 +61,13 @@ def handle_period_change(
     period = event.period or ""
 
     if period in ("1st Half", "1H", "First Half"):
-        _enter_first_half(model)
+        _enter_first_half(model, event.minute)
 
     elif period in ("Halftime", "HT", "Half Time", "Paused", "Half"):
         _enter_halftime(model)
 
     elif period in ("2nd Half", "2H", "Second Half"):
-        _enter_second_half(model)
+        _enter_second_half(model, event.minute)
 
     elif period in ("Finished", "FT", "Full Time"):
         _finish_match(model)
@@ -98,17 +98,39 @@ def handle_match_finished(
 # ---------------------------------------------------------------------------
 
 
-def _enter_first_half(model: LiveFootballQuantModel) -> None:
-    """Transition engine from WAITING_FOR_KICKOFF to FIRST_HALF."""
+def _enter_first_half(
+    model: LiveFootballQuantModel,
+    current_minute: float | None = None,
+) -> None:
+    """Transition engine from WAITING_FOR_KICKOFF to FIRST_HALF.
+
+    If *current_minute* is provided (from Goalserve status), back-compute
+    kickoff_wall_clock so that model.t aligns with the real match minute
+    rather than starting from 0.
+    """
     if model.engine_phase == FIRST_HALF:
         return  # already in first half — idempotent
 
     model.engine_phase = FIRST_HALF
 
+    # Back-compute kickoff_wall_clock from reported match minute
+    if current_minute is not None and current_minute > 0:
+        model.kickoff_wall_clock = time.monotonic() - (current_minute * 60.0)
+        model.t = current_minute
+        logger.info(
+            "first_half_time_synced",
+            match_id=model.match_id,
+            current_minute=round(current_minute, 1),
+            t=round(model.t, 2),
+        )
+    else:
+        model.kickoff_wall_clock = time.monotonic()
+
     logger.info(
         "first_half_started",
         match_id=model.match_id,
         previous_phase=WAITING_FOR_KICKOFF,
+        t=round(model.t, 2),
     )
 
 
@@ -133,8 +155,16 @@ def _enter_halftime(model: LiveFootballQuantModel) -> None:
     )
 
 
-def _enter_second_half(model: LiveFootballQuantModel) -> None:
-    """Accumulate halftime duration and transition to SECOND_HALF."""
+def _enter_second_half(
+    model: LiveFootballQuantModel,
+    current_minute: float | None = None,
+) -> None:
+    """Accumulate halftime duration and transition to SECOND_HALF.
+
+    If *current_minute* is provided (from Goalserve status, e.g. 55),
+    back-compute kickoff_wall_clock so model.t aligns with the real
+    match minute when the container joins mid-second-half.
+    """
     if model.engine_phase == SECOND_HALF:
         # Already in second half — idempotent
         return
@@ -152,6 +182,23 @@ def _enter_second_half(model: LiveFootballQuantModel) -> None:
         model.halftime_start = None
 
     model.engine_phase = SECOND_HALF
+
+    # Back-compute kickoff_wall_clock from reported match minute
+    # For second-half join: minute 55 means 55 play-minutes elapsed.
+    # kickoff_wall_clock = now - (minute * 60) - halftime_accumulated
+    if current_minute is not None and current_minute > 0:
+        model.kickoff_wall_clock = (
+            time.monotonic()
+            - (current_minute * 60.0)
+            - model.halftime_accumulated
+        )
+        model.t = current_minute
+        logger.info(
+            "second_half_time_synced",
+            match_id=model.match_id,
+            current_minute=round(current_minute, 1),
+            t=round(model.t, 2),
+        )
 
     logger.info(
         "second_half_started",
