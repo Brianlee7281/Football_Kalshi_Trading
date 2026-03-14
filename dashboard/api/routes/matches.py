@@ -80,20 +80,22 @@ def _row_to_match_summary(row: Any) -> MatchSummary:
 
 
 def _row_to_tick(row: Any) -> TickSnapshot:
+    # PostgreSQL lowercases unquoted column names, so asyncpg returns
+    # p_true, sigma_mc, mu_h, mu_a — not P_true, sigma_MC, mu_H, mu_A.
     return TickSnapshot(
         match_id=row["match_id"],
         t=float(row["t"]),
         engine_phase=row["engine_phase"],
-        P_true=_market_probs(row["P_true"]),
-        P_kalshi=_market_probs(row["P_kalshi"]),
-        P_bet365=_market_probs(row["P_bet365"]),
-        sigma_MC=_market_probs(row["sigma_MC"]),
+        P_true=_market_probs(row["p_true"]),
+        P_kalshi=_market_probs(row["p_kalshi"]),
+        P_bet365=_market_probs(row["p_bet365"]),
+        sigma_MC=_market_probs(row["sigma_mc"]),
         order_allowed=row["order_allowed"],
         cooldown=row["cooldown"],
         ob_freeze=row["ob_freeze"],
         event_state=row["event_state"],
-        mu_H=float(row["mu_H"]) if row["mu_H"] is not None else None,
-        mu_A=float(row["mu_A"]) if row["mu_A"] is not None else None,
+        mu_H=float(row["mu_h"]) if row["mu_h"] is not None else None,
+        mu_A=float(row["mu_a"]) if row["mu_a"] is not None else None,
         score=None,  # not stored per-tick; front-end derives from events
     )
 
@@ -211,8 +213,8 @@ async def match_detail(match_id: str, pool: Pool) -> MatchDetail:
         # Latest tick
         tick_row = await conn.fetchrow(
             """
-            SELECT match_id, t, engine_phase, P_true, P_kalshi, P_bet365, sigma_MC,
-                   order_allowed, cooldown, ob_freeze, event_state, mu_H, mu_A
+            SELECT match_id, t, engine_phase, p_true, p_kalshi, p_bet365, sigma_mc,
+                   order_allowed, cooldown, ob_freeze, event_state, mu_h, mu_a
             FROM tick_snapshots
             WHERE match_id = $1
             ORDER BY t DESC
@@ -306,9 +308,9 @@ async def match_ticks(
             """
             WITH ranked AS (
                 SELECT match_id, t, engine_phase,
-                       P_true, P_kalshi, P_bet365, sigma_MC,
+                       p_true, p_kalshi, p_bet365, sigma_mc,
                        order_allowed, cooldown, ob_freeze, event_state,
-                       mu_H, mu_A,
+                       mu_h, mu_a,
                        ROW_NUMBER() OVER (ORDER BY t) AS rn
                 FROM tick_snapshots
                 WHERE match_id = $1
