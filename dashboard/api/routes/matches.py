@@ -41,7 +41,13 @@ def _market_probs(v: Any) -> MarketProbs | None:
 def _parse_teams(kalshi_tickers: Any) -> tuple[str | None, str | None]:
     """Extract home/away team codes from the first Kalshi ticker.
 
-    Format: SOCCER-EPL-ARS-v-CHE-25MAR15-WINNER → ('ARS', 'CHE')
+    Handles legacy format only:
+      SOCCER-EPL-ARS-v-CHE-25MAR15-WINNER → ('ARS', 'CHE')
+
+    Current Kalshi format (KXEPL1H-26MAR15LFCTOT-LFC) embeds both team
+    codes in a single segment without a separator, so we cannot parse it.
+    In that case, returns (None, None) — the caller should rely on the
+    home_team/away_team columns from the DB instead.
     """
     try:
         tickers: list[str] = (
@@ -52,10 +58,12 @@ def _parse_teams(kalshi_tickers: Any) -> tuple[str | None, str | None]:
         if not tickers:
             return None, None
         parts = tickers[0].split("-")
-        v_idx = parts.index("v")
-        return parts[v_idx - 1], parts[v_idx + 1]
+        if "v" in parts:
+            v_idx = parts.index("v")
+            return parts[v_idx - 1], parts[v_idx + 1]
     except (ValueError, IndexError, TypeError):
-        return None, None
+        pass
+    return None, None
 
 
 def _row_to_match_summary(row: Any) -> MatchSummary:
