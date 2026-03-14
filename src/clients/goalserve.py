@@ -296,6 +296,48 @@ class GoalserveClient:
         return _extract_live_matches(data)
 
     # ------------------------------------------------------------------
+    # Pre-match odds (Phase 2 — Pinnacle 1x2)
+    # ------------------------------------------------------------------
+
+    async def get_prematch_odds(
+        self,
+        league_id: int,
+    ) -> list[dict[str, Any]]:
+        """Fetch pre-match odds for all matches in a league.
+
+        API ref: /getfeed/{key}/getodds/soccer?cat=soccer_10&league={league_id}&json=1
+
+        Args:
+            league_id: Goalserve league ID.
+
+        Returns:
+            List of match dicts with 'odds' arrays containing bookmaker data.
+        """
+        path = f"/{self._api_key}/getodds/soccer"
+        params: dict[str, Any] = {
+            "cat": "soccer_10",
+            "league": str(league_id),
+            "json": "1",
+        }
+
+        response = await self._http.get(path, params=params)
+        data = self._safe_json(response, "get_prematch_odds", league_id=league_id)
+
+        matches: list[dict[str, Any]] = []
+        scores = data.get("scores", {})
+        if isinstance(scores, dict):
+            categories = scores.get("categories", [])
+            if isinstance(categories, dict):
+                categories = [categories]
+            for cat in categories:
+                raw = cat.get("matches", [])
+                if isinstance(raw, dict):
+                    raw = [raw]
+                if isinstance(raw, list):
+                    matches.extend(raw)
+        return matches
+
+    # ------------------------------------------------------------------
     # Upcoming Fixtures (Scheduler — Phase 2/3 trigger computation)
     # ------------------------------------------------------------------
 

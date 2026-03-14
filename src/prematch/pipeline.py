@@ -27,6 +27,7 @@ from src.common.logging import get_logger
 from src.common.types import Phase2Result
 from src.prematch.step_2_1_data_collection import (
     collect_pre_match_data,
+    fetch_prematch_odds,
 )
 from src.prematch.step_2_2_feature_selection import (
     apply_feature_mask,
@@ -36,6 +37,7 @@ from src.prematch.step_2_3_backsolve import (
     BacksolveResult,
     backsolve_from_mle,
     backsolve_intensity,
+    odds_to_mu,
     predict_match_goals,
 )
 from src.prematch.step_2_4_sanity_check import (
@@ -130,6 +132,12 @@ async def run_phase2(
 
     # ---------------------------------------------------------------
     # Step 2.3: Back-solve a
+    #
+    # Priority chain:
+    #   1. XGBoost model (if available)
+    #   2. Pinnacle pre-match odds → odds_to_mu()
+    #   3. Rolling avg goals from commentaries data
+    #   4. MLE fallback (league average = 1.3 for both teams)
     # ---------------------------------------------------------------
     backsolve: BacksolveResult
 
@@ -139,7 +147,7 @@ async def run_phase2(
         and xgb_model_path != "mle_fallback"
     )
     if has_xgb_model:
-        # XGBoost path
+        # Path 1: XGBoost
         X_home = apply_feature_mask(pre_match, feature_mask, median_values)
         X_away = build_away_feature_vector(
             pre_match, feature_mask, median_values,
@@ -164,20 +172,72 @@ async def run_phase2(
             mu_A=round(mu_A, 4),
         )
     else:
-        # MLE fallback (no XGBoost model)
-        from src.calibration.step_1_3_ml_prior import _LEAGUE_AVG_GOALS
-
-        backsolve = backsolve_from_mle(
-            _LEAGUE_AVG_GOALS, _LEAGUE_AVG_GOALS, b,
-            alpha_1_mean=alpha_1_mean,
-            alpha_2_mean=alpha_2_mean,
+        # Path 2: Pinnacle odds (fetch once to avoid rate-limit)
+        try:
+            odds_matches = await gs_client.get_prematch_odds(league_id)
+        except Exception:
+            odds_matches = []
+        pinnacle_odds = await fetch_prematch_odds(
+            gs_client, match_id, league_id,
+            prefetched_odds_matches=odds_matches,
         )
 
-        logger.info(
-            "step_2_3_mle_fallback",
-            mu_H=round(backsolve.mu_H, 4),
-            mu_A=round(backsolve.mu_A, 4),
-        )
+        if pinnacle_odds is not None:
+            odds_H, odds_D, odds_A = pinnacle_odds
+            mu_H, mu_A = odds_to_mu(odds_H, odds_D, odds_A)
+
+            backsolve = backsolve_intensity(
+                mu_H, mu_A, b,
+                alpha_1_mean=alpha_1_mean,
+                alpha_2_mean=alpha_2_mean,
+            )
+
+            logger.info(
+                "step_2_3_odds_derived",
+                mu_H=round(mu_H, 4),
+                mu_A=round(mu_A, 4),
+                odds_H=odds_H,
+                odds_D=odds_D,
+                odds_A=odds_A,
+            )
+        else:
+            # Path 3: Rolling avg goals from commentaries
+            mu_from_rolling = _compute_rolling_mu(
+                league_id,
+                pre_match.match_id,
+                recent_home_stats,
+                recent_away_stats,
+            )
+
+            if mu_from_rolling is not None:
+                mu_H, mu_A = mu_from_rolling
+
+                backsolve = backsolve_intensity(
+                    mu_H, mu_A, b,
+                    alpha_1_mean=alpha_1_mean,
+                    alpha_2_mean=alpha_2_mean,
+                )
+
+                logger.info(
+                    "step_2_3_rolling_stats",
+                    mu_H=round(mu_H, 4),
+                    mu_A=round(mu_A, 4),
+                )
+            else:
+                # Path 4: MLE fallback
+                from src.calibration.step_1_3_ml_prior import _LEAGUE_AVG_GOALS
+
+                backsolve = backsolve_from_mle(
+                    _LEAGUE_AVG_GOALS, _LEAGUE_AVG_GOALS, b,
+                    alpha_1_mean=alpha_1_mean,
+                    alpha_2_mean=alpha_2_mean,
+                )
+
+                logger.info(
+                    "step_2_3_mle_fallback",
+                    mu_H=round(backsolve.mu_H, 4),
+                    mu_A=round(backsolve.mu_A, 4),
+                )
 
     # ---------------------------------------------------------------
     # Step 2.4: Sanity check
@@ -250,6 +310,68 @@ async def run_phase2(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _compute_rolling_mu(
+    league_id: int,
+    match_id: str,
+    recent_home_stats: list[dict[str, Any]] | None,
+    recent_away_stats: list[dict[str, Any]] | None,
+) -> tuple[float, float] | None:
+    """Compute μ_H, μ_A from rolling average goals in recent match stats.
+
+    Uses the 'stats' node of recent matches to extract goals scored.
+    Falls back to team xG if goals aren't directly available.
+
+    Args:
+        league_id: Goalserve league ID (for logging).
+        match_id: Match ID (for logging).
+        recent_home_stats: Last N match stats for the home team.
+        recent_away_stats: Last N match stats for the away team.
+
+    Returns:
+        (mu_H, mu_A) or None if insufficient data.
+    """
+    def _avg_goals(stats_list: list[dict[str, Any]] | None, team_key: str) -> float | None:
+        if not stats_list:
+            return None
+        goals: list[float] = []
+        for ms in stats_list:
+            # Try team stats xG first
+            team_stats = ms.get("stats", {}).get(team_key, {})
+            xg = team_stats.get("expected_goals")
+            if xg is not None:
+                try:
+                    goals.append(float(xg))
+                    continue
+                except (TypeError, ValueError):
+                    pass
+            # Fall back to actual goals from score
+            team_data = ms.get(team_key, {})
+            raw_goals = team_data.get("@goals", team_data.get("goals"))
+            if raw_goals is not None:
+                try:
+                    goals.append(float(raw_goals))
+                except (TypeError, ValueError):
+                    pass
+        if len(goals) < 3:
+            return None
+        return sum(goals) / len(goals)
+
+    mu_H = _avg_goals(recent_home_stats, "localteam")
+    mu_A = _avg_goals(recent_away_stats, "visitorteam")
+
+    if mu_H is not None and mu_A is not None and mu_H > 0 and mu_A > 0:
+        logger.info(
+            "rolling_mu_computed",
+            match_id=match_id,
+            league_id=league_id,
+            mu_H=round(mu_H, 4),
+            mu_A=round(mu_A, 4),
+        )
+        return mu_H, mu_A
+
+    return None
 
 
 def _extract_exchange_prob(

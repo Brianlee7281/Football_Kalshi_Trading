@@ -463,6 +463,109 @@ def compute_h2h_goal_diff(
 
 
 # ---------------------------------------------------------------------------
+# 2.1.7: Pinnacle pre-match odds (Goalserve getodds)
+# ---------------------------------------------------------------------------
+
+
+async def fetch_prematch_odds(
+    gs_client: GoalserveClient,
+    match_id: str,
+    league_id: int,
+    *,
+    prefetched_odds_matches: list[dict[str, Any]] | None = None,
+) -> tuple[float, float, float] | None:
+    """Fetch Pinnacle 1x2 pre-match odds from Goalserve getodds endpoint.
+
+    Searches for the match by fix_id, static_id, or id, then extracts
+    Pinnacle (bookmaker id=82 "Pncl") Match Winner odds.
+
+    Args:
+        gs_client: Active Goalserve client.
+        match_id: Goalserve match/fixture ID.
+        league_id: Goalserve league ID.
+        prefetched_odds_matches: Pre-fetched odds matches list (avoids
+            duplicate API calls that trigger rate limiting).
+
+    Returns:
+        (odds_H, odds_D, odds_A) or None if unavailable.
+    """
+    if prefetched_odds_matches is not None:
+        matches = prefetched_odds_matches
+    else:
+        try:
+            matches = await gs_client.get_prematch_odds(league_id)
+        except Exception as exc:
+            logger.warning(
+                "prematch_odds_fetch_failed",
+                match_id=match_id,
+                league_id=league_id,
+                error=str(exc),
+            )
+            return None
+
+    mid = str(match_id)
+    target: dict | None = None
+    for m in matches:
+        if (
+            str(m.get("fix_id", "")) == mid
+            or str(m.get("static_id", "")) == mid
+            or str(m.get("id", "")) == mid
+        ):
+            target = m
+            break
+
+    if target is None:
+        logger.info(
+            "prematch_odds_match_not_found",
+            match_id=match_id,
+            league_id=league_id,
+            available_count=len(matches),
+        )
+        return None
+
+    # Find "Match Winner" odds market
+    odds_list = target.get("odds", [])
+    if isinstance(odds_list, dict):
+        odds_list = [odds_list]
+
+    for market in odds_list:
+        if market.get("value") != "Match Winner":
+            continue
+        bookmakers = market.get("bookmakers", [])
+        if isinstance(bookmakers, dict):
+            bookmakers = [bookmakers]
+        for bm in bookmakers:
+            if bm.get("name") == "Pncl" or bm.get("id") == "82":
+                odds_entries = bm.get("odds", [])
+                h_val = d_val = a_val = 0.0
+                for entry in odds_entries:
+                    name = entry.get("name", "")
+                    val = _safe_float(entry.get("value", 0))
+                    if name == "Home":
+                        h_val = val
+                    elif name == "Draw":
+                        d_val = val
+                    elif name == "Away":
+                        a_val = val
+                if h_val > 1.0 and d_val > 1.0 and a_val > 1.0:
+                    logger.info(
+                        "pinnacle_odds_found",
+                        match_id=match_id,
+                        odds_H=h_val,
+                        odds_D=d_val,
+                        odds_A=a_val,
+                    )
+                    return (h_val, d_val, a_val)
+
+    logger.info(
+        "pinnacle_odds_not_available",
+        match_id=match_id,
+        league_id=league_id,
+    )
+    return None
+
+
+# ---------------------------------------------------------------------------
 # Full data collection
 # ---------------------------------------------------------------------------
 

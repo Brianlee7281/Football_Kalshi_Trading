@@ -169,6 +169,82 @@ def backsolve_intensity(
     )
 
 
+def odds_to_mu(
+    odds_H: float,
+    odds_D: float,
+    odds_A: float,
+) -> tuple[float, float]:
+    """Convert 1x2 decimal odds to expected goals (μ_H, μ_A).
+
+    1. Remove vig: p_i = (1/odds_i) / sum(1/odds_j)
+    2. Find μ_H, μ_A such that Poisson(μ_H, μ_A) matches implied 1x2 probs.
+
+    Args:
+        odds_H: Decimal odds for home win.
+        odds_D: Decimal odds for draw.
+        odds_A: Decimal odds for away win.
+
+    Returns:
+        (mu_H, mu_A) — expected goals for home and away teams.
+    """
+    from scipy.optimize import minimize
+    from scipy.stats import poisson
+
+    # Remove vig
+    raw = np.array([1.0 / odds_H, 1.0 / odds_D, 1.0 / odds_A])
+    p_implied = raw / raw.sum()
+    p_home, p_draw, p_away = float(p_implied[0]), float(p_implied[1]), float(p_implied[2])
+
+    def _poisson_1x2(mu_h: float, mu_a: float, max_goals: int = 10) -> tuple[float, float, float]:
+        """Compute P(home win), P(draw), P(away win) from independent Poisson."""
+        p_h = p_d = p_a = 0.0
+        for i in range(max_goals + 1):
+            for j in range(max_goals + 1):
+                p_ij = poisson.pmf(i, mu_h) * poisson.pmf(j, mu_a)
+                if i > j:
+                    p_h += p_ij
+                elif i == j:
+                    p_d += p_ij
+                else:
+                    p_a += p_ij
+        return p_h, p_d, p_a
+
+    def _objective(x: np.ndarray) -> float:
+        mu_h, mu_a = float(x[0]), float(x[1])
+        ph, pd, pa = _poisson_1x2(mu_h, mu_a)
+        return (ph - p_home) ** 2 + (pd - p_draw) ** 2 + (pa - p_away) ** 2
+
+    # Initial guess from implied total goals
+    total_implied = 1.0 / (p_draw + 0.01) * 0.8  # rough heuristic
+    mu_h_init = max(0.5, total_implied * p_home / (p_home + p_away + 0.01))
+    mu_a_init = max(0.5, total_implied * p_away / (p_home + p_away + 0.01))
+
+    result = minimize(
+        _objective,
+        x0=np.array([mu_h_init, mu_a_init]),
+        method="L-BFGS-B",
+        bounds=[(0.3, 5.0), (0.3, 5.0)],
+    )
+
+    mu_H_out = float(result.x[0])
+    mu_A_out = float(result.x[1])
+
+    logger.info(
+        "odds_to_mu_complete",
+        odds_H=odds_H,
+        odds_D=odds_D,
+        odds_A=odds_A,
+        p_implied_H=round(p_home, 4),
+        p_implied_D=round(p_draw, 4),
+        p_implied_A=round(p_away, 4),
+        mu_H=round(mu_H_out, 4),
+        mu_A=round(mu_A_out, 4),
+        residual=round(float(result.fun), 8),
+    )
+
+    return mu_H_out, mu_A_out
+
+
 def backsolve_from_mle(
     home_goals: float,
     away_goals: float,
