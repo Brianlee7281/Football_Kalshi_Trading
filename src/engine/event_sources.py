@@ -177,19 +177,34 @@ class GoalserveLiveScoreSource(EventSource):
 
     async def listen(self) -> AsyncIterator[NormalizedEvent]:
         """Poll Goalserve every poll_interval seconds, yield diff events."""
+        _poll_count = 0
         async with httpx.AsyncClient(timeout=10.0):
             while self._running:
+                _poll_count += 1
                 try:
                     data = await self._client.get_live_score(self._match_id)
                     if data:
+                        status = str(data.get("status", "") or "")
+                        # Log every 10th poll or on status change
+                        if _poll_count % 10 == 1 or status != self._last_period:
+                            logger.info(
+                                "live_score_poll",
+                                match_id=self._match_id,
+                                poll_count=_poll_count,
+                                status=status,
+                                score_home=data.get("localteam", {}).get("goals", "?"),
+                                score_away=data.get("visitorteam", {}).get("goals", "?"),
+                            )
                         async for event in self._diff(data):
                             yield event
                         self._consecutive_failures = 0
                     else:
-                        logger.debug(
-                            "live_score_no_data",
-                            match_id=self._match_id,
-                        )
+                        if _poll_count % 10 == 1:
+                            logger.info(
+                                "live_score_no_data",
+                                match_id=self._match_id,
+                                poll_count=_poll_count,
+                            )
 
                 except (httpx.HTTPError, httpx.TimeoutException) as exc:
                     self._consecutive_failures += 1
@@ -289,7 +304,15 @@ class GoalserveLiveScoreSource(EventSource):
         # ── Period change ─────────────────────────────────────────────────
         status = str(match.get("status", "") or "")
         if status and status != self._last_period:
-            if status in ("HT", "Half Time", "Paused"):
+            if status in ("1st Half", "1H", "First Half"):
+                yield NormalizedEvent(
+                    type="period_change",
+                    source="live_score",
+                    confidence="confirmed",
+                    period="1st Half",
+                    timestamp=time.time(),
+                )
+            elif status in ("HT", "Half Time", "Paused"):
                 yield NormalizedEvent(
                     type="period_change",
                     source="live_score",
@@ -400,15 +423,40 @@ async def live_score_poller(model: Any) -> None:
     Polls Goalserve every 3 seconds for score updates, red cards, period
     changes, and VAR cancellations.  Dispatches confirmed events via
     dispatch_event(model, event).
-
-    Stub for Sprint 5 — full implementation in Sprint 6.
     """
     import asyncio
+    import os
 
+    from src.clients.goalserve import GoalserveClient
+    from src.engine.event_handlers import dispatch_event
     from src.engine.model import FINISHED
 
-    while getattr(model, "engine_phase", None) != FINISHED:
-        await asyncio.sleep(3.0)
+    api_key = os.environ.get("GOALSERVE_API_KEY", "")
+    if not api_key:
+        logger.error("live_score_poller_no_api_key", match_id=getattr(model, "match_id", ""))
+        return
+
+    client = GoalserveClient(api_key=api_key)
+    match_id = str(getattr(model, "match_id", ""))
+    source = GoalserveLiveScoreSource(client, match_id, poll_interval=3.0)
+    await source.connect(match_id)
+
+    logger.info("live_score_poller_started", match_id=match_id)
+
+    async for event in source.listen():
+        if getattr(model, "engine_phase", None) == FINISHED:
+            break
+        logger.info(
+            "live_score_event",
+            match_id=match_id,
+            event_type=event.type,
+            period=getattr(event, "period", None),
+            score=getattr(event, "score", None),
+        )
+        dispatch_event(model, event)
+
+    await source.disconnect()
+    logger.info("live_score_poller_stopped", match_id=match_id)
 
 
 async def order_book_sync_loop(model: Any) -> None:

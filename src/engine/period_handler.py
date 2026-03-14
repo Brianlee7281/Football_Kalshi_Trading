@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 
 from src.common.logging import get_logger
 from src.common.types import NormalizedEvent
-from src.engine.model import FINISHED, HALFTIME, SECOND_HALF
+from src.engine.model import FINISHED, FIRST_HALF, HALFTIME, SECOND_HALF, WAITING_FOR_KICKOFF
 
 if TYPE_CHECKING:
     from src.engine.model import LiveFootballQuantModel
@@ -60,7 +60,10 @@ def handle_period_change(
     """
     period = event.period or ""
 
-    if period in ("Halftime", "HT", "Half Time", "Paused", "Half"):
+    if period in ("1st Half", "1H", "First Half"):
+        _enter_first_half(model)
+
+    elif period in ("Halftime", "HT", "Half Time", "Paused", "Half"):
         _enter_halftime(model)
 
     elif period in ("2nd Half", "2H", "Second Half"):
@@ -93,6 +96,20 @@ def handle_match_finished(
 # ---------------------------------------------------------------------------
 # Internal transitions
 # ---------------------------------------------------------------------------
+
+
+def _enter_first_half(model: LiveFootballQuantModel) -> None:
+    """Transition engine from WAITING_FOR_KICKOFF to FIRST_HALF."""
+    if model.engine_phase == FIRST_HALF:
+        return  # already in first half — idempotent
+
+    model.engine_phase = FIRST_HALF
+
+    logger.info(
+        "first_half_started",
+        match_id=model.match_id,
+        previous_phase=WAITING_FOR_KICKOFF,
+    )
 
 
 def _enter_halftime(model: LiveFootballQuantModel) -> None:

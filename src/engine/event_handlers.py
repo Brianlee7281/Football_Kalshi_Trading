@@ -37,6 +37,7 @@ from src.engine.compute_mu import compute_remaining_mu
 from src.engine.emit import record_event
 from src.engine.event_queue import EventQueue as _EventQueue  # re-exported
 from src.engine.model import EVENT_IDLE, EVENT_PRELIMINARY, FINISHED
+from src.engine.period_handler import handle_match_finished, handle_period_change
 
 if TYPE_CHECKING:
     from src.engine.model import LiveFootballQuantModel
@@ -410,6 +411,10 @@ def dispatch_event(
         handle_score_rollback(model, event)
     elif t == "red_card":
         handle_confirmed_red_card(model, event)
+    elif t == "period_change":
+        handle_period_change(model, event)
+    elif t == "match_finished":
+        handle_match_finished(model, event)
     elif t == "source_failure":
         handle_live_score_failure(model)
     else:

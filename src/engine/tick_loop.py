@@ -38,6 +38,7 @@ from src.engine.model import (
     FIRST_HALF,
     HALFTIME,
     SECOND_HALF,
+    WAITING_FOR_KICKOFF,
     LiveFootballQuantModel,
 )
 
@@ -83,16 +84,57 @@ async def tick_loop(
     Args:
         model: Mutable live match state.
     """
-    model.kickoff_wall_clock = time.monotonic()
     model.halftime_accumulated = 0.0
     model.halftime_start = None
     tick_count = 0
+    _last_waiting_log = 0
+
+    # Auto-kickoff timeout: if no kickoff event from Goalserve within
+    # this many seconds, assume the match has started and transition to
+    # FIRST_HALF. This prevents the tick loop from being stuck forever
+    # when Goalserve is slow to report match status.
+    _AUTO_KICKOFF_TIMEOUT = 60.0
+    _loop_start = time.monotonic()
+    # Set a temporary kickoff_wall_clock for _sleep_until_next_tick alignment
+    # during WAITING_FOR_KICKOFF. Will be reset on actual kickoff.
+    model.kickoff_wall_clock = _loop_start
 
     log: structlog.stdlib.BoundLogger = logger.bind(match_id=model.match_id)
     log.info("tick_loop_started", T_exp=model.T_exp, pricing_mode=model.pricing_mode)
 
     while model.engine_phase != FINISHED:
         tick_start = time.monotonic()
+
+        # ── WAITING_FOR_KICKOFF: log status + auto-kickoff timeout ─────
+        if model.engine_phase == WAITING_FOR_KICKOFF:
+            elapsed_waiting = time.monotonic() - _loop_start
+            # Log every 10 seconds while waiting
+            if tick_count == 0 or (tick_count - _last_waiting_log) >= 10:
+                log.info(
+                    "tick_loop_waiting",
+                    engine_phase=model.engine_phase,
+                    waiting_seconds=round(elapsed_waiting, 0),
+                )
+                _last_waiting_log = tick_count
+
+            # Auto-kickoff: assume match started if Goalserve hasn't
+            # reported "1st Half" within the timeout window.
+            if elapsed_waiting >= _AUTO_KICKOFF_TIMEOUT:
+                log.warning(
+                    "auto_kickoff_timeout",
+                    elapsed_s=round(elapsed_waiting, 0),
+                    reason="Goalserve did not report kickoff — forcing FIRST_HALF",
+                )
+                model.engine_phase = FIRST_HALF
+                model.kickoff_wall_clock = time.monotonic()
+
+            tick_count += 1
+            await _sleep_until_next_tick(model, tick_count)
+            continue
+
+        # Set kickoff_wall_clock on first active tick if not yet set
+        if model.kickoff_wall_clock == 0.0:
+            model.kickoff_wall_clock = time.monotonic()
 
         if model.engine_phase in (FIRST_HALF, SECOND_HALF):
             # ── Step 3.1: update effective play time from wall clock ──────

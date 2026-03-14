@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
+from typing import Any
 
 import asyncpg
 import redis.asyncio as aioredis
@@ -75,24 +76,93 @@ async def _load_model(
 ) -> LiveFootballQuantModel:
     """Build LiveFootballQuantModel from Phase 2 DB results and pinned params.
 
-    Queries the DB for the latest Phase 2 result for this match_id, then
-    calls model.from_phase2() to construct the model with the correct
-    intensity parameters.
-
-    Sprint 5 note: returns a minimal model for paper trading.  Full
-    DB-backed initialization is completed in Sprint 6.
+    Loads production_params from the DB (pinned by param_version), then
+    initializes the model with a_H, a_A, C_time from environment variables
+    (injected by the orchestrator from Phase 2 results).
     """
-    # Sprint 5: minimal model initialization for paper trading.
-    # Sprint 6: load from DB using param_version-pinned production_params.
-    model = LiveFootballQuantModel(
-        match_id=config.match_id,
-        trading_mode=config.trading_mode,
-        config=Phase4Config(
-            fee_rate=config.fee_rate,
-            z=config.z,
-            K_frac=config.K_frac,
-        ),
+    import json as _json
+
+    import numpy as np
+
+    from src.common.types import Phase2Result
+
+    # Load production_params from DB
+    params: dict[str, Any] = {}
+    try:
+        async with db_pool.acquire() as conn:
+            if config.param_version > 0:
+                row = await conn.fetchrow(
+                    "SELECT params FROM production_params "
+                    "WHERE league_id = $1 AND version = $2",
+                    int(config.league_id) if config.league_id else 0,
+                    config.param_version,
+                )
+            else:
+                row = await conn.fetchrow(
+                    "SELECT params FROM production_params "
+                    "WHERE league_id = $1 AND is_active = TRUE "
+                    "ORDER BY version DESC LIMIT 1",
+                    int(config.league_id) if config.league_id else 0,
+                )
+            if row:
+                raw = row["params"]
+                params = _json.loads(raw) if isinstance(raw, str) else dict(raw)
+                logger.info(
+                    "production_params_loaded",
+                    match_id=config.match_id,
+                    league_id=config.league_id,
+                    param_keys=list(params.keys())[:10],
+                )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "production_params_load_failed",
+            match_id=config.match_id,
+            error=str(exc),
+        )
+
+    # Build Phase2Result from env vars (injected by orchestrator)
+    phase2_result = Phase2Result(
+        a_H=config.a_H,
+        a_A=config.a_A,
+        C_time=config.C_time,
+        verdict="GO",
     )
+
+    # If we have production_params, use from_phase2 for full initialization
+    if params and "b" in params:
+        model = LiveFootballQuantModel.from_phase2(
+            phase2_result,
+            params,
+            match_id=config.match_id,
+            league_id=int(config.league_id) if config.league_id else 0,
+            trading_mode=config.trading_mode,
+        )
+    else:
+        # Fallback: minimal model with Phase 2 intensities but no MMPP params
+        logger.warning(
+            "model_fallback_no_params",
+            match_id=config.match_id,
+            a_H=config.a_H,
+            a_A=config.a_A,
+        )
+        model = LiveFootballQuantModel(
+            match_id=config.match_id,
+            league_id=int(config.league_id) if config.league_id else 0,
+            trading_mode=config.trading_mode,
+            a_H=config.a_H,
+            a_A=config.a_A,
+            C_time=config.C_time,
+            b=np.ones(6, dtype=np.float64),
+            gamma_H=np.ones(4, dtype=np.float64),
+            gamma_A=np.ones(4, dtype=np.float64),
+        )
+
+    model.config = Phase4Config(
+        fee_rate=config.fee_rate,
+        z=config.z,
+        K_frac=config.K_frac,
+    )
+
     return model
 
 
