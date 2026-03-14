@@ -216,15 +216,25 @@ class GoalserveClient:
     async def get_live_score(self, match_id: str) -> dict[str, Any] | None:
         """Fetch live score for a specific match.
 
+        Searches by @id, @fix_id, and @static_id since the match_schedule
+        may store any of these Goalserve identifier fields.
+
         Args:
-            match_id: Goalserve match ID.
+            match_id: Goalserve match ID (may be @id, @fix_id, or @static_id).
 
         Returns:
             Live match dict or None if match not found in live feed.
         """
         all_live = await self.get_live_scores()
+        mid = str(match_id)
         for match in all_live:
-            if str(match.get("@id", match.get("id", ""))) == str(match_id):
+            # Check all known ID fields
+            if (
+                str(match.get("@id", "")) == mid
+                or str(match.get("id", "")) == mid
+                or str(match.get("@fix_id", "")) == mid
+                or str(match.get("@static_id", "")) == mid
+            ):
                 return match
         return None
 

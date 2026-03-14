@@ -199,11 +199,22 @@ class GoalserveLiveScoreSource(EventSource):
                             yield event
                         self._consecutive_failures = 0
                     else:
-                        if _poll_count % 10 == 1:
-                            logger.info(
+                        if _poll_count <= 3 or _poll_count % 20 == 0:
+                            # Log all available IDs on first few polls to
+                            # help diagnose match_id mapping issues.
+                            try:
+                                all_live = await self._client.get_live_scores()
+                                avail_ids = [
+                                    f"{m.get('@id','?')}/{m.get('@fix_id','?')}/{m.get('@static_id','?')}"
+                                    for m in all_live[:15]
+                                ]
+                            except Exception:  # noqa: BLE001
+                                avail_ids = ["<fetch_failed>"]
+                            logger.warning(
                                 "live_score_no_data",
                                 match_id=self._match_id,
                                 poll_count=_poll_count,
+                                available_ids=avail_ids,
                             )
 
                 except (httpx.HTTPError, httpx.TimeoutException) as exc:
@@ -442,6 +453,28 @@ async def live_score_poller(model: Any) -> None:
     await source.connect(match_id)
 
     logger.info("live_score_poller_started", match_id=match_id)
+
+    # One-time diagnostic: log all live match IDs so we can debug
+    # match_id field mapping issues.
+    try:
+        all_live = await client.get_live_scores()
+        sample_ids = [
+            {
+                "@id": m.get("@id", ""),
+                "@fix_id": m.get("@fix_id", ""),
+                "@static_id": m.get("@static_id", ""),
+                "status": m.get("status", ""),
+            }
+            for m in all_live[:20]
+        ]
+        logger.info(
+            "live_score_diag",
+            searching_for=match_id,
+            total_live=len(all_live),
+            sample_ids=sample_ids,
+        )
+    except Exception:  # noqa: BLE001
+        pass
 
     async for event in source.listen():
         if getattr(model, "engine_phase", None) == FINISHED:
