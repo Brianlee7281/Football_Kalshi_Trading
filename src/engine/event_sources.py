@@ -561,6 +561,9 @@ async def live_score_poller(model: Any) -> None:
     logger.info("live_score_poller_stopped", match_id=match_id)
 
 
+_OB_DIAG_INTERVAL = 30.0  # seconds between order-book diagnostic logs
+
+
 async def order_book_sync_loop(model: Any) -> None:
     """Phase 4 Kalshi WebSocket order-book sync coroutine.
 
@@ -568,11 +571,81 @@ async def order_book_sync_loop(model: Any) -> None:
     and feeds updates into the per-ticker OrderBookSync instances stored in
     model.ob_syncs.
 
-    Stub for Sprint 5 — full implementation in Sprint 6.
+    If no KalshiClient is available (missing API key), logs a warning and
+    sleeps until match end — signal_generator will see NO_OB for every tick.
     """
     import asyncio
 
     from src.engine.model import FINISHED
 
-    while getattr(model, "engine_phase", None) != FINISHED:
-        await asyncio.sleep(1.0)
+    kalshi_client = getattr(model, "kalshi_client", None)
+    tickers = list(getattr(model, "active_tickers", []))
+    match_id = getattr(model, "match_id", "?")
+
+    if kalshi_client is None or not tickers:
+        logger.warning(
+            "ob_sync_no_client",
+            match_id=match_id,
+            has_client=kalshi_client is not None,
+            ticker_count=len(tickers),
+            reason="No Kalshi client or no tickers — OB will not update",
+        )
+        while getattr(model, "engine_phase", None) != FINISHED:
+            await asyncio.sleep(1.0)
+        return
+
+    logger.info(
+        "ob_sync_starting",
+        match_id=match_id,
+        tickers=tickers,
+    )
+
+    last_diag_time = time.monotonic()
+    update_count = 0
+
+    try:
+        async for update in kalshi_client.stream_orderbook(tickers, reconnect=True):
+            if getattr(model, "engine_phase", None) == FINISHED:
+                break
+
+            ob_sync = model.ob_syncs.get(update.ticker)
+            if ob_sync is not None:
+                ob_sync.update_from_kalshi(update)
+                update_count += 1
+
+            # Periodic diagnostic log
+            now = time.monotonic()
+            if now - last_diag_time >= _OB_DIAG_INTERVAL:
+                diag: dict[str, Any] = {}
+                for t in tickers:
+                    obs = model.ob_syncs.get(t)
+                    if obs is not None:
+                        age = round(now - obs.kalshi_last_update, 1) if obs.kalshi_last_update > 0 else -1
+                        diag[t] = {
+                            "bid": obs.kalshi_best_bid,
+                            "ask": obs.kalshi_best_ask,
+                            "ask_depth": obs.total_ask_depth,
+                            "age_s": age,
+                            "stale": obs.kalshi_is_stale,
+                        }
+                logger.info(
+                    "ob_sync_diag",
+                    match_id=match_id,
+                    updates_since_last=update_count,
+                    books=diag,
+                )
+                update_count = 0
+                last_diag_time = now
+
+    except asyncio.CancelledError:
+        logger.info("ob_sync_cancelled", match_id=match_id)
+        raise
+    except Exception as exc:
+        logger.error(
+            "ob_sync_failed",
+            match_id=match_id,
+            error=str(exc),
+            exc_info=True,
+        )
+
+    logger.info("ob_sync_stopped", match_id=match_id)

@@ -245,9 +245,9 @@ async def main() -> None:
     model.ticker_to_model_key = await _load_ticker_mapping(db_pool, config.match_id)
     model.ob_syncs = {ticker: OrderBookSync(ticker=ticker) for ticker in model.active_tickers}
 
-    # ── Execution router (paper / live) ─────────────────────────────────────
+    # ── Kalshi client (needed for OB streaming in both paper and live) ───────
     kalshi_client = None
-    if config.trading_mode == "live":
+    if config.kalshi_api_key:
         import os
 
         from src.clients.kalshi import KalshiClient
@@ -257,7 +257,22 @@ async def main() -> None:
             api_key=config.kalshi_api_key,
             private_key_path=private_key_path,
         )
+        logger.info(
+            "kalshi_client_created",
+            match_id=config.match_id,
+            trading_mode=config.trading_mode,
+            has_private_key=bool(private_key_path),
+        )
+    else:
+        logger.warning(
+            "kalshi_client_missing",
+            match_id=config.match_id,
+            reason="KALSHI_API_KEY not set — order book will not update",
+        )
 
+    model.kalshi_client = kalshi_client
+
+    # ── Execution router (paper / live) ─────────────────────────────────────
     model.execution = ExecutionRouter(
         config.trading_mode,
         model,

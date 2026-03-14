@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     import asyncpg
     import redis.asyncio as aioredis
 
+    from src.clients.kalshi import KalshiClient
     from src.execution.execution_router import ExecutionRouter
     from src.execution.order_book_sync import OrderBookSync
 
@@ -218,6 +219,7 @@ class LiveFootballQuantModel:
     # ------------------------------------------------------------------
     config: Phase4Config = field(default_factory=Phase4Config)
     execution: ExecutionRouter | None = field(default=None, repr=False)
+    kalshi_client: KalshiClient | None = field(default=None, repr=False)
 
     # Active Kalshi tickers for this match (set at startup from MatchConfig)
     active_tickers: list[str] = field(default_factory=list)
