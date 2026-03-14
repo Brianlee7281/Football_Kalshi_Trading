@@ -145,6 +145,28 @@ class ContainerManager:
         }
 
         async with aiodocker.Docker() as docker:
+            # Remove stale container with same name (e.g. from a crashed run)
+            try:
+                stale = await docker.containers.get(container_name)
+                stale_info: dict[str, Any] = await stale.show()
+                stale_status = stale_info.get("State", {}).get("Status", "")
+                logger.info(
+                    "stale_container_found",
+                    match_id=match_id,
+                    container_name=container_name,
+                    status=stale_status,
+                )
+                if stale_status == "running":
+                    await stale.stop(timeout=5)
+                await stale.delete(force=True)
+                logger.info(
+                    "stale_container_removed",
+                    match_id=match_id,
+                    container_name=container_name,
+                )
+            except aiodocker.exceptions.DockerError:
+                pass  # No existing container — normal path
+
             container = await docker.containers.create(
                 config=config,
                 name=container_name,
