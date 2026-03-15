@@ -72,6 +72,7 @@ class ContainerManager:
         goalserve_api_key: str = "",
         kalshi_api_key: str = "",
         kalshi_private_key_path: str = "",
+        keys_host_path: str = "",
         fee_rate: float = 0.07,
         z_score: float = 1.645,
         k_frac: float = 0.25,
@@ -85,6 +86,7 @@ class ContainerManager:
         self._goalserve_api_key = goalserve_api_key
         self._kalshi_api_key = kalshi_api_key
         self._kalshi_private_key_path = kalshi_private_key_path
+        self._keys_host_path = keys_host_path
         self._fee_rate = fee_rate
         self._z_score = z_score
         self._k_frac = k_frac
@@ -308,19 +310,23 @@ class ContainerManager:
     def _build_binds(self) -> list[str]:
         """Build Docker volume bind mounts for the container.
 
-        If a Kalshi private key path is configured, mount its parent
-        directory into the container at ``/keys`` (read-only).
-        Always mounts when configured — the file may exist on the Docker
-        host even if not visible from the orchestrator process.
+        In Docker-in-Docker (orchestrator runs in a container, talks to
+        host Docker daemon via socket), bind mount source paths must be
+        HOST paths, not orchestrator-container paths.  KEYS_HOST_PATH
+        provides the actual host directory.
 
         Returns:
             List of Docker bind-mount strings (``host:container:ro``).
         """
         binds: list[str] = []
-        if self._kalshi_private_key_path:
+        if self._keys_host_path:
+            # KEYS_HOST_PATH is the HOST filesystem path to the keys dir
+            binds.append(f"{self._keys_host_path}:/app/keys:ro")
+        elif self._kalshi_private_key_path:
+            # Fallback: try to derive from key path (works outside Docker)
             key_path = Path(self._kalshi_private_key_path)
             host_dir = str(key_path.parent.resolve())
-            binds.append(f"{host_dir}:/keys:ro")
+            binds.append(f"{host_dir}:/app/keys:ro")
         return binds
 
     def _build_env(
@@ -388,7 +394,7 @@ class ContainerManager:
             "GOALSERVE_API_KEY": self._goalserve_api_key,
             "KALSHI_API_KEY": self._kalshi_api_key,
             "KALSHI_PRIVATE_KEY_PATH": (
-                f"/keys/{Path(self._kalshi_private_key_path).name}"
+                f"/app/keys/{Path(self._kalshi_private_key_path).name}"
                 if self._kalshi_private_key_path
                 else ""
             ),
@@ -423,6 +429,7 @@ def create_container_manager(config: dict[str, Any]) -> ContainerManager:
         goalserve_api_key=os.environ.get("GOALSERVE_API_KEY", ""),
         kalshi_api_key=os.environ.get("KALSHI_API_KEY", ""),
         kalshi_private_key_path=os.environ.get("KALSHI_PRIVATE_KEY_PATH", ""),
+        keys_host_path=os.environ.get("KEYS_HOST_PATH", ""),
         fee_rate=float(os.environ.get("FEE_RATE", "0.07")),
         z_score=float(os.environ.get("Z_SCORE", "1.645")),
         k_frac=float(os.environ.get("K_FRAC", "0.25")),

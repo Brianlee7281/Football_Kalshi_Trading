@@ -25,3 +25,4 @@ pyyaml==6.0.1
 numpy==1.26.4
 scipy==1.12.0
 xgboost==2.0.3
+cryptography

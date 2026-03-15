@@ -75,6 +75,10 @@ services:
       GOALSERVE_API_KEY: ${GOALSERVE_API_KEY:-}
       KALSHI_API_KEY: ${KALSHI_API_KEY:-}
       KALSHI_PRIVATE_KEY_PATH: ${KALSHI_PRIVATE_KEY_PATH:-}
+      # HOST path to the keys directory — required for Docker-in-Docker.
+      # The orchestrator runs in a container but spawns match containers via
+      # the host Docker socket.  Bind mount sources must be HOST paths.
+      KEYS_HOST_PATH: ${KEYS_HOST_PATH:-}
       # Tells ContainerManager which Docker network to join spawned containers to.
       # Must match the `name:` field of the mmpp-net network below.
       COMPOSE_NETWORK: mmpp-net
