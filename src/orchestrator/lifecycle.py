@@ -269,6 +269,11 @@ class MatchLifecycleManager:
                     max_attempts=max_inspect_failures,
                 )
                 if inspect_failures >= max_inspect_failures:
+                    # Capture crash output before giving up — container may
+                    # still exist as a stopped container even if inspect fails.
+                    await _log_container_output(
+                        self._container_manager, match_id, container,
+                    )
                     logger.error(
                         "container_inspect_gave_up",
                         match_id=match_id,

@@ -215,7 +215,17 @@ async def _load_ticker_mapping(
 
 async def main() -> None:
     """Async entry point for the match container."""
-    config = MatchEngineConfig.from_env()
+    # ── Top-level try/except: catch ANY startup crash ──────────────────────
+    # Without this, import errors, missing env vars, or DB connection failures
+    # produce an unlogged traceback to stderr and exit(1).
+    try:
+        config = MatchEngineConfig.from_env()
+    except Exception:
+        import traceback
+
+        print(f"FATAL: MatchEngineConfig.from_env() failed:\n{traceback.format_exc()}", flush=True)
+        logger.error("config_load_failed", error=traceback.format_exc())
+        sys.exit(1)
 
     logger.info(
         "match_engine_starting",
@@ -223,14 +233,57 @@ async def main() -> None:
         trading_mode=config.trading_mode,
         param_version=config.param_version,
         tickers=config.kalshi_tickers,
+        a_H=config.a_H,
+        a_A=config.a_A,
+        C_time=config.C_time,
+        db_url=config.db_url[:30] + "***" if config.db_url else "(empty)",
+        redis_url=config.redis_url[:20] + "***" if config.redis_url else "(empty)",
+        kalshi_key_path=config.kalshi_private_key_path,
     )
 
     # ── Infrastructure connections ──────────────────────────────────────────
-    db_pool = await _connect_db(config.db_url)
-    redis = await _connect_redis(config.redis_url)
+    try:
+        db_pool = await _connect_db(config.db_url)
+    except Exception:
+        import traceback
+
+        logger.error(
+            "db_connect_failed",
+            match_id=config.match_id,
+            db_url=config.db_url[:30] + "***",
+            error=traceback.format_exc(),
+        )
+        sys.exit(1)
+
+    try:
+        redis = await _connect_redis(config.redis_url)
+    except Exception:
+        import traceback
+
+        logger.error(
+            "redis_connect_failed",
+            match_id=config.match_id,
+            redis_url=config.redis_url[:20] + "***",
+            error=traceback.format_exc(),
+        )
+        await db_pool.close()
+        sys.exit(1)
 
     # ── Model initialization ────────────────────────────────────────────────
-    model = await _load_model(config, db_pool)
+    try:
+        model = await _load_model(config, db_pool)
+    except Exception:
+        import traceback
+
+        logger.error(
+            "model_load_failed",
+            match_id=config.match_id,
+            error=traceback.format_exc(),
+        )
+        await db_pool.close()
+        await redis.aclose()
+        sys.exit(1)
+
     model.db_pool = db_pool
     model.redis = redis
     model.bankroll = await _load_bankroll(db_pool, config.trading_mode)
@@ -374,7 +427,18 @@ async def main() -> None:
 
 def run() -> None:
     """Synchronous wrapper called by ``python -m src.match_engine.main``."""
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except SystemExit:
+        raise
+    except Exception:
+        # Last-resort safety net: if main() throws before any structured
+        # logging is set up, print the traceback to stderr so it appears
+        # in container logs (captured by orchestrator before removal).
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -119,6 +119,29 @@ class ContainerManager:
                 create/start request.
         """
         env = self._build_env(match_id, match, phase2_result)
+
+        # ── Defensive validation: warn on empty critical env vars ─────────
+        _CRITICAL_KEYS = ["MATCH_ID", "DB_URL", "REDIS_URL", "GOALSERVE_API_KEY"]
+        for key in _CRITICAL_KEYS:
+            val = env.get(key, "")
+            if not val:
+                logger.error(
+                    "container_env_missing_critical",
+                    match_id=match_id,
+                    key=key,
+                    hint=f"{key} is empty — container will crash on startup",
+                )
+
+        _WARN_KEYS = ["KALSHI_API_KEY", "KALSHI_PRIVATE_KEY_PATH", "ODDS_API_KEY"]
+        for key in _WARN_KEYS:
+            val = env.get(key, "")
+            if not val:
+                logger.warning(
+                    "container_env_missing_optional",
+                    match_id=match_id,
+                    key=key,
+                )
+
         league_id: str = str(
             match["league_id"] if hasattr(match, "__getitem__") else match.league_id
         )
@@ -322,11 +345,27 @@ class ContainerManager:
         if self._keys_host_path:
             # KEYS_HOST_PATH is the HOST filesystem path to the keys dir
             binds.append(f"{self._keys_host_path}:/app/keys:ro")
+            logger.debug(
+                "bind_mount_keys_host_path",
+                source=self._keys_host_path,
+            )
         elif self._kalshi_private_key_path:
             # Fallback: try to derive from key path (works outside Docker)
             key_path = Path(self._kalshi_private_key_path)
             host_dir = str(key_path.parent.resolve())
             binds.append(f"{host_dir}:/app/keys:ro")
+            logger.warning(
+                "bind_mount_fallback_key_path",
+                source=host_dir,
+                hint="Using KALSHI_PRIVATE_KEY_PATH parent as bind source — "
+                     "set KEYS_HOST_PATH for Docker-in-Docker",
+            )
+        else:
+            logger.warning(
+                "bind_mount_no_keys",
+                hint="No KEYS_HOST_PATH or KALSHI_PRIVATE_KEY_PATH — "
+                     "container will not have access to Kalshi private key",
+            )
         return binds
 
     def _build_env(

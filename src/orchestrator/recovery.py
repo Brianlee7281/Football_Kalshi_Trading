@@ -265,7 +265,7 @@ async def _recover_phase3_running(
             "recovery_phase3_no_container_id",
             match_id=match_id,
         )
-        await lifecycle.emergency_freeze(match_id)
+        await _mark_failed(lifecycle, match_id)
         counts["phase3_failed"] += 1
         return
 
@@ -364,7 +364,7 @@ async def _is_container_alive(container_manager: Any, container_id: str) -> bool
 
 
 async def _mark_failed(lifecycle: Any, match_id: str) -> None:
-    """Update status to FAILED and emit emergency freeze.
+    """Update status to FAILED, clear container_id, and emit emergency freeze.
 
     Args:
         lifecycle: MatchLifecycleManager instance.
@@ -374,6 +374,12 @@ async def _mark_failed(lifecycle: Any, match_id: str) -> None:
 
     try:
         await _update_status(lifecycle._pool, match_id, "FAILED")
+        # Clear stale container_id so future recovery doesn't re-inspect a dead container
+        async with lifecycle._pool.acquire() as conn:
+            await conn.execute(
+                "UPDATE match_schedule SET container_id = NULL WHERE match_id = $1",
+                match_id,
+            )
     except Exception as exc:  # noqa: BLE001
         logger.warning("recovery_mark_failed_db_error", match_id=match_id, error=str(exc))
     await lifecycle.emergency_freeze(match_id)
