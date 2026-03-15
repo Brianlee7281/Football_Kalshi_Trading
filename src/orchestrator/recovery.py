@@ -47,6 +47,9 @@ logger = get_logger("recovery")
 # ---------------------------------------------------------------------------
 
 
+_STALE_MATCH_HOURS: float = 3.0  # Auto-finish matches older than this
+
+
 async def recover_orchestrator_state(
     pool: asyncpg.Pool,
     lifecycle: Any,
@@ -60,6 +63,9 @@ async def recover_orchestrator_state(
     re-runs Phase 2, resumes container monitoring, or launches containers
     that missed their trigger window.
 
+    Matches whose kickoff was more than 3 hours ago are auto-marked
+    FINISHED — they are too stale to retry.
+
     Args:
         pool: asyncpg connection pool.
         lifecycle: ``MatchLifecycleManager`` instance.
@@ -72,6 +78,7 @@ async def recover_orchestrator_state(
             "phase3_resumed": int,
             "phase3_failed": int,
             "scheduled_triggered": int,
+            "auto_finished": int,
         }``
     """
     now = now if now is not None else datetime.now(UTC)
@@ -81,6 +88,7 @@ async def recover_orchestrator_state(
         "phase3_resumed": 0,
         "phase3_failed": 0,
         "scheduled_triggered": 0,
+        "auto_finished": 0,
     }
 
     # ── Fetch all matches requiring action ───────────────────────────────
@@ -107,11 +115,25 @@ async def recover_orchestrator_state(
         status: str = row["status"]
 
         try:
+            # ── Auto-finish stale matches (kickoff > 3h ago) ─────────
+            kickoff = _ensure_utc(row["kickoff_utc"])
+            if (now - kickoff).total_seconds() > _STALE_MATCH_HOURS * 3600:
+                logger.info(
+                    "recovery_auto_finish_stale",
+                    match_id=match_id,
+                    status=status,
+                    kickoff=kickoff.isoformat(),
+                    age_h=round((now - kickoff).total_seconds() / 3600, 1),
+                )
+                await _mark_finished(lifecycle, match_id)
+                counts["auto_finished"] += 1
+                continue
+
             if status == "PHASE2_RUNNING":
                 await _recover_phase2_running(match_id, row, lifecycle, counts)
 
             elif status == "PHASE2_DONE":
-                await _recover_phase2_done(match_id, row, lifecycle, now, counts)
+                await _recover_phase2_done(match_id, row, lifecycle, now, pool, counts)
 
             elif status == "PHASE3_RUNNING":
                 await _recover_phase3_running(
@@ -168,6 +190,7 @@ async def _recover_phase2_done(
     row: Any,
     lifecycle: Any,
     now: datetime,
+    pool: asyncpg.Pool,
     counts: dict[str, int],
 ) -> None:
     """Phase 2 is done but Phase 3 container was not yet launched.
@@ -175,13 +198,30 @@ async def _recover_phase2_done(
     If phase3_trigger has already passed, launch immediately.
     Otherwise the normal TriggerExecutor.tick() will fire at the right time.
 
+    If a stale container_id exists from a prior crashed launch, clear it
+    first so the new launch gets a clean slate.
+
     Args:
         match_id: Goalserve match ID.
         row: asyncpg Record from match_schedule.
         lifecycle: MatchLifecycleManager instance.
         now: Current UTC datetime.
+        pool: asyncpg connection pool.
         counts: Mutable counter dict to update.
     """
+    # Clear stale container_id if present (prior crash left it behind)
+    if row["container_id"]:
+        logger.warning(
+            "recovery_phase2_done_clearing_stale_container",
+            match_id=match_id,
+            stale_container_id=str(row["container_id"])[:12],
+        )
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "UPDATE match_schedule SET container_id = NULL WHERE match_id = $1",
+                match_id,
+            )
+
     phase3_trigger = _ensure_utc(row["phase3_trigger"])
     if phase3_trigger <= now:
         logger.info(
@@ -337,6 +377,21 @@ async def _mark_failed(lifecycle: Any, match_id: str) -> None:
     except Exception as exc:  # noqa: BLE001
         logger.warning("recovery_mark_failed_db_error", match_id=match_id, error=str(exc))
     await lifecycle.emergency_freeze(match_id)
+
+
+async def _mark_finished(lifecycle: Any, match_id: str) -> None:
+    """Update status to FINISHED for stale matches that are too old to retry.
+
+    Args:
+        lifecycle: MatchLifecycleManager instance.
+        match_id: Goalserve match ID.
+    """
+    from src.orchestrator.lifecycle import _update_status  # avoid circular at module level
+
+    try:
+        await _update_status(lifecycle._pool, match_id, "FINISHED")
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("recovery_mark_finished_db_error", match_id=match_id, error=str(exc))
 
 
 def _ensure_utc(dt: Any) -> datetime:

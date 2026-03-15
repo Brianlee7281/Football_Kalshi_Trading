@@ -115,6 +115,7 @@ async def test_recovery_empty_returns_zero_counts() -> None:
         "phase3_resumed": 0,
         "phase3_failed": 0,
         "scheduled_triggered": 0,
+        "auto_finished": 0,
     }
 
 

@@ -241,12 +241,15 @@ class MatchLifecycleManager:
         On crash (non-zero):     status → FAILED, emergency_freeze called.
         On heartbeat stale:      emergency_freeze called (container kept running).
         On 9h timeout:           container stopped, status → FAILED.
+        On inspect 404 (3x):    container gone, status → FAILED.
 
         Args:
             match_id: Goalserve match ID.
             container: Container object returned by launch.
         """
         start_time = datetime.now(UTC)
+        inspect_failures: int = 0
+        max_inspect_failures: int = 3
 
         while True:
             await asyncio.sleep(MONITOR_POLL_S)
@@ -255,13 +258,26 @@ class MatchLifecycleManager:
             try:
                 status_info: dict[str, Any] = await self._container_manager.inspect(container)
                 state = status_info.get("State", {})
+                inspect_failures = 0  # reset on success
             except Exception as exc:  # noqa: BLE001
+                inspect_failures += 1
                 logger.warning(
                     "container_inspect_failed",
                     match_id=match_id,
                     error=str(exc),
+                    attempt=inspect_failures,
+                    max_attempts=max_inspect_failures,
                 )
-                state = {}
+                if inspect_failures >= max_inspect_failures:
+                    logger.error(
+                        "container_inspect_gave_up",
+                        match_id=match_id,
+                        attempts=inspect_failures,
+                    )
+                    await _update_status(self._pool, match_id, "FAILED")
+                    await self.emergency_freeze(match_id)
+                    break
+                continue
 
             if state.get("Status") == "exited":
                 exit_code: int = int(state.get("ExitCode", 1))
