@@ -253,20 +253,28 @@ async def main() -> None:
     kalshi_client = None
     if config.kalshi_api_key:
         import os
+        from pathlib import Path as _Path
 
         from src.clients.kalshi import KalshiClient
 
-        private_key_path = os.environ.get("KALSHI_PRIVATE_KEY_PATH", "kalshi_private.pem")
-        kalshi_client = KalshiClient(
-            api_key=config.kalshi_api_key,
-            private_key_path=private_key_path,
-        )
-        logger.info(
-            "kalshi_client_created",
-            match_id=config.match_id,
-            trading_mode=config.trading_mode,
-            has_private_key=bool(private_key_path),
-        )
+        private_key_path = os.environ.get("KALSHI_PRIVATE_KEY_PATH", "")
+        if private_key_path and _Path(private_key_path).is_file():
+            kalshi_client = KalshiClient(
+                api_key=config.kalshi_api_key,
+                private_key_path=private_key_path,
+            )
+            logger.info(
+                "kalshi_client_created",
+                match_id=config.match_id,
+                trading_mode=config.trading_mode,
+                private_key_path=private_key_path,
+            )
+        else:
+            logger.warning(
+                "kalshi_private_key_not_found",
+                match_id=config.match_id,
+                private_key_path=private_key_path,
+            )
     else:
         logger.warning(
             "kalshi_client_missing",

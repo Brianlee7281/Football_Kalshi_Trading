@@ -104,6 +104,8 @@ async def main() -> None:
         odds_api_key=odds_api_key,
         goalserve_api_key=goalserve_key,
         kalshi_api_key=kalshi_key,
+        kalshi_private_key_path=kalshi_private_key,
+        keys_host_path=os.environ.get("KEYS_HOST_PATH", ""),
     )
 
     # ── Lifecycle manager ─────────────────────────────────────────────────
