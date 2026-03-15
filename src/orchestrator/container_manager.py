@@ -150,6 +150,22 @@ class ContainerManager:
             },
         }
 
+        # Log env vars (redact secrets) and binds for debugging
+        _REDACT_KEYS = {"KALSHI_API_KEY", "ODDS_API_KEY", "GOALSERVE_API_KEY", "DB_URL", "REDIS_URL"}
+        redacted_env = {
+            k: (v[:4] + "***" if k in _REDACT_KEYS and v else v)
+            for k, v in env.items()
+        }
+        binds = config["HostConfig"]["Binds"]
+        logger.info(
+            "container_config",
+            match_id=match_id,
+            image=self._image,
+            env=redacted_env,
+            binds=binds,
+            network=self._compose_network,
+        )
+
         async with aiodocker.Docker() as docker:
             # Remove stale container with same name (e.g. from a crashed run)
             try:

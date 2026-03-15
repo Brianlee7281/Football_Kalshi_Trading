@@ -287,6 +287,10 @@ class MatchLifecycleManager:
                     await _settle_match(self._pool, match_id)
                     await _update_status(self._pool, match_id, "FINISHED")
                 else:
+                    # Capture crash output BEFORE container is removed
+                    await _log_container_output(
+                        self._container_manager, match_id, container,
+                    )
                     logger.error(
                         "container_exited_error",
                         match_id=match_id,
@@ -560,6 +564,55 @@ async def _settle_match(pool: asyncpg.Pool, match_id: str) -> None:
         match_id: Goalserve match ID.
     """
     logger.info("settle_match_analytics", match_id=match_id)
+
+
+async def _log_container_output(
+    container_manager: Any,
+    match_id: str,
+    container: Any,
+    *,
+    tail: int = 50,
+) -> None:
+    """Fetch and log the last N lines of container stdout/stderr.
+
+    Called before container removal on crash so the error output is
+    captured in orchestrator logs for debugging.
+
+    Args:
+        container_manager: ContainerManager instance.
+        match_id: Goalserve match ID.
+        container: Container object (has .id attribute).
+        tail: Number of lines to fetch (default 50).
+    """
+    try:
+        import aiodocker
+
+        container_id = getattr(container, "id", str(container))
+        async with aiodocker.Docker() as docker:
+            c = await docker.containers.get(container_id)
+            log_lines: list[str] | bytes = await c.log(
+                stdout=True, stderr=True, tail=tail,
+            )
+
+        if isinstance(log_lines, list):
+            output = "".join(log_lines)
+        elif isinstance(log_lines, bytes):
+            output = log_lines.decode("utf-8", errors="replace")
+        else:
+            output = str(log_lines)
+
+        logger.error(
+            "container_crash_output",
+            match_id=match_id,
+            container_id=container_id[:12],
+            output=output[-3000:],  # cap at 3000 chars
+        )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "container_crash_output_fetch_failed",
+            match_id=match_id,
+            error=str(exc),
+        )
 
 
 async def _archive_logs(pool: asyncpg.Pool, match_id: str, container_id: str) -> None:
