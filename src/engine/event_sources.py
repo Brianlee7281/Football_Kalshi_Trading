@@ -597,7 +597,6 @@ async def live_score_poller(model: Any) -> None:
     changes, and VAR cancellations.  Dispatches confirmed events via
     dispatch_event(model, event).
     """
-    import asyncio
     import os
 
     from src.clients.goalserve import GoalserveClient

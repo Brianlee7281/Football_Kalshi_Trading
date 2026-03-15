@@ -504,7 +504,7 @@ async def fetch_prematch_odds(
             return None
 
     mid = str(match_id)
-    target: dict | None = None
+    target: dict[str, Any] | None = None
     for m in matches:
         if (
             str(m.get("fix_id", "")) == mid

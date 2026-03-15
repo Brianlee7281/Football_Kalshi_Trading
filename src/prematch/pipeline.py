@@ -15,6 +15,7 @@ Reference: docs/phase2.md, docs/implementation_roadmap.md Task 4.1
 
 from __future__ import annotations
 
+import contextlib
 from typing import Any
 
 import numpy as np
@@ -142,11 +143,13 @@ async def run_phase2(
     backsolve: BacksolveResult
 
     has_xgb_model = (
-        xgb_model_path
-        and feature_mask
+        xgb_model_path is not None
+        and feature_mask is not None
         and xgb_model_path != "mle_fallback"
     )
     if has_xgb_model:
+        assert feature_mask is not None  # narrowing for mypy
+        assert xgb_model_path is not None
         # Path 1: XGBoost
         X_home = apply_feature_mask(pre_match, feature_mask, median_values)
         X_away = build_away_feature_vector(
@@ -350,10 +353,8 @@ def _compute_rolling_mu(
             team_data = ms.get(team_key, {})
             raw_goals = team_data.get("@goals", team_data.get("goals"))
             if raw_goals is not None:
-                try:
+                with contextlib.suppress(TypeError, ValueError):
                     goals.append(float(raw_goals))
-                except (TypeError, ValueError):
-                    pass
         if len(goals) < 3:
             return None
         return sum(goals) / len(goals)

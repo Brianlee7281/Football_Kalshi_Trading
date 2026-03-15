@@ -3,7 +3,7 @@
 Tests cover:
   - _parse_fixture_kickoff: valid dates, invalid, missing
   - _name_in_title: exact match, first-word match, no match
-  - _event_within_window: within/outside 24h, invalid date
+  - (removed: _event_within_window was inlined into _match_fixtures_to_markets)
   - _match_fixtures_to_markets: happy path, no Kalshi match, missing fields
   - MatchDiscovery.discover: happy path, zero fixtures, zero Kalshi events
   - TriggerExecutor.tick: phase2 triggered, phase3 triggered, none ready
@@ -23,7 +23,6 @@ from src.orchestrator.scheduler import (
     PHASE3_OFFSET_MINUTES,
     MatchDiscovery,
     TriggerExecutor,
-    _event_within_window,
     _match_fixtures_to_markets,
     _name_in_title,
     _upsert_match_schedules,
@@ -121,36 +120,6 @@ def test_name_in_title_short_team_not_in_title() -> None:
 
 
 # ---------------------------------------------------------------------------
-# _event_within_window
-# ---------------------------------------------------------------------------
-
-_BASE_KO = datetime(2026, 3, 26, 15, 0, tzinfo=UTC)
-
-
-def test_event_within_window_same_day() -> None:
-    event = {"close_time": "2026-03-26T17:00:00Z"}
-    assert _event_within_window(_BASE_KO, event) is True
-
-
-def test_event_within_window_outside_24h() -> None:
-    event = {"close_time": "2026-03-28T15:00:00Z"}  # 48h ahead
-    assert _event_within_window(_BASE_KO, event) is False
-
-
-def test_event_within_window_missing_close_time() -> None:
-    assert _event_within_window(_BASE_KO, {}) is False
-
-
-def test_event_within_window_invalid_date() -> None:
-    assert _event_within_window(_BASE_KO, {"close_time": "not-a-date"}) is False
-
-
-def test_event_within_window_uses_end_date_fallback() -> None:
-    event = {"end_date": "2026-03-26T17:00:00Z"}
-    assert _event_within_window(_BASE_KO, event) is True
-
-
-# ---------------------------------------------------------------------------
 # _match_fixtures_to_markets
 # ---------------------------------------------------------------------------
 
@@ -207,9 +176,18 @@ def test_match_fixtures_no_kalshi_match() -> None:
     assert matched == []
 
 
-def test_match_fixtures_date_outside_window() -> None:
+def test_match_fixtures_close_time_after_kickoff_matches() -> None:
+    """close_time after kickoff is valid — Kalshi sets expiry days/weeks out."""
     fixtures = [_make_fixture()]
     events = [_make_kalshi_event(close_time="2026-03-29T15:00:00Z")]
+    matched = _match_fixtures_to_markets(fixtures, events)
+    assert len(matched) == 1
+
+
+def test_match_fixtures_close_time_before_kickoff_rejected() -> None:
+    """close_time before kickoff means the market expired — skip it."""
+    fixtures = [_make_fixture()]
+    events = [_make_kalshi_event(close_time="2026-03-25T10:00:00Z")]
     matched = _match_fixtures_to_markets(fixtures, events)
     assert matched == []
 
