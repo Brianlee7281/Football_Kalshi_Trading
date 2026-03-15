@@ -86,23 +86,21 @@ async def _load_model(
 
     from src.common.types import Phase2Result
 
-    # Load production_params from DB
+    # Load production_params from DB (global — no league_id column)
     params: dict[str, Any] = {}
     try:
         async with db_pool.acquire() as conn:
             if config.param_version > 0:
                 row = await conn.fetchrow(
                     "SELECT params FROM production_params "
-                    "WHERE league_id = $1 AND version = $2",
-                    int(config.league_id) if config.league_id else 0,
+                    "WHERE version = $1",
                     config.param_version,
                 )
             else:
                 row = await conn.fetchrow(
                     "SELECT params FROM production_params "
-                    "WHERE league_id = $1 AND is_active = TRUE "
+                    "WHERE is_active = TRUE "
                     "ORDER BY version DESC LIMIT 1",
-                    int(config.league_id) if config.league_id else 0,
                 )
             if row:
                 raw = row["params"]
@@ -110,8 +108,14 @@ async def _load_model(
                 logger.info(
                     "production_params_loaded",
                     match_id=config.match_id,
-                    league_id=config.league_id,
+                    param_version=config.param_version,
                     param_keys=list(params.keys())[:10],
+                )
+            else:
+                logger.warning(
+                    "production_params_not_found",
+                    match_id=config.match_id,
+                    param_version=config.param_version,
                 )
     except Exception as exc:  # noqa: BLE001
         logger.warning(
